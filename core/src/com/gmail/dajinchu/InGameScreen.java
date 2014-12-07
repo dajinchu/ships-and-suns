@@ -31,7 +31,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 450;//Ships per player
+    static final int SHIP_NUM = 1050;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 2;
     static final double TERMINAL_VELOCITY = 2;
@@ -87,6 +87,7 @@ public class InGameScreen implements Screen {
         if(players!=null) {
             for (Player player : players) {
                 spriteBatch.begin();
+                spriteBatch.draw(player.texture,0,0);
                 player.drawShips(spriteBatch);
                 spriteBatch.end();
 

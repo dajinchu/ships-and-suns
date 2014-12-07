@@ -18,22 +18,28 @@ public class Player implements Serializable {
 
     //Graphics
     static Texture[] textureMap = new Texture[]{new Texture("red.png"),new Texture("blue.png")};//number->color link
-
+    int textureXShift, textureYShift;
 
     String TAG = "Player";
 
     public Player(int playerNumber){
         this.playerNumber = playerNumber;
         texture = textureMap[playerNumber];
+        textureXShift = texture.getWidth()/2;
+        textureYShift = texture.getHeight()/2;
     }
     public void drawShips(SpriteBatch batch){
         for(Ship ship : my_ships){
-            //Log.i("PLAYER", bmp+" "+ship.x+" "+ship.y+" "+mPaint);
-            batch.draw(texture, (int) ship.x, (int) ship.y);
+            //It draws bottomleft corner at given coords, so we give it coords shifted down and left
+            batch.draw(texture, (int) ship.x-textureXShift, (int) ship.y-textureYShift);
         }
     }
     public void frame(){
         //Log.i(TAG, my_ships.size()+"");
+        /*for(Iterator<Ship> iterator=my_ships.iterator(); iterator.hasNext()){
+            Ship ship = iterator.next();
+            iterator.remove();
+        }*/
         for(Ship ship : my_ships){
             ship.frame();
         }

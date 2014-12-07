@@ -38,7 +38,9 @@ public class Ship implements Serializable {
         }
         Ship target = getTarget();
         if(target != null){
-            target.my_owner.remove_ships.add(target);//TODO maybbe just iterate through a clone and remove from real?
+            //Not iterating through enemies ships right now, so just remove!
+            target.my_owner.my_ships.remove(target);//TODO maybbe just iterate through a clone and remove from real?
+            //Have to flag for removal, since my_owner is iterating through his my_ships
             my_owner.remove_ships.add(this);
         }
     }
