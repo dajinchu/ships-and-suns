@@ -13,7 +13,7 @@ public class Player implements Serializable {
     ArrayList<Ship> my_ships = new ArrayList<Ship>();//ships under this Player's control
     ArrayList<Ship> remove_ships = new ArrayList<Ship>();//ships to be removed
     int playerNumber;//For identification across devices, each number corresponds to a color
-    int destx=100,desty=100;
+    int destx=300,desty=300;
     Texture texture;
 
     //Graphics
@@ -43,9 +43,14 @@ public class Player implements Serializable {
         for(Ship ship : my_ships){
             ship.frame();
         }
-        for(Ship ship: remove_ships){
-            my_ships.remove(ship);
+    }
+
+    public void killFrame(){
+
+        for(Ship ship : my_ships){
+            ship.killFrame();
         }
+        my_ships.removeAll(remove_ships);
         remove_ships.clear();
     }
 
@@ -63,4 +68,5 @@ public class Player implements Serializable {
             ship.calcDestWithWander(destx,desty);
         }
     }
+
 }

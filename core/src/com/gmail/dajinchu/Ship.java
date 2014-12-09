@@ -13,6 +13,8 @@ public class Ship implements Serializable {
     int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
     //int color;
 
+    ShipTile my_tile;
+
     //Temp stuff, local variables here to save memory
     double minx,maxx,miny,maxy,wanderxoffset;
 
@@ -25,23 +27,40 @@ public class Ship implements Serializable {
         this.y = y;
         my_owner = owner;
         this.inGame = inGame;
+        my_tile = inGame.grid[((int) Math.floor(y/InGameScreen.ENGAGEMENT_RANGE))][(int)Math.floor(x/InGameScreen.ENGAGEMENT_RANGE)];
+        my_tile.ships.add(this);
     }
 
 
 
     public void frame(){
         arrive();
+
+        //TODO efficiency here
+        try {
+            my_tile.ships.remove(this);
+            my_tile = inGame.grid[((int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE))][(int) Math.floor(x / InGameScreen.ENGAGEMENT_RANGE)];//TODO MAKE A THIS FUNCTION
+            my_tile.ships.add(this);
+        }catch (ArrayIndexOutOfBoundsException e){
+
+        }
         //Have we arrived and needing a new wanderdest?
         //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
-        if(Math.abs(wanderdestx-x)+Math.abs(wanderdesty-y)<2){
-            calcDestWithWander(my_owner.destx,my_owner.desty);
+        if(Math.abs(wanderdestx-x)+Math.abs(wanderdesty-y)<InGameScreen.ENGAGEMENT_RANGE){
+            calcDestWithWander(my_owner.destx, my_owner.desty);
         }
+
+    }
+
+    public void killFrame(){
         Ship target = getTarget();
         if(target != null){
             //Not iterating through enemies ships right now, so just remove!
             target.my_owner.my_ships.remove(target);//TODO maybbe just iterate through a clone and remove from real?
+            target.my_tile.ships.remove(target);
             //Have to flag for removal, since my_owner is iterating through his my_ships
-            my_owner.remove_ships.add(this);
+            my_owner.remove_ships.add(this);//TODO make a remove ship function
+            my_tile.ships.remove(this);
         }
     }
 
@@ -99,6 +118,19 @@ public class Ship implements Serializable {
 
     public Ship getTarget(){
         //pre-calculation bounds for efficiency
+        for(ShipTile shipTile : my_tile.neighbors){
+
+            for(Ship ship :
+                    shipTile
+                    .ships){
+                if(ship.my_owner == my_owner) {
+                    break;
+                }
+                if(Math.abs(x-ship.x)+Math.abs(y-ship.y)<2){
+                    return ship;
+                }
+            }
+        }/*
         minx=x-InGameScreen.ENGAGEMENT_RANGE;
         miny=y-InGameScreen.ENGAGEMENT_RANGE;
         maxx=x+InGameScreen.ENGAGEMENT_RANGE;
@@ -114,7 +146,7 @@ public class Ship implements Serializable {
                     }
                 }
             }
-        }
+        }*/
         return null;
     }
 }

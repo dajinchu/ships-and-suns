@@ -31,9 +31,9 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 1050;//Ships per player
+    static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
-    static final double ENGAGEMENT_RANGE = 2;
+    static final double ENGAGEMENT_RANGE = 10;
     static final double TERMINAL_VELOCITY = 2;
     static final double MAX_FORCE = .1;
 
@@ -42,6 +42,9 @@ public class InGameScreen implements Screen {
 
     //Test
     float retarget = 0;
+
+    ShipTile[][] grid;
+    int gridHeight, gridWidth;
 
     public InGameScreen(MainGame game){
         this.game = game;
@@ -55,17 +58,33 @@ public class InGameScreen implements Screen {
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
 
+        gridHeight=(int) Math.ceil(height/ENGAGEMENT_RANGE);
+        gridWidth=(int) Math.ceil(width/ENGAGEMENT_RANGE);
+        grid = new ShipTile[gridHeight][gridWidth];
+        for(int y=0; y < gridHeight; y++){
+            for(int x = 0; x < gridWidth; x++){
+                grid[y][x] = new ShipTile(x,y);
+            }
+        }
+        for(int y=0; y < gridHeight; y++){
+            for(int x = 0; x < gridWidth; x++){
+                grid[y][x].fillNeighbors(this);
+            }
+        }
+
         initWithSeed(TimeUtils.millis());
     }
 
     //Game Mechanic Functions
     public void initWithSeed(long randomSeed){
         //When received seed for random from server, take appropriate action
+        random = new Random(randomSeed);
         players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
         players[1] = new Player(1);
+        players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
+        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
         me = players[0];
-        random = new Random(randomSeed);
         int x,y;
         for(Player player : players){
             for(int i=0; i<SHIP_NUM; i++){
@@ -87,7 +106,7 @@ public class InGameScreen implements Screen {
         if(players!=null) {
             for (Player player : players) {
                 spriteBatch.begin();
-                spriteBatch.draw(player.texture,0,0);
+                //spriteBatch.draw(player.texture,0,0);
                 player.drawShips(spriteBatch);
                 spriteBatch.end();
 
@@ -106,19 +125,25 @@ public class InGameScreen implements Screen {
     }
 
     public void update(float delta){
+
+        //Move em
         for(Player player : players){
             player.frame();
+        }
+        for(Player player : players){
+            player.killFrame();
         }
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
-            players[1].setDest(random.nextInt(width),random.nextInt(height));
+            players[1].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
     }
 
     @Override
     public void resize(int w, int h) {
+
 
         this.width = Gdx.graphics.getWidth();
         this.height = Gdx.graphics.getHeight();
