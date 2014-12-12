@@ -79,11 +79,9 @@ public class InGameScreen implements Screen {
     public void initWithSeed(long randomSeed){
         //When received seed for random from server, take appropriate action
         random = new Random(randomSeed);
-        players = new Player[2];//TODO TEMP, have send of num of playas
+        players = new Player[2];//TODO TEMP, have sen3d of num of playas
         players[0] = new Player(0);
         players[1] = new Player(1);
-        players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
-        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
         me = players[0];
         int x,y;
         for(Player player : players){
@@ -93,6 +91,8 @@ public class InGameScreen implements Screen {
                 player.my_ships.add(new Ship(x,y,player, this));
             }
         }
+        players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
+        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
     }
 
     @Override
@@ -129,10 +129,10 @@ public class InGameScreen implements Screen {
         //Move em
         for(Player player : players){
             player.frame();
-        }
+        }/*
         for(Player player : players){
             player.killFrame();
-        }
+        }*/
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
