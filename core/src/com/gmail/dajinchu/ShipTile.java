@@ -2,12 +2,14 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.utils.Array;
 
+import java.util.LinkedList;
+
 /**
  * Created by Da-Jin on 12/8/2014.
  */
 public class ShipTile {
     final int x, y;
-    Array<Ship> ships = new Array<Ship>();
+    LinkedList<Ship> ships = new LinkedList<Ship>();
     Array<ShipTile> neighbors = new Array<ShipTile>();
 
     public ShipTile(int x, int y){
