@@ -2,16 +2,16 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 public class Player implements Serializable {
-    ArrayList<Ship> my_ships = new ArrayList<Ship>();//ships under this Player's control
+    Array<Ship> my_ships = new Array<Ship>();//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
     int destx=300,desty=300;
     Texture texture;

@@ -52,7 +52,7 @@ public class Ship implements Serializable {
         calcGrid();
         if(newgridy!=my_tile.y||newgridx!=my_tile.x){
             try {
-                my_tile.ships.remove(this);
+                my_tile.ships.removeValue(this, true);
                 my_tile = inGame.grid[newgridy][newgridx];//TODO MAKE A THIS FUNCTION
                 my_tile.ships.add(this);
             }catch (ArrayIndexOutOfBoundsException e){
@@ -69,7 +69,7 @@ public class Ship implements Serializable {
 
     public void die(){
         destroyed = true;
-        my_tile.ships.remove(this);//TODO anywhere else to do this so we can stay pure flag?
+        my_tile.ships.removeValue(this, true);//TODO anywhere else to do this so we can stay pure flag?
     }
 
     public void killFrame(){

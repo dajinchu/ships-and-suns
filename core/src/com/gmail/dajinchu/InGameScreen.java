@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -30,14 +30,14 @@ public class InGameScreen implements Screen {
     Player[] players;
     Player me;
     ShipTile[][] grid;
-    ArrayList<Ship> allShips =  new ArrayList<Ship>(SHIP_NUM*2);//To save resources, preallocate some space
+    Array<Ship> allShips =  new Array<Ship>(SHIP_NUM*2);//To save resources, preallocate some space
 
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
     static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
-    static final double ENGAGEMENT_RANGE = 5;
+    static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
     static final double MAX_FORCE = .1;
 
@@ -48,6 +48,7 @@ public class InGameScreen implements Screen {
     float retarget = 0;
 
     int gridHeight, gridWidth;
+    private Ship ship;
 
     public InGameScreen(MainGame game){
         this.game = game;
@@ -101,7 +102,7 @@ public class InGameScreen implements Screen {
 
         //Move em
         for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
-            Ship ship = (Ship) iterator.next();
+            ship = (Ship) iterator.next();
             if(ship.destroyed) {
                 iterator.remove();
             }else{
@@ -110,7 +111,7 @@ public class InGameScreen implements Screen {
         }
         //Calculate kills
         for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
-            Ship ship = (Ship) iterator.next();
+            ship = (Ship) iterator.next();
             if(ship.destroyed) {
                 iterator.remove();
                 break;

@@ -1,14 +1,14 @@
 package com.gmail.dajinchu;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by Da-Jin on 12/8/2014.
  */
 public class ShipTile {
     final int x, y;
-    ArrayList<Ship> ships = new ArrayList<Ship>();
-    ArrayList<ShipTile> neighbors = new ArrayList<ShipTile>();
+    Array<Ship> ships = new Array<Ship>();
+    Array<ShipTile> neighbors = new Array<ShipTile>();
 
     public ShipTile(int x, int y){
         super();
