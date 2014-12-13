@@ -49,7 +49,7 @@ public class Ship implements Serializable {
         //TODO efficiency here
 
         //If entered a new tile...
-        calcGrid();
+        /*calcGrid();
         if(newgridy!=my_tile.y||newgridx!=my_tile.x){
             try {
                 my_tile.ships.removeValue(this, true);
@@ -58,7 +58,7 @@ public class Ship implements Serializable {
             }catch (ArrayIndexOutOfBoundsException e){
 
             }
-        }
+        }*/
         //Have we arrived and needing a new wanderdest?
         //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
         if(Math.abs(wanderdestx-x)+Math.abs(wanderdesty-y)<InGameScreen.ENGAGEMENT_RANGE){

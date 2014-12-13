@@ -100,7 +100,7 @@ public class InGameScreen implements Screen {
     public void update(float delta){
 
         //Move em
-        /*allShips.begin();
+        allShips.begin();
         for(Ship ship : allShips){
             if(ship.destroyed){
                 allShips.removeValue(ship, true);
@@ -109,6 +109,7 @@ public class InGameScreen implements Screen {
             ship.frame();
         }
         allShips.end();
+        /*
         //After all moved, calc killing
         for(Ship ship : allShips){
             if(ship.destroyed){
