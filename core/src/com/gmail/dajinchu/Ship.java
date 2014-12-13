@@ -15,8 +15,13 @@ public class Ship implements Serializable {
 
     ShipTile my_tile;
 
+    boolean destroyed = false;
+
     //Temp stuff, local variables here to save memory
     double minx,maxx,miny,maxy,wanderxoffset;
+    int newgridx,newgridy;
+    Ship target;
+
 
     Player my_owner;
     InGameScreen inGame;
@@ -25,24 +30,34 @@ public class Ship implements Serializable {
     public Ship(int x, int y, Player owner, InGameScreen inGame){
         this.x = x;
         this.y = y;
-        my_owner = owner;
         this.inGame = inGame;
-        my_tile = inGame.grid[((int) Math.floor(y/InGameScreen.ENGAGEMENT_RANGE))][(int)Math.floor(x/InGameScreen.ENGAGEMENT_RANGE)];
+        my_owner = owner;
+        calcGrid();
+        my_tile = inGame.grid[newgridy][newgridx];
         my_tile.ships.add(this);
+        my_owner.my_ships.add(this);
     }
 
-
+    public void calcGrid(){
+        newgridy = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
+        newgridx = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
+    }
 
     public void frame(){
         arrive();
 
         //TODO efficiency here
-        try {
-            my_tile.ships.remove(this);
-            my_tile = inGame.grid[((int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE))][(int) Math.floor(x / InGameScreen.ENGAGEMENT_RANGE)];//TODO MAKE A THIS FUNCTION
-            my_tile.ships.add(this);
-        }catch (ArrayIndexOutOfBoundsException e){
 
+        //If entered a new tile...
+        calcGrid();
+        if(newgridy!=my_tile.y||newgridx!=my_tile.x){
+            try {
+                my_tile.ships.remove(this);
+                my_tile = inGame.grid[newgridy][newgridx];//TODO MAKE A THIS FUNCTION
+                my_tile.ships.add(this);
+            }catch (ArrayIndexOutOfBoundsException e){
+
+            }
         }
         //Have we arrived and needing a new wanderdest?
         //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
@@ -52,15 +67,16 @@ public class Ship implements Serializable {
 
     }
 
+    public void die(){
+        destroyed = true;
+        my_tile.ships.remove(this);//TODO anywhere else to do this so we can stay pure flag?
+    }
+
     public void killFrame(){
-        Ship target = getTarget();
+        target = getTarget();
         if(target != null){
-            //Not iterating through enemies ships right now, so just remove!
-            target.my_owner.my_ships.remove(target);//TODO maybbe just iterate through a clone and remove from real?
-            target.my_tile.ships.remove(target);
-            //Have to flag for removal, since my_owner is iterating through his my_ships
-            my_owner.remove_ships.add(this);//TODO make a remove ship function
-            my_tile.ships.remove(this);
+            target.die();
+            this.die();
         }
     }
 

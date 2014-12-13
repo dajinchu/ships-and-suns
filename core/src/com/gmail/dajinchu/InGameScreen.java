@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -27,13 +29,15 @@ public class InGameScreen implements Screen {
     //Ships and Suns stuff
     Player[] players;
     Player me;
+    ShipTile[][] grid;
+    ArrayList<Ship> allShips =  new ArrayList<Ship>(SHIP_NUM*2);//To save resources, preallocate some space
 
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
     static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
-    static final double ENGAGEMENT_RANGE = 10;
+    static final double ENGAGEMENT_RANGE = 5;
     static final double TERMINAL_VELOCITY = 2;
     static final double MAX_FORCE = .1;
 
@@ -43,7 +47,6 @@ public class InGameScreen implements Screen {
     //Test
     float retarget = 0;
 
-    ShipTile[][] grid;
     int gridHeight, gridWidth;
 
     public InGameScreen(MainGame game){
@@ -79,7 +82,7 @@ public class InGameScreen implements Screen {
     public void initWithSeed(long randomSeed){
         //When received seed for random from server, take appropriate action
         random = new Random(randomSeed);
-        players = new Player[2];//TODO TEMP, have sen3d of num of playas
+        players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
         players[1] = new Player(1);
         me = players[0];
@@ -88,12 +91,49 @@ public class InGameScreen implements Screen {
             for(int i=0; i<SHIP_NUM; i++){
                 x=random.nextInt(width);
                 y=random.nextInt(height);
-                player.my_ships.add(new Ship(x,y,player, this));
+                spawnShip(player,x,y);
             }
         }
         players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
         players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
     }
+    public void update(float delta){
+
+        //Move em
+        for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
+            Ship ship = (Ship) iterator.next();
+            if(ship.destroyed) {
+                iterator.remove();
+            }else{
+                ship.frame();
+            }
+        }
+        //Calculate kills
+        for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
+            Ship ship = (Ship) iterator.next();
+            if(ship.destroyed) {
+                iterator.remove();
+                break;
+            }
+            ship.killFrame();
+        }
+
+        /*
+        for(Player player : players){
+            player.killFrame();
+        }*/
+        retarget += delta;
+        //System.out.println(retarget);
+        if(retarget>5){
+            players[1].setDest(random.nextInt(width), random.nextInt(height));
+            retarget=0;
+        }
+    }
+    public void spawnShip(Player owner, int x, int y){
+        //May need to modify this eventually, Ship adds itself to grid and owner
+        allShips.add(new Ship(x,y,owner,this));
+    }
+
 
     @Override
     public void render(float delta) {
@@ -122,23 +162,6 @@ public class InGameScreen implements Screen {
         }
 
         update(delta);
-    }
-
-    public void update(float delta){
-
-        //Move em
-        for(Player player : players){
-            player.frame();
-        }/*
-        for(Player player : players){
-            player.killFrame();
-        }*/
-        retarget += delta;
-        //System.out.println(retarget);
-        if(retarget>5){
-            players[1].setDest(random.nextInt(width), random.nextInt(height));
-            retarget=0;
-        }
     }
 
     @Override

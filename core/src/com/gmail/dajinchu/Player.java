@@ -5,16 +5,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 public class Player implements Serializable {
     ArrayList<Ship> my_ships = new ArrayList<Ship>();//ships under this Player's control
-    ArrayList<Ship> remove_ships = new ArrayList<Ship>();//ships to be removed
     int playerNumber;//For identification across devices, each number corresponds to a color
     int destx=300,desty=300;
     Texture texture;
+
 
     //Graphics
     static Texture[] textureMap = new Texture[]{new Texture("red.png"),new Texture("blue.png")};//number->color link
@@ -29,29 +30,16 @@ public class Player implements Serializable {
         textureYShift = texture.getHeight()/2;
     }
     public void drawShips(SpriteBatch batch){
-        for(Ship ship : my_ships){
+        Ship ship;
+        for(Iterator<Ship> iterator = my_ships.iterator(); iterator.hasNext();){
+            ship = iterator.next();
+            if(ship.destroyed){
+                iterator.remove();
+                break;
+            }
             //It draws bottomleft corner at given coords, so we give it coords shifted down and left
             batch.draw(texture, (int) ship.x-textureXShift, (int) ship.y-textureYShift);
         }
-    }
-    public void frame(){
-        //Log.i(TAG, my_ships.size()+"");
-        /*for(Iterator<Ship> iterator=my_ships.iterator(); iterator.hasNext()){
-            Ship ship = iterator.next();
-            iterator.remove();
-        }*/
-        for(Ship ship : my_ships){
-            ship.frame();
-        }
-    }
-
-    public void killFrame(){
-
-        for(Ship ship : my_ships){
-            ship.killFrame();
-        }
-        my_ships.removeAll(remove_ships);
-        remove_ships.clear();
     }
 
     //TODO maybe you'll need this?

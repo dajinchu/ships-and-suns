@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Da-Jin on 12/8/2014.
  */
 public class ShipTile {
-    int x, y;
+    final int x, y;
     ArrayList<Ship> ships = new ArrayList<Ship>();
     ArrayList<ShipTile> neighbors = new ArrayList<ShipTile>();
 
