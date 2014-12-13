@@ -1,6 +1,9 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
+
 import java.io.Serializable;
+
 
 /**
  * Created by Da-Jin on 12/5/2014.
@@ -27,6 +30,8 @@ public class Ship implements Serializable {
     InGameScreen inGame;
     volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
+    static int newGrid = 0, loopcount = 0;
+
     public Ship(int x, int y, Player owner, InGameScreen inGame){
         this.x = x;
         this.y = y;
@@ -40,7 +45,7 @@ public class Ship implements Serializable {
 
     public void calcGrid(){
         newgridy = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
-        newgridx = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
+        newgridx = (int) Math.floor(x / InGameScreen.ENGAGEMENT_RANGE);
     }
 
     public void frame(){
@@ -51,12 +56,14 @@ public class Ship implements Serializable {
         //If entered a new tile...
         calcGrid();
         if(newgridy!=my_tile.y||newgridx!=my_tile.x){
+            loopcount++;
             try {
+                newGrid++;
                 my_tile.ships.remove(this);
                 my_tile = inGame.grid[newgridy][newgridx];//TODO MAKE A THIS FUNCTION
                 my_tile.ships.add(this);
             }catch (ArrayIndexOutOfBoundsException e){
-
+                Gdx.app.log("SHIP", "Out of bounds yay");
             }
         }
         //Have we arrived and needing a new wanderdest?

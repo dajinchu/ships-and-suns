@@ -34,7 +34,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 1000;//Ships per player
+    static final int SHIP_NUM = 1;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
@@ -144,6 +144,7 @@ public class InGameScreen implements Screen {
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
+            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
             players[1].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
@@ -174,6 +175,15 @@ public class InGameScreen implements Screen {
                 shapeRenderer.end();
             }
         }
+
+        shapeRenderer.begin();
+        for(int h = 0; h < gridHeight; h++){
+            for(int w = 0; w < gridWidth; w++){
+                shapeRenderer.rect((float)(w*ENGAGEMENT_RANGE),(float)(h*ENGAGEMENT_RANGE),(float)(ENGAGEMENT_RANGE),(float)(ENGAGEMENT_RANGE));
+                //Gdx.app.log("Rect",(float)(w*ENGAGEMENT_RANGE)+" "+(float)(h*ENGAGEMENT_RANGE)+" "+(float)((w+1)*ENGAGEMENT_RANGE)+" "+(float)((h+1)*ENGAGEMENT_RANGE));
+            }
+        }
+        shapeRenderer.end();
 
         if(Gdx.input.justTouched()){
             me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
