@@ -67,6 +67,7 @@ public class InGameScreen implements Screen {
         for(int y=0; y < gridHeight; y++){
             for(int x = 0; x < gridWidth; x++){
                 grid[y][x] = new ShipTile(x,y);
+                Gdx.app.log("Making grid",x+" "+y);
             }
         }
         for(int y=0; y < gridHeight; y++){
@@ -82,9 +83,9 @@ public class InGameScreen implements Screen {
     public void initWithSeed(long randomSeed){
         //When received seed for random from server, take appropriate action
         random = new Random(randomSeed);
-        players = new Player[2];//TODO TEMP, have send of num of playas
+        players = new Player[1];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
-        players[1] = new Player(1);
+        //players[1] = new Player(1);
         me = players[0];
         int x,y;
         for(Player player : players){
@@ -95,7 +96,7 @@ public class InGameScreen implements Screen {
             }
         }
         players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
-        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
+//        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
     }
     public void update(float delta){
 
@@ -145,7 +146,7 @@ public class InGameScreen implements Screen {
         //System.out.println(retarget);
         if(retarget>5){
             Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            players[1].setDest(random.nextInt(width), random.nextInt(height));
+            players[0].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
     }

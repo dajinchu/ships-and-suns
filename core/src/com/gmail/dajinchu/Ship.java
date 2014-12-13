@@ -1,7 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
-
 import java.io.Serializable;
 
 
@@ -55,15 +53,15 @@ public class Ship implements Serializable {
 
         //If entered a new tile...
         calcGrid();
+        //Gdx.app.log("SHIP", newgridx + " " + my_tile.x+" "+newgridy+" "+my_tile.y);
+        loopcount++;
         if(newgridy!=my_tile.y||newgridx!=my_tile.x){
-            loopcount++;
             try {
                 newGrid++;
                 my_tile.ships.remove(this);
                 my_tile = inGame.grid[newgridy][newgridx];//TODO MAKE A THIS FUNCTION
                 my_tile.ships.add(this);
             }catch (ArrayIndexOutOfBoundsException e){
-                Gdx.app.log("SHIP", "Out of bounds yay");
             }
         }
         //Have we arrived and needing a new wanderdest?
