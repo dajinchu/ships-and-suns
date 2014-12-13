@@ -2,16 +2,15 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.DelayedRemovalArray;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 public class Player implements Serializable {
-    Array<Ship> my_ships = new Array<Ship>();//ships under this Player's control
+    DelayedRemovalArray<Ship> my_ships = new DelayedRemovalArray<Ship>(false,InGameScreen.SHIP_NUM);//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
     int destx=300,desty=300;
     Texture texture;
@@ -30,16 +29,16 @@ public class Player implements Serializable {
         textureYShift = texture.getHeight()/2;
     }
     public void drawShips(SpriteBatch batch){
-        Ship ship;
-        for(Iterator<Ship> iterator = my_ships.iterator(); iterator.hasNext();){
-            ship = iterator.next();
+        my_ships.begin();
+        for(Ship ship : my_ships){
             if(ship.destroyed){
-                iterator.remove();
+                my_ships.removeValue(ship, true);
                 break;
             }
             //It draws bottomleft corner at given coords, so we give it coords shifted down and left
             batch.draw(texture, (int) ship.x-textureXShift, (int) ship.y-textureYShift);
         }
+        my_ships.end();
     }
 
     //TODO maybe you'll need this?

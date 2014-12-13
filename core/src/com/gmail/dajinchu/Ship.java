@@ -134,7 +134,7 @@ public class Ship implements Serializable {
 
     public Ship getTarget(){
         //pre-calculation bounds for efficiency
-        for(ShipTile shipTile : my_tile.neighbors){
+        /*for(ShipTile shipTile : my_tile.neighbors){
 
             for(Ship ship :
                     shipTile

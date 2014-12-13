@@ -6,10 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -30,7 +29,7 @@ public class InGameScreen implements Screen {
     Player[] players;
     Player me;
     ShipTile[][] grid;
-    Array<Ship> allShips =  new Array<Ship>(SHIP_NUM*2);//To save resources, preallocate some space
+    DelayedRemovalArray<Ship> allShips =  new DelayedRemovalArray(false,SHIP_NUM*2,Ship.class);//To save resources, preallocate some space
 
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
@@ -101,7 +100,25 @@ public class InGameScreen implements Screen {
     public void update(float delta){
 
         //Move em
-        for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
+        /*allShips.begin();
+        for(Ship ship : allShips){
+            if(ship.destroyed){
+                allShips.removeValue(ship, true);
+                break;
+            }
+            ship.frame();
+        }
+        allShips.end();
+        //After all moved, calc killing
+        for(Ship ship : allShips){
+            if(ship.destroyed){
+                //NEEDED?
+                //allShips.removeValue(ship, true);
+                break;
+            }
+            ship.killFrame();
+        }
+        /*for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
             ship = (Ship) iterator.next();
             if(ship.destroyed) {
                 iterator.remove();
