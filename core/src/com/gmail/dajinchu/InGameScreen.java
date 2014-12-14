@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -108,18 +109,18 @@ public class InGameScreen implements Screen {
             if(ship.destroyed){
                 //allShips.remove(ship);
                 //allShipRemove++;
-                break;
+                continue;
             }
             ship.frame();
         }
-
+/*
         //After all moved, calc killing
         for(Ship ship : allShips){
             if(ship.destroyed){
                 //NEEDED?
                 allShipRemove++;
                 allShips.remove(ship);
-                break;
+                continue;
             }
             ship.killFrame();
         }
@@ -131,13 +132,13 @@ public class InGameScreen implements Screen {
             }else{
                 ship.frame();
             }
-        }
+        }*/
         //Calculate kills
         for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
             ship = (Ship) iterator.next();
             if(ship.destroyed) {
                 iterator.remove();
-                break;
+                continue;
             }
             ship.killFrame();
         }

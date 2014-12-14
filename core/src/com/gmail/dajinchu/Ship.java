@@ -146,7 +146,7 @@ public class Ship implements Serializable {
                     shipTile
                     .ships){
                 if(ship.my_owner == my_owner) {
-                    break;
+                    continue;
                 }
                 if(Math.abs(x-ship.x)+Math.abs(y-ship.y)<2){
                     return ship;
