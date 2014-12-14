@@ -34,7 +34,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 1;//Ships per player
+    static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
@@ -83,9 +83,9 @@ public class InGameScreen implements Screen {
     public void initWithSeed(long randomSeed){
         //When received seed for random from server, take appropriate action
         random = new Random(randomSeed);
-        players = new Player[1];//TODO TEMP, have send of num of playas
+        players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
-        //players[1] = new Player(1);
+        players[1] = new Player(1);
         me = players[0];
         int x,y;
         for(Player player : players){
@@ -96,7 +96,7 @@ public class InGameScreen implements Screen {
             }
         }
         players[0].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
-//        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
+        players[1].setDest((int)random.nextDouble()*width, (int)random.nextDouble()*height);
     }
     public void update(float delta){
 
@@ -110,12 +110,12 @@ public class InGameScreen implements Screen {
             ship.frame();
         }
         allShips.end();
-        /*
+
         //After all moved, calc killing
         for(Ship ship : allShips){
             if(ship.destroyed){
                 //NEEDED?
-                //allShips.removeValue(ship, true);
+                allShips.removeValue(ship, true);
                 break;
             }
             ship.killFrame();
@@ -145,8 +145,8 @@ public class InGameScreen implements Screen {
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
-            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            players[0].setDest(random.nextInt(width), random.nextInt(height));
+            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount+" "+allShips.size);
+            players[1].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
     }
