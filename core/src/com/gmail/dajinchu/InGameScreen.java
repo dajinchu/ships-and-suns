@@ -35,7 +35,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 1000;//Ships per player
+    static final int SHIP_NUM = 5000;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
@@ -170,13 +170,7 @@ public class InGameScreen implements Screen {
 
         Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if(players!=null) {
-            for (Player player : players) {
-                shapeRenderer.begin();
-                shapeRenderer.circle(player.destx,player.desty, (float) DEST_RADIUS);
-                shapeRenderer.end();
-            }
-        }
+
         spriteBatch.begin();
 
         drawShips = 0;
@@ -186,7 +180,14 @@ public class InGameScreen implements Screen {
             spriteBatch.draw(ship.my_owner.texture, (int) ship.x-ship.my_owner.textureXShift, (int) ship.y-ship.my_owner.textureYShift);
         }
         spriteBatch.end();
-        Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
+        if(players!=null) {
+            for (Player player : players) {
+                shapeRenderer.begin();
+                shapeRenderer.circle(player.destx,player.desty, (float) DEST_RADIUS);
+                shapeRenderer.end();
+            }
+        }
+        //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
         shapeRenderer.begin();
         for(int h = 0; h < gridHeight; h++){
