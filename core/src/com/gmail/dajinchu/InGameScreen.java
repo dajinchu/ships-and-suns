@@ -48,6 +48,7 @@ public class InGameScreen implements Screen {
 
     int gridHeight, gridWidth;
     private Ship ship;
+    private long start;
 
     public InGameScreen(MainGame game){
         this.game = game;
@@ -112,6 +113,7 @@ public class InGameScreen implements Screen {
         allShips.end();
 
         //After all moved, calc killing
+        start = TimeUtils.millis();
         for(Ship ship : allShips){
             if(ship.destroyed){
                 //NEEDED?
@@ -120,6 +122,7 @@ public class InGameScreen implements Screen {
             }
             ship.killFrame();
         }
+        Gdx.app.log("Time for killFrames", String.valueOf(TimeUtils.timeSinceMillis(start)));
         /*for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
             ship = (Ship) iterator.next();
             if(ship.destroyed) {
