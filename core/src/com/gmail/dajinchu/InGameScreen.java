@@ -166,16 +166,17 @@ public class InGameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if(players!=null) {
             for (Player player : players) {
-                spriteBatch.begin();
-                //spriteBatch.draw(player.texture,0,0);
-                player.drawShips(spriteBatch);
-                spriteBatch.end();
-
                 shapeRenderer.begin();
                 shapeRenderer.circle(player.destx,player.desty, (float) DEST_RADIUS);
                 shapeRenderer.end();
             }
         }
+        spriteBatch.begin();
+        for(Ship ship: allShips){
+            //spriteBatch.draw(player.texture,0,0);
+            spriteBatch.draw(ship.my_owner.texture, (int) ship.x-ship.my_owner.textureXShift, (int) ship.y-ship.my_owner.textureYShift);
+        }
+        spriteBatch.end();
 
         shapeRenderer.begin();
         for(int h = 0; h < gridHeight; h++){
