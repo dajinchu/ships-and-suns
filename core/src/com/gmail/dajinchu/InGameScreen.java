@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -29,7 +29,7 @@ public class InGameScreen implements Screen {
     Player[] players;
     Player me;
     ShipTile[][] grid;
-    DelayedRemovalArray<Ship> allShips =  new DelayedRemovalArray(false,SHIP_NUM*2,Ship.class);//To save resources, preallocate some space
+    LinkedList<Ship> allShips =  new LinkedList<Ship>();//To save resources, preallocate some space
 
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
@@ -49,6 +49,8 @@ public class InGameScreen implements Screen {
     int gridHeight, gridWidth;
     private Ship ship;
     private long start;
+    private int drawShips;
+    private int allShipRemove=0;
 
     public InGameScreen(MainGame game){
         this.game = game;
@@ -102,27 +104,26 @@ public class InGameScreen implements Screen {
     public void update(float delta){
 
         //Move em
-        allShips.begin();
         for(Ship ship : allShips){
             if(ship.destroyed){
-                allShips.removeValue(ship, true);
+                //allShips.remove(ship);
+                //allShipRemove++;
                 break;
             }
             ship.frame();
         }
-        allShips.end();
 
         //After all moved, calc killing
-        start = TimeUtils.millis();
         for(Ship ship : allShips){
             if(ship.destroyed){
                 //NEEDED?
-                allShips.removeValue(ship, true);
+                allShipRemove++;
+                allShips.remove(ship);
                 break;
             }
             ship.killFrame();
         }
-        Gdx.app.log("Time for killFrames", String.valueOf(TimeUtils.timeSinceMillis(start)));
+        //Gdx.app.log("Time for killFrames", String.valueOf(TimeUtils.timeSinceMillis(start)));
         /*for(Iterator iterator = allShips.iterator(); iterator.hasNext();){
             ship = (Ship) iterator.next();
             if(ship.destroyed) {
@@ -148,7 +149,7 @@ public class InGameScreen implements Screen {
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
-            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount+" "+allShips.size);
+            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
             players[1].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
@@ -161,6 +162,7 @@ public class InGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        start = TimeUtils.millis();
         cam.update();
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);
@@ -175,11 +177,15 @@ public class InGameScreen implements Screen {
             }
         }
         spriteBatch.begin();
+
+        drawShips = 0;
         for(Ship ship: allShips){
+            drawShips++;
             //spriteBatch.draw(player.texture,0,0);
             spriteBatch.draw(ship.my_owner.texture, (int) ship.x-ship.my_owner.textureXShift, (int) ship.y-ship.my_owner.textureYShift);
         }
         spriteBatch.end();
+        Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
         shapeRenderer.begin();
         for(int h = 0; h < gridHeight; h++){

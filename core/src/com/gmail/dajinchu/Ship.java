@@ -28,7 +28,7 @@ public class Ship implements Serializable {
     InGameScreen inGame;
     volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
-    static int newGrid = 0, loopcount = 0;
+    static int newGrid = 0, loopcount = 0, dead = 0;
 
     public Ship(int x, int y, Player owner, InGameScreen inGame){
         this.x = x;
@@ -75,6 +75,7 @@ public class Ship implements Serializable {
     public void die(){
         destroyed = true;
         my_tile.ships.remove(this);//TODO anywhere else to do this so we can stay pure flag?
+        dead++;
     }
 
     public void killFrame(){
