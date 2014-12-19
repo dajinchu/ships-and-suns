@@ -1,25 +1,29 @@
 package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
 
 public class MainGame extends Game {
 
     InGameScreen igScreen;
-    Screen conScreen;
+    ConnectScreen conScreen;
 
-    public MainGame(Screen conScreen){
+    public MainGame(ConnectScreen conScreen){
         this.conScreen = conScreen;
     }
 
 	@Override
 	public void create () {
-        igScreen = new InGameScreen(this);
+        conScreen.mainGame = this;
         setScreen(conScreen);
 	}
 
     @Override
     public void dispose(){
         igScreen.dispose();
+    }
+
+    public void startGame(){
+        igScreen = new InGameScreen(this);
+        setScreen(igScreen);
     }
 }

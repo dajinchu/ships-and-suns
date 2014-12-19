@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
@@ -15,7 +17,7 @@ import java.util.Random;
 /**
  * Created by Da-Jin on 12/5/2014.
  */
-public class InGameScreen implements Screen {
+public class InGameScreen implements Screen, GestureDetector.GestureListener {
 
     //Screems
     MainGame game;
@@ -35,7 +37,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     /*static final int WIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int HEIGHT = 400;*/
-    static final int SHIP_NUM = 5000;//Ships per player
+    static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
@@ -150,7 +152,7 @@ public class InGameScreen implements Screen {
         retarget += delta;
         //System.out.println(retarget);
         if(retarget>5){
-            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
+            //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
             players[1].setDest(random.nextInt(width), random.nextInt(height));
             retarget=0;
         }
@@ -174,12 +176,15 @@ public class InGameScreen implements Screen {
         spriteBatch.begin();
 
         drawShips = 0;
+
+        //Draw all ships
         for(Ship ship: allShips){
             drawShips++;
             //spriteBatch.draw(player.texture,0,0);
             spriteBatch.draw(ship.my_owner.texture, (int) ship.x-ship.my_owner.textureXShift, (int) ship.y-ship.my_owner.textureYShift);
         }
         spriteBatch.end();
+        //Draw destination circles
         if(players!=null) {
             for (Player player : players) {
                 shapeRenderer.begin();
@@ -189,6 +194,7 @@ public class InGameScreen implements Screen {
         }
         //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
+        //Draw collision detection optimization grid borders
         shapeRenderer.begin();
         for(int h = 0; h < gridHeight; h++){
             for(int w = 0; w < gridWidth; w++){
@@ -208,8 +214,6 @@ public class InGameScreen implements Screen {
 
     @Override
     public void resize(int w, int h) {
-
-
         this.width = Gdx.graphics.getWidth();
         this.height = Gdx.graphics.getHeight();
         cam = new OrthographicCamera(width,height);
@@ -240,5 +244,48 @@ public class InGameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    //Gestures
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        cam.translate(deltaX,deltaY);
+        cam.update();
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        return false;
     }
 }
