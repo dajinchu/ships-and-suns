@@ -2,14 +2,12 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.utils.Array;
 
-import java.util.LinkedList;
-
 /**
  * Created by Da-Jin on 12/8/2014.
  */
 public class ShipTile {
     final int x, y;
-    LinkedList<Ship> ships = new LinkedList<Ship>();
+    Array<Integer> ships = new Array<Integer>();
     Array<ShipTile> neighbors = new Array<ShipTile>();
 
     public ShipTile(int x, int y){
@@ -18,32 +16,32 @@ public class ShipTile {
         this.y = y;
     }
 
-    public void fillNeighbors(InGameScreen gameScreen){
+    public void fillNeighbors(Model model){
 
-        neighbors.add(gameScreen.grid[y][x]);
-        if(y+1<gameScreen.gridHeight){
-            neighbors.add(gameScreen.grid[y + 1][x]);
-            if(x+1<gameScreen.gridWidth){
-                neighbors.add(gameScreen.grid[y + 1][x + 1]);
+        neighbors.add(model.getShipTile(x,y));
+        if(y+1<model.gridHeight){
+            neighbors.add(model.getShipTile(x,y + 1));
+            if(x+1<model.gridWidth){
+                neighbors.add(model.getShipTile(x + 1,y + 1));
             }
             if(x-1>0){
-                neighbors.add(gameScreen.grid[y + 1][x - 1]);
+                neighbors.add(model.getShipTile(x - 1,y + 1));
             }
         }
         if(y-1>0){
-            neighbors.add(gameScreen.grid[y - 1][x]);
-            if(x+1<gameScreen.gridWidth){
-                neighbors.add(gameScreen.grid[y - 1][x + 1]);
+            neighbors.add(model.getShipTile(x,y - 1));
+            if(x+1<model.gridWidth){
+                neighbors.add(model.getShipTile(x + 1,y - 1));
             }
             if(x-1>0){
-                neighbors.add(gameScreen.grid[y - 1][x - 1]);
+                neighbors.add(model.getShipTile(x - 1,y - 1));
             }
         }
-        if(x+1<gameScreen.gridWidth) {
-            neighbors.add(gameScreen.grid[y][x + 1]);
+        if(x+1<model.gridWidth) {
+            neighbors.add(model.getShipTile(x + 1,y));
         }
         if(x-1>0){
-            neighbors.add(gameScreen.grid[y][x - 1]);
+            neighbors.add(model.getShipTile(x - 1,y));
         }
     }
 }
