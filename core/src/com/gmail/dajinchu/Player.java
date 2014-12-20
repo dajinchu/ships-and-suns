@@ -1,15 +1,16 @@
 package com.gmail.dajinchu;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 public class Player implements Serializable {
-    LinkedList<Ship> my_ships = new LinkedList<Ship>();//ships under this Player's control
+    private final Model model;
+    Array<Integer> my_ships = new Array<Integer>();//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
     int destx=300,desty=300;
     Texture texture;
@@ -21,7 +22,8 @@ public class Player implements Serializable {
 
     String TAG = "Player";
 
-    public Player(int playerNumber){
+    public Player(int playerNumber, Model model){
+        this.model = model;
         this.playerNumber = playerNumber;
         texture = textureMap[playerNumber];
         textureXShift = texture.getWidth()/2;
@@ -38,8 +40,12 @@ public class Player implements Serializable {
     public void setDest(int destx, int desty){
         this.destx = destx;
         this.desty = desty;
-        for(Ship ship : my_ships){
-            ship.calcDestWithWander(destx,desty);
+        for(int id : my_ships){
+            //System.out.print(id);
+            if(model.getShip(id)==null){
+                continue;
+            }
+            model.getShip(id).calcDestWithWander(destx, desty);
         }
     }
 

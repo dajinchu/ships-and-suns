@@ -23,25 +23,27 @@ public class Ship implements Serializable {
     int newgridx,newgridy;
     Ship target;
 
+    int id;
 
     Player my_owner;
-    InGameScreen inGame;
+    Model model;
     volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
     static int newGrid = 0, loopcount = 0, dead = 0;
 
-    public Ship(int x, int y, Player owner, InGameScreen inGame){
+    public Ship(int x, int y, Player owner, int id, Model model){
         this.x = x;
         this.y = y;
-        this.inGame = inGame;
         my_owner = owner;
+        this.model = model;
+        this.id = id;
         calcGrid();
-        my_tile = inGame.grid[newgridy][newgridx];
-        my_tile.ships.add(this);
-        my_owner.my_ships.add(this);
+        my_tile = model.getShipTile(newgridx,newgridy);
+        my_tile.ships.add(id);
+        my_owner.my_ships.add(id);
     }
 
-    public void calcGrid(){
+    private void calcGrid(){
         newgridy = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
         newgridx = (int) Math.floor(x / InGameScreen.ENGAGEMENT_RANGE);
     }
@@ -58,9 +60,9 @@ public class Ship implements Serializable {
         if(newgridy!=my_tile.y||newgridx!=my_tile.x){
             try {
                 newGrid++;
-                my_tile.ships.remove(this);
-                my_tile = inGame.grid[newgridy][newgridx];//TODO MAKE A THIS FUNCTION
-                my_tile.ships.add(this);
+                my_tile.ships.removeValue(id, false);
+                my_tile = model.getShipTile(newgridx,newgridy);//TODO MAKE A THIS FUNCTION
+                my_tile.ships.add(id);
             }catch (ArrayIndexOutOfBoundsException e){
             }
         }
@@ -74,7 +76,7 @@ public class Ship implements Serializable {
 
     public void die(){
         destroyed = true;
-        my_tile.ships.remove(this);//TODO anywhere else to do this so we can stay pure flag?
+        my_tile.ships.removeValue(id, false);//TODO anywhere else to do this so we can stay pure flag?
         dead++;
     }
 
@@ -89,9 +91,9 @@ public class Ship implements Serializable {
     public void calcDestWithWander(int originx, int originy){
         //Range after each operation, x=dest_radius: (interval notation)
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
-        wanderxoffset = (int) (InGameScreen.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
+        wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdesty = (int)(InGameScreen.random.nextDouble()*maxy*2-maxy+originy);
+        wanderdesty = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
         wanderdestx = (int) (wanderxoffset+originx);
     }
 
@@ -140,12 +142,13 @@ public class Ship implements Serializable {
 
     public Ship getTarget(){
         //pre-calculation bounds for efficiency
+        Ship ship;
         for(ShipTile shipTile : my_tile.neighbors){
 
-            for(Ship ship :
-                    shipTile
-                    .ships){
-                if(ship.my_owner == my_owner) {
+            for(int id :shipTile.ships){
+                ship = model.getShip(id);
+                //Dont need to target our teammates, and getShip will return null if destroyed
+                if(ship.my_owner == my_owner||ship==null) {
                     continue;
                 }
                 if(Math.abs(x-ship.x)+Math.abs(y-ship.y)<2){
