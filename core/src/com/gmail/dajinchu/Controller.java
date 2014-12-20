@@ -16,7 +16,7 @@ public class Controller implements GestureDetector.GestureListener {
     private final OrthographicCamera cam;
     Model model;
     Vector3 touch = new Vector3();
-    int previousDistance;
+    float previousDistance, previousInitial;
 
     public Controller(Model model, OrthographicCamera camera){
         this.model = model;
@@ -25,10 +25,7 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        touch.set(x,y,0);
-        cam.unproject(touch);
-        model.me.setDest((int)touch.x,(int)touch.y);
-        return true;
+        return false;
     }
 
     @Override
@@ -38,7 +35,10 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean longPress(float x, float y) {
-        return false;
+        touch.set(x,y,0);
+        cam.unproject(touch);
+        model.me.setDest((int)touch.x,(int)touch.y);
+        return true;
     }
 
     @Override
@@ -61,14 +61,23 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        cam.zoom=(initialDistance/distance);
+        if(previousInitial!=initialDistance){
+            //Starting a new gesture
+            //Just make previousDistance initial to avoid jumpiness from the previous gesture's values carrying over
+            previousDistance=initialDistance;
+        }
+        cam.zoom*=(previousDistance/distance);
         clamp();
         Gdx.app.log("Zoom", initialDistance+" "+distance);
-        return true;
+        //Set previous, as this frame has ended
+        previousDistance = distance;
+        previousInitial = initialDistance;
+        return false;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        Gdx.app.log("Pinch", initialPointer1+" "+initialPointer2+" "+pointer1+" "+pointer2);
         return false;
     }
 
