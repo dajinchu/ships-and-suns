@@ -61,6 +61,8 @@ public class InGameScreen implements Screen, GestureDetector.GestureListener {
         this.shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
+        Gdx.input.setInputProcessor(new GestureDetector(this));
+
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
         cam = new OrthographicCamera(width,height);
@@ -204,11 +206,6 @@ public class InGameScreen implements Screen, GestureDetector.GestureListener {
         }
         shapeRenderer.end();
 
-        if(Gdx.input.justTouched()){
-            me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
-            System.out.println(Gdx.input.getX());
-        }
-
         update(delta);
     }
 
@@ -249,7 +246,8 @@ public class InGameScreen implements Screen, GestureDetector.GestureListener {
     //Gestures
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
+        me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
+        return true;
     }
 
     @Override
@@ -269,9 +267,10 @@ public class InGameScreen implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        cam.translate(deltaX,deltaY);
+        cam.translate(-deltaX,deltaY);
         cam.update();
-        return false;
+        Gdx.app.log("GESTURES","PAN");
+        return true;
     }
 
     @Override
