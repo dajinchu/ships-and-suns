@@ -3,7 +3,9 @@ package com.gmail.dajinchu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 /**
  * Created by Da-Jin on 12/20/2014.
@@ -13,6 +15,8 @@ public class Controller implements GestureDetector.GestureListener {
 
     private final OrthographicCamera cam;
     Model model;
+    Vector3 touch = new Vector3();
+    int previousDistance;
 
     public Controller(Model model, OrthographicCamera camera){
         this.model = model;
@@ -21,7 +25,9 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        model.me.setDest(Gdx.input.getX(), (int) (cam.viewportHeight-Gdx.input.getY()));
+        touch.set(x,y,0);
+        cam.unproject(touch);
+        model.me.setDest((int)touch.x,(int)touch.y);
         return true;
     }
 
@@ -42,10 +48,10 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        cam.translate(-deltaX,deltaY);
+        cam.translate(-deltaX * cam.zoom, deltaY * cam.zoom);
         cam.update();
-        Gdx.app.log("GESTURES","PAN");
-        return true;
+        clamp();
+        return false;
     }
 
     @Override
@@ -55,11 +61,25 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
+        cam.zoom=(initialDistance/distance);
+        clamp();
+        Gdx.app.log("Zoom", initialDistance+" "+distance);
+        return true;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         return false;
+    }
+
+    public void clamp(){
+        float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
+        float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
+
+        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, model.mapWidth / cam.viewportWidth);
+        cam.position.x = MathUtils.clamp(cam.position.x, effectiveViewportWidth / 2f, model.mapWidth - effectiveViewportWidth / 2f);
+        cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, model.mapHeight - effectiveViewportHeight / 2f);
+        cam.update();
+        //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
     }
 }
