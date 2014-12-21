@@ -1,12 +1,9 @@
 package com.gmail.dajinchu.desktop;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.gmail.dajinchu.MainGame;
-
 public class DesktopLauncher {
 	public static void main (String[] arg) {
+        new EchoClient();/*
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new MainGame(new NoConnect()), config);
+		new LwjglApplication(new MainGame(new NoConnect()), config);*/
 	}
 }

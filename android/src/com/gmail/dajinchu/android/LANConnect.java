@@ -19,6 +19,7 @@ import com.gmail.dajinchu.ConnectScreen;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
@@ -50,6 +51,7 @@ public class LANConnect extends ConnectScreen {
     //For debug
     private ShapeRenderer shapeRenderer;
     private Skin uiSkin;
+    private int SOCKET_TIMEOUT=5000;
 
     public LANConnect(AndroidLauncher androidLauncher){
         activity = androidLauncher;
@@ -63,6 +65,7 @@ public class LANConnect extends ConnectScreen {
             //https://github.com/twitwi/AndroidDnssdDemo
             android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager) activity.getSystemService(android.content.Context.WIFI_SERVICE);
             final InetAddress deviceIpAddress = getDeviceIpAddress(wifi);
+            notifyUser("Your IP: "+deviceIpAddress);
             lock = wifi.createMulticastLock("mylockthereturn");
             lock.setReferenceCounted(true);
             lock.acquire();
@@ -87,9 +90,9 @@ public class LANConnect extends ConnectScreen {
                         jmdns.requestServiceInfo(event.getType(), event.getName(), 1);
                     }
                 });
-                serviceInfo = ServiceInfo.create("_test2._tcp.local.", "AndroidTest", 0, "plain test service from android");
+                /*serviceInfo = ServiceInfo.create("_test2._tcp.local.", "AndroidTest", 0, "plain test service from android");
                 notifyUser("This IP: " + deviceIpAddress);
-                jmdns.registerService(serviceInfo);
+                jmdns.registerService(serviceInfo);*/
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -120,7 +123,7 @@ public class LANConnect extends ConnectScreen {
         textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println(ip+" "+port);
+                new ASyncConnect(ip,port).execute();
             }
         });
 
@@ -141,6 +144,9 @@ public class LANConnect extends ConnectScreen {
         uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
 
         table = new Table(uiSkin);
+        table.setFillParent(true);
+        stage.addActor(table);
+
         TextButton textButton =new TextButton("NO CONNECT", uiSkin.get(TextButton.TextButtonStyle.class));
         table.add(textButton);
         textButton.addListener(new ClickListener(){
@@ -149,11 +155,17 @@ public class LANConnect extends ConnectScreen {
                mainGame.startGame();
             }
         });
-        table.setFillParent(true);
-        stage.addActor(table);
+        TextButton host =new TextButton("HOST", uiSkin.get(TextButton.TextButtonStyle.class));
+        table.add(host);
+        host.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                mainGame.setScreen(new HostingLobby(mainGame, jmdns));
+            }
+        });
 
         //Label label = new Label("HI", new Label.LabelStyle());
-        table.add("HI");
+        notifyUser("HI");
 
         shapeRenderer = new ShapeRenderer();
         new SetUp().execute();
@@ -212,5 +224,34 @@ public class LANConnect extends ConnectScreen {
         }
 
         return result;
+    }
+
+    //Connect to IP
+    class ASyncConnect extends AsyncTask<Void,Void,Void> {
+
+        String host;
+        int port;
+
+        public ASyncConnect(String host, int port) {
+            this.host = host;
+            this.port = port;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try {
+                Gdx.app.log("CLient",port+"");
+                Socket socket = new Socket(host, 13079);//Random hardcoded port
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+
+        }
     }
 }
