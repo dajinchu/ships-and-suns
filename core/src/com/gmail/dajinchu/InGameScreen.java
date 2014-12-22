@@ -47,6 +47,9 @@ public class InGameScreen implements Screen {
     private int drawShips;
     private int allShipRemove = 0;
 
+    //View
+    static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
+
     public InGameScreen(MainGame game, Model model) {
         this.game = game;
         this.model = model;
@@ -104,7 +107,7 @@ public class InGameScreen implements Screen {
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
             drawShips++;
-            spriteBatch.draw(ship.my_owner.texture, (int) ship.x - ship.my_owner.textureXShift, (int) ship.y - ship.my_owner.textureYShift);
+            spriteBatch.draw(textureMap[ship.my_owner.playerNumber], (int) ship.x - textureMap[ship.my_owner.playerNumber].getWidth()/2, (int) ship.y - textureMap[ship.my_owner.playerNumber].getHeight()/2);
         }
         spriteBatch.end();
         //Draw destination circles

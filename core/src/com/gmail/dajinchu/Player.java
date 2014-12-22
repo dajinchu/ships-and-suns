@@ -1,7 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -12,21 +10,13 @@ public class Player{
     Array<Integer> my_ships = new Array<Integer>();//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
     int destx=300,desty=300;
-    Texture texture;
 
-
-    //Graphics
-    static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
-    int textureXShift, textureYShift;
 
     String TAG = "Player";
 
     public Player(int playerNumber, Model model){
         this.model = model;
         this.playerNumber = playerNumber;
-        texture = textureMap[playerNumber];
-        textureXShift = texture.getWidth()/2;
-        textureYShift = texture.getHeight()/2;
     }
 
     //TODO maybe you'll need this?
