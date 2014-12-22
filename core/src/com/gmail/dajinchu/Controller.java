@@ -21,6 +21,7 @@ public class Controller implements GestureDetector.GestureListener {
     public Controller(Model model, OrthographicCamera camera){
         this.model = model;
         this.cam = camera;
+        clamp();
     }
 
     @Override
@@ -90,5 +91,13 @@ public class Controller implements GestureDetector.GestureListener {
         cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, model.mapHeight - effectiveViewportHeight / 2f);
         cam.update();
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
+    }
+
+    class SocketSend implements Runnable{
+
+        @Override
+        public void run() {
+            
+        }
     }
 }

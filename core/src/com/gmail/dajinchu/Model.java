@@ -22,7 +22,7 @@ public class Model {
 
     int shipIdCount = 0;
 
-    //Memory saving fields, unfortunate to expand score this way, but not much choice
+    //Memory saving fields, unfortunate to expand scope this way, but not much choice
     private Ship tempship;
 
 
@@ -54,16 +54,18 @@ public class Model {
     }
     public void initShipDistro(int numPlayers, int player_id, int shipsPerPlayer){
         players = new Player[numPlayers];
-        int x,y;
+        int x,y,randomcalls=0;
         for(int p = 0; p < numPlayers; p++){//use the "Player player: players" syntax?
             players[p] = new Player(p,this);
             for(int i = 0; i < shipsPerPlayer; i++){
+                randomcalls++;
                 x=random.nextInt(mapWidth);
                 y=random.nextInt(mapHeight);
                 spawnShip(players[p],x,y);
             }
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
         }
+        System.out.println("Random calls"+String.valueOf(randomcalls)+" "+random.nextDouble());
         me = players[player_id];
     }
     public void update(float delta){
@@ -89,6 +91,9 @@ public class Model {
     }
 
     public static Model defaultModel(long seed, int player_id){
+        Gdx.app.log("Client", "Seed: " + seed);
+        Gdx.app.log("Client", "Player ID: " + player_id);
+
         Model model = new Model(1000,1000);
         model.setSeed(seed);
         model.makeGrid((int) InGameScreen.ENGAGEMENT_RANGE);

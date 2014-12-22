@@ -82,7 +82,7 @@ public class InGameScreen implements Screen {
         //System.out.println(retarget);
         if (retarget > 5) {
             //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            model.players[1].setDest(model.random.nextInt(MAPWIDTH), model.random.nextInt(MAPHEIGHT));
+            model.players[1*model.me.playerNumber].setDest(model.random.nextInt(model.mapWidth), model.random.nextInt(model.mapHeight));
             retarget = 0;
         }
     }
@@ -103,7 +103,6 @@ public class InGameScreen implements Screen {
         drawShips = 0;
 
         //Draw all ships
-        spriteBatch.draw(new Texture("red.png"),0,0);
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
             drawShips++;

@@ -236,8 +236,6 @@ public class LANConnect extends ConnectScreen {
         try {
             long seed = Long.parseLong(reader.readLine());
             int player_id = Integer.parseInt(reader.readLine());
-            Gdx.app.log("Client", "Seed: " + seed);
-            Gdx.app.log("Client", "Player ID: " + player_id);
 
             model = Model.defaultModel(seed,player_id);
 

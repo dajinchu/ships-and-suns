@@ -87,8 +87,6 @@ public class HostingLobby implements Screen{
 
             writer.write(seed + "\n" + client_player_id+"\n");
             writer.flush();
-            Gdx.app.log("Client", "Seed: " + seed);
-            Gdx.app.log("Client", "Player ID: " + my_player_id);
             model = Model.defaultModel(seed, my_player_id);
         } catch (IOException e) {
             e.printStackTrace();
