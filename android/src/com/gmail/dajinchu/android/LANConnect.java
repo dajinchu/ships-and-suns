@@ -17,7 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gmail.dajinchu.ConnectScreen;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -243,6 +245,10 @@ public class LANConnect extends ConnectScreen {
             try {
                 Gdx.app.log("CLient",port+"");
                 Socket socket = new Socket(host, 13079);//Random hardcoded port
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                Gdx.app.log("CLient",br.readLine());
+                br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -5,9 +5,12 @@ import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.MainGame;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -39,15 +42,29 @@ public class HostingLobby implements Screen{
                 //notifyUser("This IP: " + deviceIpAddress);
                 jmdns.registerService(serviceInfo);
                 if (serverSocket == null) {
-                    serverSocket = new ServerSocket(49151);//Random hardcoded port
+                    serverSocket = new ServerSocket(13079);//Random hardcoded port
                     Log.i(TAG, "Server socket opened");
                 }
                 client = serverSocket.accept();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(client.getOutputStream()));
+                // Write output
+                sendInitalSetup(writer);
+                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             Gdx.app.log(TAG,client.getLocalPort()+"");
             return null;//TODO make this like client
+        }
+    }
+
+    public void sendInitalSetup(BufferedWriter writer){
+        try {
+            writer.write(TimeUtils.millis()+"\n"+"1");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
