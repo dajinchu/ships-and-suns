@@ -27,7 +27,7 @@ public class Controller implements GestureDetector.GestureListener {
     public Controller(Model model, OrthographicCamera camera, BufferedReader reader, BufferedWriter writer){
         this.model = model;
         this.cam = camera;
-        new SocketReceive(reader);
+        new Thread(new SocketReceive(reader)).start();
         this.writer = writer;
         clamp();
     }
@@ -51,7 +51,7 @@ public class Controller implements GestureDetector.GestureListener {
     @Override
     public boolean longPress(float x, float y) {
         setPlayerDest(model.me.playerNumber,(int)x,(int)y);
-        new SocketSend(model.me.playerNumber+","+(int)x+","+(int)y);
+        new Thread(new SocketSend(model.me.playerNumber+","+(int)x+","+(int)y)).start();
         return true;
     }
 
@@ -133,6 +133,7 @@ public class Controller implements GestureDetector.GestureListener {
             String line;
             String[] line_split;
             while(true){
+                Gdx.app.log("Receive", "Checking for more on ufferedREader");
                 try{
                     if((line = reader.readLine())!=null){
                         line_split = line.split(",");
