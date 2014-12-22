@@ -15,7 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.ConnectScreen;
+import com.gmail.dajinchu.Model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,6 +56,7 @@ public class LANConnect extends ConnectScreen {
     private ShapeRenderer shapeRenderer;
     private Skin uiSkin;
     private int SOCKET_TIMEOUT=5000;
+    private Model model;
 
     public LANConnect(AndroidLauncher androidLauncher){
         activity = androidLauncher;
@@ -154,7 +157,7 @@ public class LANConnect extends ConnectScreen {
         textButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-               mainGame.startGame();
+               mainGame.startGame(Model.defaultModel(TimeUtils.millis(),0));
             }
         });
         TextButton host =new TextButton("HOST", uiSkin.get(TextButton.TextButtonStyle.class));
@@ -208,6 +211,7 @@ public class LANConnect extends ConnectScreen {
             jmdns = null;
         }
         lock.release();
+        uiSkin.dispose();
     }
 
     private InetAddress getDeviceIpAddress(WifiManager wifi) {
@@ -226,6 +230,34 @@ public class LANConnect extends ConnectScreen {
         }
 
         return result;
+    }
+
+    public void readInitialSetup(BufferedReader reader){
+        try {
+            long seed = Long.parseLong(reader.readLine());
+            int player_id = Integer.parseInt(reader.readLine());
+            Gdx.app.log("Client", "Seed: " + seed);
+            Gdx.app.log("Client", "Player ID: " + player_id);
+            model = Model.defaultModel(seed,player_id);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void waitForStart(BufferedReader reader){
+        try {
+            if(reader.readLine().equals("Start")){
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainGame.startGame(model);
+                    }
+                });
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Connect to IP
@@ -247,7 +279,8 @@ public class LANConnect extends ConnectScreen {
                 Socket socket = new Socket(host, 13079);//Random hardcoded port
                 BufferedReader br = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
-                Gdx.app.log("CLient",br.readLine());
+                readInitialSetup(br);
+                waitForStart(br);
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();

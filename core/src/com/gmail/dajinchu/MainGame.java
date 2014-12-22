@@ -1,6 +1,7 @@
 package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 
 public class MainGame extends Game {
 
@@ -22,8 +23,10 @@ public class MainGame extends Game {
         igScreen.dispose();
     }
 
-    public void startGame(){
-        igScreen = new InGameScreen(this);
+    public void startGame(Model model){
+        Gdx.app.log("MainGame","Starting Game");
+        igScreen = new InGameScreen(this, model);
         setScreen(igScreen);
+        conScreen.dispose();
     }
 }

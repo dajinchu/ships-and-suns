@@ -1,13 +1,10 @@
 package com.gmail.dajinchu;
 
-import java.io.Serializable;
-
-
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 
-public class Ship implements Serializable {
+public class Ship {
     double x, y;
     double xVel=0,yVel=0;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx

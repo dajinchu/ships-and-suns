@@ -52,7 +52,7 @@ public class Model {
             }
         }
     }
-    public void initShipDistro(int numPlayers, int shipsPerPlayer){
+    public void initShipDistro(int numPlayers, int player_id, int shipsPerPlayer){
         players = new Player[numPlayers];
         int x,y;
         for(int p = 0; p < numPlayers; p++){//use the "Player player: players" syntax?
@@ -64,7 +64,7 @@ public class Model {
             }
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
         }
-        me = players[0];
+        me = players[player_id];
     }
     public void update(float delta){
         for(IntMap.Entry<Ship> ship : allShips.entries()){
@@ -86,6 +86,14 @@ public class Model {
     public void spawnShip(Player player, int x, int y){
         allShips.put(shipIdCount,new Ship(x,y,player,shipIdCount,this));
         shipIdCount++;
+    }
+
+    public static Model defaultModel(long seed, int player_id){
+        Model model = new Model(1000,1000);
+        model.setSeed(seed);
+        model.makeGrid((int) InGameScreen.ENGAGEMENT_RANGE);
+        model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
+        return model;
     }
 
     //Getter-Setter

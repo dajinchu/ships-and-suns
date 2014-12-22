@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.MainGame;
+import com.gmail.dajinchu.Model;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,13 +23,16 @@ import javax.jmdns.ServiceInfo;
  */
 public class HostingLobby implements Screen{
 
+    private final MainGame mainGame;
     private ServerSocket serverSocket;
     String TAG = "HostingLobby";
     private Socket client;
     private JmDNS jmdns;
     private ServiceInfo serviceInfo;
+    private Model model;
 
     public HostingLobby(MainGame mainGame, JmDNS jmdns){
+        this.mainGame = mainGame;
         this.jmdns = jmdns;
         new ASyncConnect().execute();
     }
@@ -50,6 +54,7 @@ public class HostingLobby implements Screen{
                         new OutputStreamWriter(client.getOutputStream()));
                 // Write output
                 sendInitalSetup(writer);
+                sendStart(writer);
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -59,10 +64,32 @@ public class HostingLobby implements Screen{
         }
     }
 
+    public void sendStart(BufferedWriter writer){
+        try {
+            writer.write("Start");
+            writer.flush();
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    mainGame.startGame(model);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendInitalSetup(BufferedWriter writer){
         try {
-            writer.write(TimeUtils.millis()+"\n"+"1");
+            long seed = TimeUtils.millis();
+            int client_player_id = 1;
+            int my_player_id = 0;
+
+            writer.write(seed + "\n" + client_player_id+"\n");
             writer.flush();
+            Gdx.app.log("Client", "Seed: " + seed);
+            Gdx.app.log("Client", "Player ID: " + my_player_id);
+            model = Model.defaultModel(seed, my_player_id);
         } catch (IOException e) {
             e.printStackTrace();
         }

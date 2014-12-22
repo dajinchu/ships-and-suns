@@ -1,14 +1,13 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
-
-import java.io.Serializable;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
-public class Player implements Serializable {
+public class Player{
     private final Model model;
     Array<Integer> my_ships = new Array<Integer>();//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
@@ -17,7 +16,7 @@ public class Player implements Serializable {
 
 
     //Graphics
-    static Texture[] textureMap = new Texture[]{new Texture("red.png"),new Texture("blue.png")};//number->color link
+    static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
     int textureXShift, textureYShift;
 
     String TAG = "Player";

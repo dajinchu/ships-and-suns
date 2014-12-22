@@ -29,9 +29,9 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 1000;//Ships per player
+    public static final int SHIP_NUM = 1000;//Ships per player
     static final double DEST_RADIUS = 50;
-    static final double ENGAGEMENT_RANGE = 50;
+    public static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
     static final double MAX_FORCE = .1;
 
@@ -46,8 +46,9 @@ public class InGameScreen implements Screen {
     private int drawShips;
     private int allShipRemove = 0;
 
-    public InGameScreen(MainGame game) {
+    public InGameScreen(MainGame game, Model model) {
         this.game = game;
+        this.model = model;
         this.spriteBatch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
@@ -59,12 +60,6 @@ public class InGameScreen implements Screen {
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
 
-
-        //Game:
-        model = new Model(MAPWIDTH, MAPHEIGHT);
-        model.setSeed(TimeUtils.millis());
-        model.makeGrid((int) ENGAGEMENT_RANGE);
-        model.initShipDistro(2, SHIP_NUM);
 
         //Controller
         Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam)));
@@ -104,10 +99,10 @@ public class InGameScreen implements Screen {
         drawShips = 0;
 
         //Draw all ships
+        spriteBatch.draw(model.me.texture,0,0);
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
             drawShips++;
-            //spriteBatch.draw(player.texture,0,0);
             spriteBatch.draw(ship.my_owner.texture, (int) ship.x - ship.my_owner.textureXShift, (int) ship.y - ship.my_owner.textureYShift);
         }
         spriteBatch.end();
