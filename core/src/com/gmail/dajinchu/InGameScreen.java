@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -99,7 +100,7 @@ public class InGameScreen implements Screen {
         drawShips = 0;
 
         //Draw all ships
-        spriteBatch.draw(model.me.texture,0,0);
+        spriteBatch.draw(new Texture("red.png"),0,0);
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
             drawShips++;
