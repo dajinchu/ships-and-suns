@@ -9,8 +9,10 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -50,11 +52,11 @@ public class HostingLobby implements Screen{
                     Log.i(TAG, "Server socket opened");
                 }
                 client = serverSocket.accept();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(client.getOutputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 // Write output
                 sendInitalSetup(writer);
-                sendStart(writer);
+                sendStart(writer, br);
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,14 +66,14 @@ public class HostingLobby implements Screen{
         }
     }
 
-    public void sendStart(BufferedWriter writer){
+    public void sendStart(final BufferedWriter writer, final BufferedReader reader){
         try {
             writer.write("Start");
             writer.flush();
             Gdx.app.postRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    mainGame.startGame(model);
+                    mainGame.startGame(model, reader, writer);
                 }
             });
         } catch (IOException e) {

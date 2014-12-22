@@ -11,6 +11,9 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+
 /**
  * Created by Da-Jin on 12/5/2014.
  */
@@ -50,7 +53,7 @@ public class InGameScreen implements Screen {
     //View
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
 
-    public InGameScreen(MainGame game, Model model) {
+    public InGameScreen(MainGame game, Model model, BufferedReader reader, BufferedWriter writer) {
         this.game = game;
         this.model = model;
         this.spriteBatch = new SpriteBatch();
@@ -66,7 +69,7 @@ public class InGameScreen implements Screen {
 
 
         //Controller
-        Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam)));
+        Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam, reader, writer)));
     }
 
     //Game Mechanic Functions
@@ -78,13 +81,13 @@ public class InGameScreen implements Screen {
         for(Player player : players){
             player.killFrame();
         }*/
-        retarget += delta;
+        /*retarget += delta;
         //System.out.println(retarget);
         if (retarget > 5) {
             //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
             model.players[1*model.me.playerNumber].setDest(model.random.nextInt(model.mapWidth), model.random.nextInt(model.mapHeight));
             retarget = 0;
-        }
+        }*/
     }
 
 

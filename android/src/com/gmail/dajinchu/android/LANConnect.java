@@ -15,13 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.ConnectScreen;
 import com.gmail.dajinchu.Model;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -157,7 +158,7 @@ public class LANConnect extends ConnectScreen {
         textButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-               mainGame.startGame(Model.defaultModel(TimeUtils.millis(),0));
+               //mainGame.startGame(Model.defaultModel(TimeUtils.millis(),0));
             }
         });
         TextButton host =new TextButton("HOST", uiSkin.get(TextButton.TextButtonStyle.class));
@@ -244,13 +245,13 @@ public class LANConnect extends ConnectScreen {
         }
     }
 
-    public void waitForStart(BufferedReader reader){
+    public void waitForStart(final BufferedReader reader, final BufferedWriter writer){
         try {
             if(reader.readLine().equals("Start")){
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        mainGame.startGame(model);
+                        mainGame.startGame(model, reader,writer);
                     }
                 });
             }
@@ -276,10 +277,10 @@ public class LANConnect extends ConnectScreen {
             try {
                 Gdx.app.log("CLient",port+"");
                 Socket socket = new Socket(host, 13079);//Random hardcoded port
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 readInitialSetup(br);
-                waitForStart(br);
+                waitForStart(br, writer);
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();

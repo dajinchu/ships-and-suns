@@ -3,6 +3,9 @@ package com.gmail.dajinchu;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+
 public class MainGame extends Game {
 
     InGameScreen igScreen;
@@ -23,9 +26,9 @@ public class MainGame extends Game {
         igScreen.dispose();
     }
 
-    public void startGame(Model model){
+    public void startGame(Model model, BufferedReader reader, BufferedWriter writer){
         Gdx.app.log("MainGame","Starting Game");
-        igScreen = new InGameScreen(this, model);
+        igScreen = new InGameScreen(this, model, reader, writer);
         setScreen(igScreen);
         conScreen.dispose();
     }

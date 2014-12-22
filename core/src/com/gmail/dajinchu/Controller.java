@@ -7,6 +7,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  * Created by Da-Jin on 12/20/2014.
  */
@@ -18,10 +22,20 @@ public class Controller implements GestureDetector.GestureListener {
     Vector3 touch = new Vector3();
     float previousDistance, previousInitial;
 
-    public Controller(Model model, OrthographicCamera camera){
+    BufferedWriter writer;
+
+    public Controller(Model model, OrthographicCamera camera, BufferedReader reader, BufferedWriter writer){
         this.model = model;
         this.cam = camera;
+        new SocketReceive(reader);
+        this.writer = writer;
         clamp();
+    }
+
+    public void setPlayerDest(int playerId, int x, int y){
+        touch.set(x,y,0);
+        cam.unproject(touch);
+        model.players[playerId].setDest((int)touch.x,(int)touch.y);
     }
 
     @Override
@@ -36,9 +50,8 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean longPress(float x, float y) {
-        touch.set(x,y,0);
-        cam.unproject(touch);
-        model.me.setDest((int)touch.x,(int)touch.y);
+        setPlayerDest(model.me.playerNumber,(int)x,(int)y);
+        new SocketSend(model.me.playerNumber+","+(int)x+","+(int)y);
         return true;
     }
 
@@ -94,10 +107,41 @@ public class Controller implements GestureDetector.GestureListener {
     }
 
     class SocketSend implements Runnable{
+        String msg;
 
+        public SocketSend(String msg){
+            this.msg = msg;
+        }
         @Override
         public void run() {
-            
+            try {
+                writer.write(msg);
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    class SocketReceive implements Runnable{
+        BufferedReader reader;
+
+        public SocketReceive(BufferedReader reader){
+            this.reader = reader;
+        }
+        @Override
+        public void run() {
+            String line;
+            String[] line_split;
+            while(true){
+                try{
+                    if((line = reader.readLine())!=null){
+                        line_split = line.split(",");
+                        setPlayerDest(Integer.parseInt(line_split[0]),Integer.parseInt(line_split[1]),Integer.parseInt(line_split[2]));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
