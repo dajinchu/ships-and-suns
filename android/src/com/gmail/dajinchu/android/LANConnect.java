@@ -245,13 +245,14 @@ public class LANConnect extends ConnectScreen {
         }
     }
 
-    public void waitForStart(final BufferedReader reader, final BufferedWriter writer){
+    public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
         try {
-            if(reader.readLine().equals("Start")){
+            if (reader.readLine().equals("Start")) {
+                Gdx.app.log("Client", "waiting for start");
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        mainGame.startGame(model, reader,writer);
+                        mainGame.startGame(model, reader, writer);
                     }
                 });
             }
