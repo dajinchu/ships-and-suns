@@ -57,7 +57,7 @@ public class HostingLobby implements Screen{
                 // Write output
                 sendInitalSetup(writer);
                 sendStart(writer, br);
-                writer.close();
+                //writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
