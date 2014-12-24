@@ -195,6 +195,7 @@ public class LANConnect extends ConnectScreen {
 
     @Override
     public void dispose() {
+        Gdx.app.log("LANConnect","Dispoingd");
         stage.dispose();
         shapeRenderer.dispose();
         if (jmdns != null) {
@@ -246,12 +247,14 @@ public class LANConnect extends ConnectScreen {
     }
 
     public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
+        Gdx.app.log("Client", "Waiting "+reader.toString());
         try {
             if (reader.readLine().equals("Start")) {
                 Gdx.app.log("Client", "waiting for start");
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
+
                         mainGame.startGame(model, reader, writer);
                     }
                 });
@@ -282,7 +285,7 @@ public class LANConnect extends ConnectScreen {
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 readInitialSetup(br);
                 waitForStart(br, writer);
-                br.close();
+                //br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

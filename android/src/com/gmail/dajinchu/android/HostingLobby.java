@@ -57,6 +57,7 @@ public class HostingLobby implements Screen{
                 // Write output
                 sendInitalSetup(writer);
                 sendStart(writer, br);
+
                 //writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,7 +69,7 @@ public class HostingLobby implements Screen{
 
     public void sendStart(final BufferedWriter writer, final BufferedReader reader){
         try {
-            writer.write("Start");
+            writer.write("Start\n");
             writer.flush();
             Gdx.app.postRunnable(new Runnable() {
                 @Override

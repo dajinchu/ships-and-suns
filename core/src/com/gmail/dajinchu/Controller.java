@@ -33,9 +33,7 @@ public class Controller implements GestureDetector.GestureListener {
     }
 
     public void setPlayerDest(int playerId, int x, int y){
-        touch.set(x,y,0);
-        cam.unproject(touch);
-        model.players[playerId].setDest((int)touch.x,(int)touch.y);
+        model.players[playerId].setDest(x,y);
     }
 
     @Override
@@ -50,8 +48,11 @@ public class Controller implements GestureDetector.GestureListener {
 
     @Override
     public boolean longPress(float x, float y) {
-        setPlayerDest(model.me.playerNumber,(int)x,(int)y);
-        new Thread(new SocketSend(model.me.playerNumber+","+(int)x+","+(int)y)).start();
+        touch.set(x,y,0);
+        cam.unproject(touch);
+
+        setPlayerDest(model.me.playerNumber,(int)touch.x,(int)touch.y);
+        new Thread(new SocketSend(model.me.playerNumber+","+(int)touch.x+","+(int)touch.y)).start();
         return true;
     }
 
@@ -115,7 +116,7 @@ public class Controller implements GestureDetector.GestureListener {
         @Override
         public void run() {
             try {
-                writer.write(msg);
+                writer.write(msg+"\n");
                 writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -133,7 +134,7 @@ public class Controller implements GestureDetector.GestureListener {
             String line;
             String[] line_split;
             while(true){
-                Gdx.app.log("Receive", "Checking for more on ufferedREader");
+                //Gdx.app.log("Receive", "Checking for more on ufferedREader");
                 try{
                     if((line = reader.readLine())!=null){
                         line_split = line.split(",");
