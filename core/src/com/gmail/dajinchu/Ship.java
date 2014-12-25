@@ -26,7 +26,7 @@ public class Ship {
     Model model;
     volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
-    static int newGrid = 0, loopcount = 0, dead = 0;
+    static int newGrid = 0, loopcount = 0, dead = 0, outOfBounds = 0;
 
     public Ship(int x, int y, Player owner, int id, Model model){
         this.x = x;
@@ -61,6 +61,7 @@ public class Ship {
                 my_tile = model.getShipTile(newgridx,newgridy);//TODO MAKE A THIS FUNCTION
                 my_tile.ships.add(id);
             }catch (ArrayIndexOutOfBoundsException e){
+                outOfBounds++;
             }
         }
         //Have we arrived and needing a new wanderdest?

@@ -81,13 +81,13 @@ public class InGameScreen implements Screen {
         for(Player player : players){
             player.killFrame();
         }*/
-        /*retarget += delta;
+        retarget += delta;
         //System.out.println(retarget);
         if (retarget > 5) {
-            //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            model.players[1*model.me.playerNumber].setDest(model.random.nextInt(model.mapWidth), model.random.nextInt(model.mapHeight));
+            Gdx.app.log("SHIP", Ship.outOfBounds+" ");
+            //model.players[1*model.me.playerNumber].setDest(model.random.nextInt(model.mapWidth), model.random.nextInt(model.mapHeight));
             retarget = 0;
-        }*/
+        }
     }
 
 
