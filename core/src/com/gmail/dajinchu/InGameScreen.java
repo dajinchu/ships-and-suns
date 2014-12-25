@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -46,6 +50,10 @@ public class InGameScreen implements Screen {
     private int drawShips;
     private int allShipRemove = 0;
 
+    //Box2D
+    private final World world;
+    private final Box2DDebugRenderer debugRenderer;
+
     public InGameScreen(MainGame game) {
         this.game = game;
         this.spriteBatch = new SpriteBatch();
@@ -59,9 +67,13 @@ public class InGameScreen implements Screen {
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
 
+        //Box2D
+        Box2D.init();
+        world = new World(new Vector2(0, -10), true);
+        debugRenderer = new Box2DDebugRenderer();
 
         //Game:
-        model = new Model(MAPWIDTH, MAPHEIGHT);
+        model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(TimeUtils.millis());
         model.makeGrid((int) ENGAGEMENT_RANGE);
         model.initShipDistro(2, SHIP_NUM);
@@ -96,9 +108,10 @@ public class InGameScreen implements Screen {
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);
 
-        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        debugRenderer.render(world, cam.combined);
         spriteBatch.begin();
 
         drawShips = 0;
