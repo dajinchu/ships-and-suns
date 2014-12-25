@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 /**
  * Created by Da-Jin on 12/5/2014.
  */
-public class InGameScreen implements Screen {
+public class InGameScreen implements Screen, GestureDetector.GestureListener {
 
     //Screems
     MainGame game;
@@ -129,7 +129,7 @@ public class InGameScreen implements Screen {
         shapeRenderer.end();
 
         if(Gdx.input.justTouched()){
-            me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
+            model.me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
             System.out.println(Gdx.input.getX());
         }
 
@@ -196,7 +196,7 @@ public class InGameScreen implements Screen {
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        cam.translate(-deltaX,deltaY);
+        cam.translate(-deltaX, deltaY);
         cam.update();
         Gdx.app.log("GESTURES","PAN");
         return true;
