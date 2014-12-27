@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /**
@@ -33,11 +32,11 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 10;//Ships per player
+    static final int SHIP_NUM = 100;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 400;
-    static final double MAX_FORCE = 100;
+    static final double MAX_FORCE = 300;
 
     //Cam
     int height, width;
@@ -76,7 +75,7 @@ public class InGameScreen implements Screen {
         model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(TimeUtils.millis());
         model.makeGrid((int) ENGAGEMENT_RANGE);
-        model.initShipDistro(1, 1);
+        model.initShipDistro(1, SHIP_NUM);
 
         //Controller
         Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam)));
@@ -109,7 +108,7 @@ public class InGameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugRenderer.render(world, cam.combined);
-        spriteBatch.begin();
+        /*spriteBatch.begin();
 
         drawShips = 0;
 
@@ -128,7 +127,7 @@ public class InGameScreen implements Screen {
                 shapeRenderer.circle(player.destx, player.desty, (float) DEST_RADIUS);
                 shapeRenderer.end();
             }
-        }
+        }*/
         //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
         shapeRenderer.begin();

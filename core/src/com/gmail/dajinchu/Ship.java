@@ -88,10 +88,7 @@ public class Ship implements Serializable, Entity {
 
     public void arrive(){
         Vector2 currentVel = body.getLinearVelocity();
-        Gdx.app.log("Destx", String.valueOf(wanderdest.x));
         desired.set(wanderdest).sub(pos);
-
-        Gdx.app.log("Ship","pos:"+pos.x+" dest:"+wanderdest.x);
 
         dist = desired.len();
         desired.nor();
@@ -105,7 +102,7 @@ public class Ship implements Serializable, Entity {
             //Otherwise fast as possible
             desired.scl((float) InGameScreen.TERMINAL_VELOCITY);
         }
-
+        //Gdx.app.log("ship", speed+" "+dist);
         steer.set(desired).sub(currentVel);
         steer.limit((float) InGameScreen.MAX_FORCE);
         body.applyForceToCenter(steer, true);
