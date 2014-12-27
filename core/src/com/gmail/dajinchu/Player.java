@@ -39,7 +39,8 @@ public class Player implements Serializable {
     }*/
 
     public void setDest(int destx, int desty){
-        Gdx.app.log("Player", "settingdest");
+        model.dest.setTransform(destx,desty,model.dest.getAngle());
+        Gdx.app.log("Player", "settingdest "+model.dest.getPosition().x);
         this.destx = destx;
         this.desty = desty;
         for(int id : my_ships){

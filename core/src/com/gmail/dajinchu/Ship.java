@@ -56,8 +56,7 @@ public class Ship implements Serializable, Entity {
         loopcount++;
 
         //Have we arrived and needing a new wanderdest?
-        //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
-        if(Math.abs(wanderdest.x-pos.x)+Math.abs(wanderdest.y-pos.y)<InGameScreen.ENGAGEMENT_RANGE){
+        if(wanderdest.dst(pos)<InGameScreen.ENGAGEMENT_RANGE){
             calcDestWithWander(my_owner.destx, my_owner.desty);
         }
 
@@ -83,8 +82,8 @@ public class Ship implements Serializable, Entity {
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdest.x = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
-        wanderdest.y = (int) (wanderxoffset+originx);
+        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
+        wanderdest.x = (int) (wanderxoffset+originx);
     }
 
     public void arrive(){

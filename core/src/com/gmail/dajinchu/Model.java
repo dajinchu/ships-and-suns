@@ -35,6 +35,7 @@ public class Model {
     private float accumulator = 0;
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
+    Body dest;
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
@@ -73,8 +74,8 @@ public class Model {
                 y=random.nextInt(mapHeight);
                 spawnShip(players[p],x,y);
             }
+            dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
-            
         }
         me = players[0];
     }
@@ -116,32 +117,7 @@ public class Model {
 
     public void spawnShip(Player player, int x, int y){
         // First we create a body definition
-        BodyDef bodyDef = new BodyDef();
-// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-// Set our body's starting position in the world
-        bodyDef.position.set(x,y);
-
-// Create our body in the world using our body definition
-        Body body = world.createBody(bodyDef);
-
-// Create a circle shape and set its radius to 6
-        CircleShape circle = new CircleShape();
-        circle.setRadius(6f);
-
-// Create a fixture definition to apply our shape to
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
-        fixtureDef.density = 0f;
-        fixtureDef.friction = 0f;
-        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-
-// Create our fixture and attach it to the body
-        Fixture fixture = body.createFixture(fixtureDef);
-
-// Remember to dispose of any shapes after you're done with them!
-// BodyDef and FixtureDef don't need disposing, but shapes do.
-        circle.dispose();
+        Body body = createCircleBody(x,y,6, BodyDef.BodyType.DynamicBody, false);
 
         //Add Ship userData to do the moving around stuff
         disShip = new Ship(player,shipIdCount,this,body);
@@ -158,5 +134,35 @@ public class Model {
 
     public Ship getShip(int id){
         return allShips.get(id);
+    }
+    public Body createCircleBody(int x, int y, float radius, BodyDef.BodyType type, boolean isSensor){
+        BodyDef bodyDef = new BodyDef();
+        // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
+        bodyDef.type = type;
+        // Set our body's starting position in the world
+        bodyDef.position.set(x,y);
+
+        // Create our body in the world using our body definition
+        Body body = world.createBody(bodyDef);
+
+        // Create a circle shape and set its radius to 6
+        CircleShape circle = new CircleShape();
+        circle.setRadius(radius);
+
+        // Create a fixture definition to apply our shape to
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 0f;
+        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+
+        // Create our fixture and attach it to the body
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setSensor(isSensor);
+
+        // Remember to dispose of any shapes after you're done with them!
+        // BodyDef and FixtureDef don't need disposing, but shapes do.
+        circle.dispose();
+        return body;
     }
 }
