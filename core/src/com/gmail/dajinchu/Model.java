@@ -7,9 +7,9 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -33,6 +33,8 @@ public class Model {
 
     World world;
     private float accumulator = 0;
+    Array<Body> bodies = new Array<Body>();
+    private Ship disShip;
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
@@ -82,6 +84,19 @@ public class Model {
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
         }
+
+        world.getBodies(bodies);
+
+        for (Body b : bodies) {
+            // Get the body's user data - in this example, our user
+            // data is an instance of the Entity class
+            Entity e = (Entity) b.getUserData();
+
+            if (e != null) {
+                e.frame();
+            }
+        }
+/*
         for(IntMap.Entry<Ship> ship : allShips.entries()){
             if(ship.value.destroyed){
                 continue;
@@ -95,7 +110,7 @@ public class Model {
                 continue;
             }
             tempship.killFrame();
-        }
+        }*/
     }
 
     public void spawnShip(Player player, int x, int y){
@@ -126,6 +141,10 @@ public class Model {
 // Remember to dispose of any shapes after you're done with them!
 // BodyDef and FixtureDef don't need disposing, but shapes do.
         circle.dispose();
+
+        //Add Ship userData to do the moving around stuff
+        disShip = new Ship(player,shipIdCount,this,body);
+        body.setUserData(disShip);
     }
 
     //Getter-Setter

@@ -1,5 +1,9 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+
 import java.io.Serializable;
 
 
@@ -7,9 +11,8 @@ import java.io.Serializable;
  * Created by Da-Jin on 12/5/2014.
  */
 
-public class Ship implements Serializable {
-    double x, y;
-    double xVel=0,yVel=0;
+public class Ship implements Serializable, Entity {
+    private final Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
     //int color;
@@ -30,45 +33,29 @@ public class Ship implements Serializable {
     volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
     static int newGrid = 0, loopcount = 0, dead = 0;
+    Vector2 pos;
 
-    public Ship(int x, int y, Player owner, int id, Model model){
-        this.x = x;
-        this.y = y;
+    public Ship(Player owner, int id, Model model, Body b){
         my_owner = owner;
         this.model = model;
         this.id = id;
-        calcGrid();
-        my_tile = model.getShipTile(newgridx,newgridy);
-        my_tile.ships.add(id);
         my_owner.my_ships.add(id);
+        this.body = b;
     }
 
-    private void calcGrid(){
-        newgridy = (int) Math.floor(y / InGameScreen.ENGAGEMENT_RANGE);
-        newgridx = (int) Math.floor(x / InGameScreen.ENGAGEMENT_RANGE);
-    }
 
     public void frame(){
+        pos = body.getLocalCenter();//TODO check if I can do this only once, and the vector will update?
         arrive();
 
         //TODO efficiency here
 
-        //If entered a new tile...
-        calcGrid();
         //Gdx.app.log("SHIP", newgridx + " " + my_tile.x+" "+newgridy+" "+my_tile.y);
         loopcount++;
-        if(newgridy!=my_tile.y||newgridx!=my_tile.x){
-            try {
-                newGrid++;
-                my_tile.ships.removeValue(id, false);
-                my_tile = model.getShipTile(newgridx,newgridy);//TODO MAKE A THIS FUNCTION
-                my_tile.ships.add(id);
-            }catch (ArrayIndexOutOfBoundsException e){
-            }
-        }
+
         //Have we arrived and needing a new wanderdest?
         //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
-        if(Math.abs(wanderdestx-x)+Math.abs(wanderdesty-y)<InGameScreen.ENGAGEMENT_RANGE){
+        if(Math.abs(wanderdestx-pos.x)+Math.abs(wanderdesty-pos.y)<InGameScreen.ENGAGEMENT_RANGE){
             calcDestWithWander(my_owner.destx, my_owner.desty);
         }
 
@@ -80,14 +67,14 @@ public class Ship implements Serializable {
         dead++;
     }
 
-    public void killFrame(){
+/*    public void killFrame(){
         target = getTarget();
         if(target != null){
             target.die();
             this.die();
         }
     }
-
+*/
     public void calcDestWithWander(int originx, int originy){
         //Range after each operation, x=dest_radius: (interval notation)
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
@@ -98,8 +85,11 @@ public class Ship implements Serializable {
     }
 
     public void arrive(){
-        desiredx = wanderdestx-x;
-        desiredy = wanderdesty-y;
+        Vector2 currentVel = body.getLinearVelocity();
+        float xVel = currentVel.x;
+        float yVel = currentVel.y;
+        desiredx = wanderdestx-pos.x;
+        desiredy = wanderdesty-pos.y;
 
         dist = Math.sqrt(Math.pow(desiredx,2)+Math.pow(desiredy,2));//Magnitude of desired
 
@@ -134,13 +124,11 @@ public class Ship implements Serializable {
             xVel*=ratio;
             yVel*=ratio;
         }
-
-        x += xVel;
-        y += yVel;
-        //Log.i("SHIP",desiredx+" "+ dist+" "+ speed+ " "+steeringx+" "+steerMagnitude+" "+xVel);
+        body.applyForceToCenter(2000, (float) steeringx, true);
+        Gdx.app.log("SHIP",desiredx+" "+ dist+" "+ speed+ " "+steeringx+" "+steerMagnitude+" "+xVel);
     }
 
-    public Ship getTarget(){
+    /*public Ship getTarget(){
         //pre-calculation bounds for efficiency
         Ship ship;
         for(ShipTile shipTile : my_tile.neighbors){
@@ -171,7 +159,7 @@ public class Ship implements Serializable {
                     }
                 }
             }
-        }*/
+        }
         return null;
-    }
+    }*/
 }

@@ -33,7 +33,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 1000;//Ships per player
+    static final int SHIP_NUM = 10;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 2;
@@ -69,14 +69,14 @@ public class InGameScreen implements Screen {
 
         //Box2D
         Box2D.init();
-        world = new World(new Vector2(0, -10), true);
+        world = new World(new Vector2(0,0), true);
         debugRenderer = new Box2DDebugRenderer();
 
         //Game:
         model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(TimeUtils.millis());
         model.makeGrid((int) ENGAGEMENT_RANGE);
-        model.initShipDistro(2, SHIP_NUM);
+        model.initShipDistro(1, 1);
 
         //Controller
         Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam)));
@@ -87,15 +87,12 @@ public class InGameScreen implements Screen {
     public void update(float delta) {
         model.update(delta);
 
-        /*
-        for(Player player : players){
-            player.killFrame();
-        }*/
+
         retarget += delta;
         //System.out.println(retarget);
         if (retarget > 5) {
-            //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            model.players[1].setDest(model.random.nextInt(MAPWIDTH), model.random.nextInt(MAPHEIGHT));
+            Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
+//            model.players[1].setDest(model.random.nextInt(MAPWIDTH), model.random.nextInt(MAPHEIGHT));
             retarget = 0;
         }
     }
@@ -121,7 +118,7 @@ public class InGameScreen implements Screen {
             ship = entry.value;
             drawShips++;
             //spriteBatch.draw(player.texture,0,0);
-            spriteBatch.draw(ship.my_owner.texture, (int) ship.x - ship.my_owner.textureXShift, (int) ship.y - ship.my_owner.textureYShift);
+            spriteBatch.draw(ship.my_owner.texture, (int) ship.pos.x - ship.my_owner.textureXShift, (int) ship.pos.y - ship.my_owner.textureYShift);
         }
         spriteBatch.end();
         //Draw destination circles
