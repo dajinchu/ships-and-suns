@@ -36,8 +36,8 @@ public class InGameScreen implements Screen {
     static final int SHIP_NUM = 10;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
-    static final double TERMINAL_VELOCITY = 2;
-    static final double MAX_FORCE = .1;
+    static final double TERMINAL_VELOCITY = 100;
+    static final double MAX_FORCE = 100;
 
     //Cam
     int height, width;

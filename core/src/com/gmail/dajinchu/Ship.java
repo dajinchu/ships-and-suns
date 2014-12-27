@@ -1,6 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -14,7 +13,10 @@ import java.io.Serializable;
 public class Ship implements Serializable, Entity {
     private final Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
-    int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
+    Vector2 wanderdest = new Vector2();//Eventually give this back to give player control over individual ships
+    Vector2 pos = new Vector2();
+    Vector2 desired;
+    Vector2 steer;
     //int color;
 
     ShipTile my_tile;
@@ -30,10 +32,9 @@ public class Ship implements Serializable, Entity {
 
     Player my_owner;
     Model model;
-    volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
+    volatile private double  dist, speed, steerMagnitude, ratio;
 
     static int newGrid = 0, loopcount = 0, dead = 0;
-    Vector2 pos;
 
     public Ship(Player owner, int id, Model model, Body b){
         my_owner = owner;
@@ -55,7 +56,7 @@ public class Ship implements Serializable, Entity {
 
         //Have we arrived and needing a new wanderdest?
         //Dont need fancy pthagorean, just reach threshold, pythag hardly applies this close
-        if(Math.abs(wanderdestx-pos.x)+Math.abs(wanderdesty-pos.y)<InGameScreen.ENGAGEMENT_RANGE){
+        if(Math.abs(wanderdest.x-pos.x)+Math.abs(wanderdest.y-pos.y)<InGameScreen.ENGAGEMENT_RANGE){
             calcDestWithWander(my_owner.destx, my_owner.desty);
         }
 
@@ -80,52 +81,32 @@ public class Ship implements Serializable, Entity {
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdesty = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
-        wanderdestx = (int) (wanderxoffset+originx);
+        wanderdest.x = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
+        wanderdest.y = (int) (wanderxoffset+originx);
     }
 
     public void arrive(){
         Vector2 currentVel = body.getLinearVelocity();
         float xVel = currentVel.x;
         float yVel = currentVel.y;
-        desiredx = wanderdestx-pos.x;
-        desiredy = wanderdesty-pos.y;
+        desired = wanderdest.sub(pos);
 
-        dist = Math.sqrt(Math.pow(desiredx,2)+Math.pow(desiredy,2));//Magnitude of desired
+        dist = desired.len();
+        desired.nor();
 
         //m is speed to multiply
         if(dist<InGameScreen.DEST_RADIUS){
             //Closer we get, slower we get, its a proportion
             speed = InGameScreen.TERMINAL_VELOCITY * (dist /InGameScreen.DEST_RADIUS);
+            desired.scl((float) speed);
         } else{
             //Otherwise fast as possible
-            speed = InGameScreen.TERMINAL_VELOCITY;
+            desired.scl((float) InGameScreen.TERMINAL_VELOCITY);
         }
 
-        desiredx*=speed;
-        desiredy*=speed;
-
-        steeringx = desiredx-xVel;
-        steeringy = desiredy-yVel;
-
-        steerMagnitude = Math.sqrt(steeringx*steeringx+steeringy*steeringy);
-        if(steerMagnitude>InGameScreen.MAX_FORCE){
-            ratio = InGameScreen.MAX_FORCE/steerMagnitude;
-            steeringx*=ratio;
-            steeringy*=ratio;
-        }
-
-        xVel += steeringx;
-        yVel += steeringy;
-
-        speed =Math.sqrt(xVel*xVel+yVel*yVel);
-        if(speed>InGameScreen.TERMINAL_VELOCITY){
-            ratio = InGameScreen.TERMINAL_VELOCITY/speed;;
-            xVel*=ratio;
-            yVel*=ratio;
-        }
-        body.applyForceToCenter(2000, (float) steeringx, true);
-        Gdx.app.log("SHIP",desiredx+" "+ dist+" "+ speed+ " "+steeringx+" "+steerMagnitude+" "+xVel);
+        steer = desired.sub(currentVel);
+        steer.limit((float) InGameScreen.MAX_FORCE);
+        body.applyForceToCenter(steer,true);
     }
 
     /*public Ship getTarget(){
