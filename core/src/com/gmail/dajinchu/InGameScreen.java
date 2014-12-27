@@ -32,7 +32,7 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 100;//Ships per player
+    static final int SHIP_NUM = 500;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 400;
@@ -138,12 +138,6 @@ public class InGameScreen implements Screen {
             }
         }
         shapeRenderer.end();
-
-        if(Gdx.input.justTouched()){
-            model.me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
-            System.out.println(Gdx.input.getX());
-        }
-
         update(delta);
     }
 
