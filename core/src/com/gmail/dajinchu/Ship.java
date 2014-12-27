@@ -1,5 +1,6 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -15,8 +16,8 @@ public class Ship implements Serializable, Entity {
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     Vector2 wanderdest = new Vector2();//Eventually give this back to give player control over individual ships
     Vector2 pos = new Vector2();
-    Vector2 desired;
-    Vector2 steer;
+    Vector2 desired = new Vector2();
+    Vector2 steer = new Vector2();
     //int color;
 
     ShipTile my_tile;
@@ -46,7 +47,7 @@ public class Ship implements Serializable, Entity {
 
 
     public void frame(){
-        pos = body.getLocalCenter();//TODO check if I can do this only once, and the vector will update?
+        pos = body.getPosition();//TODO check if I can do this only once, and the vector will update?
         arrive();
 
         //TODO efficiency here
@@ -77,6 +78,7 @@ public class Ship implements Serializable, Entity {
     }
 */
     public void calcDestWithWander(int originx, int originy){
+        Gdx.app.log("Ship", "Calcdestwithwander");
         //Range after each operation, x=dest_radius: (interval notation)
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
@@ -87,9 +89,10 @@ public class Ship implements Serializable, Entity {
 
     public void arrive(){
         Vector2 currentVel = body.getLinearVelocity();
-        float xVel = currentVel.x;
-        float yVel = currentVel.y;
-        desired = wanderdest.sub(pos);
+        Gdx.app.log("Destx", String.valueOf(wanderdest.x));
+        desired.set(wanderdest).sub(pos);
+
+        Gdx.app.log("Ship","pos:"+pos.x+" dest:"+wanderdest.x);
 
         dist = desired.len();
         desired.nor();
@@ -104,9 +107,9 @@ public class Ship implements Serializable, Entity {
             desired.scl((float) InGameScreen.TERMINAL_VELOCITY);
         }
 
-        steer = desired.sub(currentVel);
+        steer.set(desired).sub(currentVel);
         steer.limit((float) InGameScreen.MAX_FORCE);
-        body.applyForceToCenter(steer,true);
+        body.applyForceToCenter(steer, true);
     }
 
     /*public Ship getTarget(){

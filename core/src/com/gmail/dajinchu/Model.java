@@ -74,6 +74,7 @@ public class Model {
                 spawnShip(players[p],x,y);
             }
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
+            
         }
         me = players[0];
     }
@@ -131,8 +132,8 @@ public class Model {
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 0f;
         fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 
 // Create our fixture and attach it to the body
@@ -145,6 +146,8 @@ public class Model {
         //Add Ship userData to do the moving around stuff
         disShip = new Ship(player,shipIdCount,this,body);
         body.setUserData(disShip);
+        allShips.put(shipIdCount, disShip);
+        shipIdCount++;
     }
 
     //Getter-Setter

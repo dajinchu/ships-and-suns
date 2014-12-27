@@ -1,5 +1,6 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
@@ -38,6 +39,7 @@ public class Player implements Serializable {
     }*/
 
     public void setDest(int destx, int desty){
+        Gdx.app.log("Player", "settingdest");
         this.destx = destx;
         this.desty = desty;
         for(int id : my_ships){
