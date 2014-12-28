@@ -32,11 +32,11 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 500;//Ships per player
+    static final int SHIP_NUM = 1;//Ships per player
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
-    static final double TERMINAL_VELOCITY = 400;
-    static final double MAX_FORCE = 300;
+    static final double TERMINAL_VELOCITY = 20;
+    static final double MAX_FORCE = 5;
 
     //Cam
     int height, width;
@@ -74,7 +74,6 @@ public class InGameScreen implements Screen {
         //Game:
         model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(TimeUtils.millis());
-        model.makeGrid((int) ENGAGEMENT_RANGE);
         model.initShipDistro(1, SHIP_NUM);
 
         //Controller

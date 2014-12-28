@@ -20,8 +20,6 @@ public class Ship implements Serializable, Entity {
     Vector2 steer = new Vector2();
     //int color;
 
-    ShipTile my_tile;
-
     boolean destroyed = false;
 
     //Temp stuff, local variables here to save memory
@@ -56,17 +54,12 @@ public class Ship implements Serializable, Entity {
         loopcount++;
 
         //Have we arrived and needing a new wanderdest?
-        if(wanderdest.dst(pos)<InGameScreen.ENGAGEMENT_RANGE){
+        if(wanderdest.dst(pos)<5){
             calcDestWithWander(my_owner.destx, my_owner.desty);
         }
 
     }
 
-    public void die(){
-        destroyed = true;
-        my_tile.ships.removeValue(id, false);//TODO anywhere else to do this so we can stay pure flag?
-        dead++;
-    }
 
 /*    public void killFrame(){
         target = getTarget();
@@ -77,13 +70,13 @@ public class Ship implements Serializable, Entity {
     }
 */
     public void calcDestWithWander(int originx, int originy){
-        Gdx.app.log("Ship", "Calcdestwithwander");
         //Range after each operation, x=dest_radius: (interval notation)
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
         wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
         wanderdest.x = (int) (wanderxoffset+originx);
+        Gdx.app.log("Ship", "Calcdestwithwander"+originx+" "+originy+" "+wanderdest.x+" "+wanderdest.y);
     }
 
     public void arrive(){
@@ -105,7 +98,7 @@ public class Ship implements Serializable, Entity {
         //Gdx.app.log("ship", speed+" "+dist);
         steer.set(desired).sub(currentVel);
         steer.limit((float) InGameScreen.MAX_FORCE);
-        body.applyForceToCenter(steer, true);
+        body.applyLinearImpulse(steer, body.getWorldCenter(), true);
     }
 
     /*public Ship getTarget(){

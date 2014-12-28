@@ -1,6 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -18,7 +17,6 @@ import java.util.Random;
 public class Model {
     Player[] players;
     Player me;
-    private ShipTile[][] grid;
     IntMap<Ship> allShips =  new IntMap<Ship>();
     long seed;
     Random random;
@@ -48,22 +46,6 @@ public class Model {
         random = new Random(seed);
     }
 
-    public void makeGrid(int tileSize){
-        gridHeight=(int) Math.ceil(mapHeight/tileSize);
-        gridWidth=(int) Math.ceil(mapWidth/tileSize);
-        grid = new ShipTile[gridHeight][gridWidth];
-        for(int y=0; y < gridHeight; y++){
-            for(int x = 0; x < gridWidth; x++){
-                grid[y][x] = new ShipTile(x,y);
-                Gdx.app.log("Making grid",x+" "+y);
-            }
-        }
-        for(int y=0; y < gridHeight; y++){
-            for(int x = 0; x < gridWidth; x++){
-                grid[y][x].fillNeighbors(this);
-            }
-        }
-    }
     public void initShipDistro(int numPlayers, int shipsPerPlayer){
         players = new Player[numPlayers];
         int x,y;
@@ -117,7 +99,7 @@ public class Model {
 
     public void spawnShip(Player player, int x, int y){
         // First we create a body definition
-        Body body = createCircleBody(x,y,6, BodyDef.BodyType.DynamicBody, false);
+        Body body = createCircleBody(x,y,4, BodyDef.BodyType.DynamicBody, true);
 
         //Add Ship userData to do the moving around stuff
         disShip = new Ship(player,shipIdCount,this,body);
@@ -127,11 +109,6 @@ public class Model {
     }
 
     //Getter-Setter
-    public ShipTile getShipTile(int x, int y){
-        //Finally end all that y/x confusion
-        return grid[y][x];
-    }
-
     public Ship getShip(int id){
         return allShips.get(id);
     }
