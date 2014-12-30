@@ -105,8 +105,10 @@ public class InGameScreen implements Screen {
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+        Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        debugRenderer.render(world, cam.combined);
 
         spriteBatch.begin();
 
@@ -123,7 +125,6 @@ public class InGameScreen implements Screen {
         //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
         shapeRenderer.end();
-        debugRenderer.render(world, cam.combined);
         update(delta);
     }
 
