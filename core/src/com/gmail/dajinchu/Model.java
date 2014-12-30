@@ -51,6 +51,10 @@ public class Model {
         random = new Random(seed);
     }
 
+    public void initSunDistro(){
+        new Sun(100,100,players[0],0,this);
+    }
+
     public void initShipDistro(int numPlayers, int shipsPerPlayer){
         players = new Player[numPlayers];
         int x,y;
@@ -59,7 +63,7 @@ public class Model {
             for(int i = 0; i < shipsPerPlayer; i++){
                 x=random.nextInt(mapWidth);
                 y=random.nextInt(mapHeight);
-                spawnShip(players[p],x,y);
+                new Ship(players[p],this,x,y);
             }
             players[p].dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
@@ -111,16 +115,7 @@ public class Model {
         }*/
     }
 
-    public void spawnShip(Player player, int x, int y){
-        // First we create a body definition
-        Body body = createCircleBody(x,y,4, BodyDef.BodyType.DynamicBody, true);
 
-        //Add Ship userData to do the moving around stuff
-        disShip = new Ship(player,shipIdCount,this,body);
-        body.setUserData(disShip);
-        allShips.put(shipIdCount, disShip);
-        shipIdCount++;
-    }
 
     //Getter-Setter
     public Ship getShip(int id){

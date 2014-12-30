@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import java.io.Serializable;
 
@@ -34,12 +35,17 @@ public class Ship implements Serializable, Entity {
 
     static int newGrid = 0, loopcount = 0, dead = 0;
 
-    public Ship(Player owner, int id, Model model, Body b){
+    public Ship(Player owner, Model model,int x, int y){//TODO make Model Singleton
+        this.body = model.createCircleBody(x,y,4, BodyDef.BodyType.DynamicBody, true);
+
+        //Add Ship userData to do the moving around stuff
         my_owner = owner;
         this.model = model;
-        this.id = id;
+        this.id = model.shipIdCount;
         my_owner.my_ships.add(id);
-        this.body = b;
+        body.setUserData(this);
+        model.allShips.put(model.shipIdCount, this);
+        model.shipIdCount++;
     }
 
 
