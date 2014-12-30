@@ -1,6 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -38,7 +37,6 @@ public class Model {
     private float accumulator = 0;
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
-    Body dest;
     Array<Ship> scheduleForDelete = new Array<Ship>();
 
     public Model(int mapWidth, int mapHeight, World world){
@@ -63,7 +61,7 @@ public class Model {
                 y=random.nextInt(mapHeight);
                 spawnShip(players[p],x,y);
             }
-            dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
+            players[p].dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
             players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
         }
         me = players[0];
@@ -171,10 +169,11 @@ public class Model {
         public void beginContact(Contact contact) {
             aData = contact.getFixtureA().getBody().getUserData();
             bData = contact.getFixtureB().getBody().getUserData();
-            //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
-            if (scheduleForDelete.contains((Ship) aData, true)||scheduleForDelete.contains((Ship) bData,true))return;
             if(aData instanceof Ship && bData instanceof Ship){
-                Gdx.app.log("ContactListener", "Ship "+((Ship) aData).id+" and "+((Ship) bData).id+" are getting deleted");
+                //Preventing friendly fire
+                if(((Ship) aData).my_owner==((Ship) bData).my_owner)return;
+                //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
+                if (scheduleForDelete.contains((Ship) aData, true)||scheduleForDelete.contains((Ship) bData,true))return;
                 killShip((Ship) aData);
                 killShip((Ship) bData);
             }

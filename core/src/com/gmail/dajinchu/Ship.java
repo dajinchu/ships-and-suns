@@ -54,7 +54,7 @@ public class Ship implements Serializable, Entity {
 
         //Have we arrived and needing a new wanderdest?
         if(wanderdest.dst(pos)<5){
-            calcDestWithWander(my_owner.destx, my_owner.desty);
+            calcDestWithWander((int)my_owner.dest.getWorldCenter().x, (int)my_owner.dest.getWorldCenter().y);
         }
 
     }

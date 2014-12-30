@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /**
@@ -74,7 +75,7 @@ public class InGameScreen implements Screen {
         //Game:
         model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(1234);
-        model.initShipDistro(1, SHIP_NUM);
+        model.initShipDistro(2, SHIP_NUM);
 
         start = TimeUtils.millis();
 
@@ -107,8 +108,7 @@ public class InGameScreen implements Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        debugRenderer.render(world, cam.combined);
-        /*spriteBatch.begin();
+        spriteBatch.begin();
 
         drawShips = 0;
 
@@ -120,24 +120,10 @@ public class InGameScreen implements Screen {
             spriteBatch.draw(ship.my_owner.texture, (int) ship.pos.x - ship.my_owner.textureXShift, (int) ship.pos.y - ship.my_owner.textureYShift);
         }
         spriteBatch.end();
-        //Draw destination circles
-        if (model.players != null) {
-            for (Player player : model.players) {
-                shapeRenderer.begin();
-                shapeRenderer.circle(player.destx, player.desty, (float) DEST_RADIUS);
-                shapeRenderer.end();
-            }
-        }*/
         //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
-        shapeRenderer.begin();
-        for (int h = 0; h < model.gridHeight; h++) {
-            for (int w = 0; w < model.gridWidth; w++) {
-                shapeRenderer.rect((float) (w * ENGAGEMENT_RANGE), (float) (h * ENGAGEMENT_RANGE), (float) (ENGAGEMENT_RANGE), (float) (ENGAGEMENT_RANGE));
-                //Gdx.app.log("Rect",(float)(w*ENGAGEMENT_RANGE)+" "+(float)(h*ENGAGEMENT_RANGE)+" "+(float)((w+1)*ENGAGEMENT_RANGE)+" "+(float)((h+1)*ENGAGEMENT_RANGE));
-            }
-        }
         shapeRenderer.end();
+        debugRenderer.render(world, cam.combined);
         update(delta);
     }
 
