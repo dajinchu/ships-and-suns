@@ -160,12 +160,8 @@ public class Model {
     }
 
     public void killShip(Ship ship){
-        if (!scheduleForDelete.contains(ship, true)){
-            scheduleForDelete.add(ship);
-            allShips.remove(ship.id);
-        }else{
-            Gdx.app.log("Model", "Ship "+ship.id+" is already in deletion queue");
-        }
+        scheduleForDelete.add(ship);
+        allShips.remove(ship.id);
     }
     public class ShipContactListener implements ContactListener {
         private Object aData;
@@ -175,8 +171,9 @@ public class Model {
         public void beginContact(Contact contact) {
             aData = contact.getFixtureA().getBody().getUserData();
             bData = contact.getFixtureB().getBody().getUserData();
-            if(aData instanceof Ship
-                    && bData instanceof Ship){
+            //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
+            if (scheduleForDelete.contains((Ship) aData, true)||scheduleForDelete.contains((Ship) bData,true))return;
+            if(aData instanceof Ship && bData instanceof Ship){
                 Gdx.app.log("ContactListener", "Ship "+((Ship) aData).id+" and "+((Ship) bData).id+" are getting deleted");
                 killShip((Ship) aData);
                 killShip((Ship) bData);
