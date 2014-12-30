@@ -1,10 +1,15 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
@@ -34,11 +39,13 @@ public class Model {
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
     Body dest;
+    Array<Ship> scheduleForDelete = new Array<Ship>();
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.world=world;
+        world.setContactListener(new ShipContactListener());
     }
 
     public void setSeed(long seed){
@@ -80,6 +87,15 @@ public class Model {
                 e.frame();
             }
         }
+        for(Ship ship:scheduleForDelete){
+            if(bodies.contains(ship.body,true)){
+                world.destroyBody(ship.body);
+            }
+            allShips.remove(ship.id);
+        }
+
+        scheduleForDelete.clear();
+        //Gdx.app.log("Model", String.valueOf(scheduleForDelete.size));
 /*
         for(IntMap.Entry<Ship> ship : allShips.entries()){
             if(ship.value.destroyed){
@@ -141,5 +157,45 @@ public class Model {
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         circle.dispose();
         return body;
+    }
+
+    public void killShip(Ship ship){
+        if (!scheduleForDelete.contains(ship, true)){
+            scheduleForDelete.add(ship);
+            allShips.remove(ship.id);
+        }else{
+            Gdx.app.log("Model", "Ship "+ship.id+" is already in deletion queue");
+        }
+    }
+    public class ShipContactListener implements ContactListener {
+        private Object aData;
+        private Object bData;
+
+        @Override
+        public void beginContact(Contact contact) {
+            aData = contact.getFixtureA().getBody().getUserData();
+            bData = contact.getFixtureB().getBody().getUserData();
+            if(aData instanceof Ship
+                    && bData instanceof Ship){
+                Gdx.app.log("ContactListener", "Ship "+((Ship) aData).id+" and "+((Ship) bData).id+" are getting deleted");
+                killShip((Ship) aData);
+                killShip((Ship) bData);
+            }
+        }
+
+        @Override
+        public void endContact(Contact contact) {
+
+        }
+
+        @Override
+        public void preSolve(Contact contact, Manifold oldManifold) {
+
+        }
+
+        @Override
+        public void postSolve(Contact contact, ContactImpulse impulse) {
+
+        }
     }
 }
