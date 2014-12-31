@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -29,11 +33,11 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 1000;//Ships per player
-    static final double DEST_RADIUS = 50;
+    static final int SHIP_NUM = 1000 ;//Ships per player
+    static final double DEST_RADIUS = 10;
     static final double ENGAGEMENT_RANGE = 50;
-    static final double TERMINAL_VELOCITY = 2;
-    static final double MAX_FORCE = .1;
+    static final double TERMINAL_VELOCITY = 20;
+    static final double MAX_FORCE = 5;
 
     //Cam
     int height, width;
@@ -45,6 +49,10 @@ public class InGameScreen implements Screen {
     private long start;
     private int drawShips;
     private int allShipRemove = 0;
+
+    //Box2D
+    private final World world;
+    private final Box2DDebugRenderer debugRenderer;
 
     public InGameScreen(MainGame game) {
         this.game = game;
@@ -59,12 +67,18 @@ public class InGameScreen implements Screen {
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
 
+        //Box2D
+        Box2D.init();
+        world = new World(new Vector2(0,0), true);
+        debugRenderer = new Box2DDebugRenderer();
 
         //Game:
-        model = new Model(MAPWIDTH, MAPHEIGHT);
+        model = new Model(MAPWIDTH, MAPHEIGHT, world);
         model.setSeed(TimeUtils.millis());
-        model.makeGrid((int) ENGAGEMENT_RANGE);
         model.initShipDistro(2, SHIP_NUM);
+        model.initSunDistro();
+
+        start = TimeUtils.millis();
 
         //Controller
         Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam)));
@@ -75,15 +89,12 @@ public class InGameScreen implements Screen {
     public void update(float delta) {
         model.update(delta);
 
-        /*
-        for(Player player : players){
-            player.killFrame();
-        }*/
+
         retarget += delta;
         //System.out.println(retarget);
         if (retarget > 5) {
-            //Gdx.app.log("SHIP", Ship.newGrid+" "+Ship.loopcount);
-            model.players[1].setDest(model.random.nextInt(MAPWIDTH), model.random.nextInt(MAPHEIGHT));
+//            Gdx.app.log("SHIP", TimeUtils.timeSinceMillis(start)+" "+model.allShips.get(0).pos.x+" "+model.allShips.get(0).pos.y);
+//            model.players[1].setDest(model.random.nextInt(MAPWIDTH), model.random.nextInt(MAPHEIGHT));
             retarget = 0;
         }
     }
@@ -91,13 +102,14 @@ public class InGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        start = TimeUtils.millis();
         cam.update();
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);
 
-        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
+        Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        debugRenderer.render(world, cam.combined);
 
         spriteBatch.begin();
 
@@ -108,33 +120,12 @@ public class InGameScreen implements Screen {
             ship = entry.value;
             drawShips++;
             //spriteBatch.draw(player.texture,0,0);
-            spriteBatch.draw(ship.my_owner.texture, (int) ship.x - ship.my_owner.textureXShift, (int) ship.y - ship.my_owner.textureYShift);
+            spriteBatch.draw(ship.my_owner.texture, (int) ship.pos.x - ship.my_owner.textureXShift, (int) ship.pos.y - ship.my_owner.textureYShift);
         }
         spriteBatch.end();
-        //Draw destination circles
-        if (model.players != null) {
-            for (Player player : model.players) {
-                shapeRenderer.begin();
-                shapeRenderer.circle(player.destx, player.desty, (float) DEST_RADIUS);
-                shapeRenderer.end();
-            }
-        }
         //Gdx.app.log("Draw ships", drawShips+" "+Ship.dead+" "+allShipRemove);
 
-        shapeRenderer.begin();
-        for (int h = 0; h < model.gridHeight; h++) {
-            for (int w = 0; w < model.gridWidth; w++) {
-                shapeRenderer.rect((float) (w * ENGAGEMENT_RANGE), (float) (h * ENGAGEMENT_RANGE), (float) (ENGAGEMENT_RANGE), (float) (ENGAGEMENT_RANGE));
-                //Gdx.app.log("Rect",(float)(w*ENGAGEMENT_RANGE)+" "+(float)(h*ENGAGEMENT_RANGE)+" "+(float)((w+1)*ENGAGEMENT_RANGE)+" "+(float)((h+1)*ENGAGEMENT_RANGE));
-            }
-        }
         shapeRenderer.end();
-
-        if(Gdx.input.justTouched()){
-            model.me.setDest(Gdx.input.getX(),height-Gdx.input.getY());
-            System.out.println(Gdx.input.getX());
-        }
-
         update(delta);
     }
 
