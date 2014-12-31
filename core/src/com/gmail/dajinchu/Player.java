@@ -1,16 +1,23 @@
 package com.gmail.dajinchu;
 
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
+
+import java.io.Serializable;
 
 /**
  * Created by Da-Jin on 12/5/2014.
  */
-public class Player{
+public class Player implements Serializable {
     private final Model model;
     Array<Integer> my_ships = new Array<Integer>();//ships under this Player's control
     int playerNumber;//For identification across devices, each number corresponds to a color
-    int destx=300,desty=300;
+    Texture texture;
 
+    Body dest;
 
     String TAG = "Player";
 
@@ -27,8 +34,9 @@ public class Player{
     }*/
 
     public void setDest(int destx, int desty){
-        this.destx = destx;
-        this.desty = desty;
+        dest.setTransform(destx,desty,dest.getAngle());
+        Gdx.app.log("Player", "settingdest "+dest.getPosition().x);
+
         for(int id : my_ships){
             //System.out.print(id);
             if(model.getShip(id)==null){

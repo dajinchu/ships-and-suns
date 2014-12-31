@@ -32,8 +32,8 @@ public class Controller implements GestureDetector.GestureListener {
         clamp();
     }
 
-    public void setPlayerDest(int playerId, int x, int y){
-        model.players[playerId].setDest(x,y);
+    public void setPlayerDest(int playerId, int x, int y) {
+        model.players[playerId].setDest(x, y);
     }
 
     @Override
@@ -50,9 +50,9 @@ public class Controller implements GestureDetector.GestureListener {
     public boolean longPress(float x, float y) {
         touch.set(x,y,0);
         cam.unproject(touch);
-
         setPlayerDest(model.me.playerNumber,(int)touch.x,(int)touch.y);
         new Thread(new SocketSend(model.me.playerNumber+","+(int)touch.x+","+(int)touch.y)).start();
+
         return true;
     }
 
