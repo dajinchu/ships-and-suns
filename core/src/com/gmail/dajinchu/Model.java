@@ -22,6 +22,7 @@ public class Model {
     Player[] players;
     Player me;
     IntMap<Ship> allShips =  new IntMap<Ship>();
+    Array<Sun> allSuns = new Array<Sun>();
     long seed;
     Random random;
 
@@ -38,6 +39,8 @@ public class Model {
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
     Array<Ship> scheduleForDelete = new Array<Ship>();
+
+    float spawnAccumulator=0;
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
@@ -78,15 +81,22 @@ public class Model {
             accumulator -= 1/60f;
         }
 
+        spawnAccumulator+=frameTime;
+        while(spawnAccumulator>=1){
+            for(Sun sun : allSuns){
+                sun.pulse();
+            }
+            spawnAccumulator-=1;
+        }
         world.getBodies(bodies);
 
         for (Body b : bodies) {
             // Get the body's user data - in this example, our user
             // data is an instance of the Entity class
-            Entity e = (Entity) b.getUserData();
+            Object e = b.getUserData();
 
-            if (e != null) {
-                e.frame();
+            if (e instanceof Entity) {
+                ((Entity)e).frame();
             }
         }
         for(Ship ship:scheduleForDelete){
@@ -97,6 +107,8 @@ public class Model {
         }
 
         scheduleForDelete.clear();
+
+
         //Gdx.app.log("Model", String.valueOf(scheduleForDelete.size));
 /*
         for(IntMap.Entry<Ship> ship : allShips.entries()){
@@ -172,6 +184,14 @@ public class Model {
                 killShip((Ship) aData);
                 killShip((Ship) bData);
             }
+            //Ship to Sun contact
+            if(aData instanceof Sun && bData instanceof Ship){
+                ((Sun) aData).consumeShip((Ship) bData);
+            }
+            if(aData instanceof Ship && bData instanceof Sun){
+                ((Sun) bData).consumeShip((Ship) aData);
+            }
+
         }
 
         @Override
