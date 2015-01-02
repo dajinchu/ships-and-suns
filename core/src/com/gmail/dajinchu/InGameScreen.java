@@ -34,8 +34,8 @@ public class InGameScreen implements Screen {
     //Ships and Suns CONSTANTS
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
-    static final int SHIP_NUM = 1000 ;//Ships per player
-    static final double DEST_RADIUS = 10;
+    static final int SHIP_NUM = 500 ;//Ships per player
+    static final double DEST_RADIUS = 15;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 20;
     static final double MAX_FORCE = 5;
@@ -95,7 +95,7 @@ public class InGameScreen implements Screen {
         Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        debugRenderer.render(world, cam.combined);
+        //debugRenderer.render(world, cam.combined);
 
         spriteBatch.begin();
 
