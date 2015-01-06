@@ -59,6 +59,7 @@ public class InGameScreen implements Screen {
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
 
     public InGameScreen(MainGame game, Model model, BufferedReader reader, BufferedWriter writer) {
+        Gdx.app.log("Ingame","GAME  screen STARTED");
         this.game = game;
         this.model = model;
         this.spriteBatch = new SpriteBatch();

@@ -70,6 +70,7 @@ public class HostingLobby implements Screen{
     public void sendStart(final BufferedWriter writer, final BufferedReader reader){
         try {
             writer.write("Start\n");
+            Gdx.app.log("HostingLobby", "sent start");
             writer.flush();
             Gdx.app.postRunnable(new Runnable() {
                 @Override
