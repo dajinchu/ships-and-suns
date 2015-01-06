@@ -9,12 +9,11 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 
 /**
  * Created by Da-Jin on 12/20/2014.
  */
-public class Controller implements GestureDetector.GestureListener {
+public class Controller implements GestureDetector.GestureListener, MessageObserver {
     //Controller handles input from player, and other players through sockets
 
     private final OrthographicCamera cam;
@@ -22,13 +21,13 @@ public class Controller implements GestureDetector.GestureListener {
     Vector3 touch = new Vector3();
     float previousDistance, previousInitial;
 
-    BufferedWriter writer;
+    private final SocketClientManager socketManager;
 
     public Controller(Model model, OrthographicCamera camera, BufferedReader reader, BufferedWriter writer){
         this.model = model;
         this.cam = camera;
-        new Thread(new SocketReceive(reader)).start();
-        this.writer = writer;
+        socketManager = new SocketClientManager(writer,reader);
+        socketManager.setMessageReceived(this);
         clamp();
     }
 
@@ -51,8 +50,7 @@ public class Controller implements GestureDetector.GestureListener {
         touch.set(x,y,0);
         cam.unproject(touch);
         setPlayerDest(model.me.playerNumber,(int)touch.x,(int)touch.y);
-        new Thread(new SocketSend(model.me.playerNumber+","+(int)touch.x+","+(int)touch.y)).start();
-
+        socketManager.sendMsg(model.me.playerNumber+","+(int)touch.x+","+(int)touch.y);
         return true;
     }
 
@@ -107,43 +105,9 @@ public class Controller implements GestureDetector.GestureListener {
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
     }
 
-    class SocketSend implements Runnable{
-        String msg;
-
-        public SocketSend(String msg){
-            this.msg = msg;
-        }
-        @Override
-        public void run() {
-            try {
-                writer.write(msg+"\n");
-                writer.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    class SocketReceive implements Runnable{
-        BufferedReader reader;
-
-        public SocketReceive(BufferedReader reader){
-            this.reader = reader;
-        }
-        @Override
-        public void run() {
-            String line;
-            String[] line_split;
-            while(true){
-                //Gdx.app.log("Receive", "Checking for more on ufferedREader");
-                try{
-                    if((line = reader.readLine())!=null){
-                        line_split = line.split(",");
-                        setPlayerDest(Integer.parseInt(line_split[0]),Integer.parseInt(line_split[1]),Integer.parseInt(line_split[2]));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    @Override
+    public void update(String msg) {
+        String[] line_split = msg.split(",");
+        setPlayerDest(Integer.parseInt(line_split[0]),Integer.parseInt(line_split[1]),Integer.parseInt(line_split[2]));
     }
 }
