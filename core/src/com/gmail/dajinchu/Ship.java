@@ -140,4 +140,8 @@ public class Ship implements Serializable, Entity {
         }
         return null;
     }*/
+
+    public String dumpInfo(){
+        return String.format("%.2f,%.2f,%.2f,%.2f", pos.x,pos.y,wanderdest.x,wanderdest.y);
+    }
 }

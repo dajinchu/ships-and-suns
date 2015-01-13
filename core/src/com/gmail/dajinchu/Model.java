@@ -100,12 +100,12 @@ public class Model {
                 nextAction = actionQueue.peek();
             }
 
-            if(worldFrame%300==0) {
+            if(worldFrame%30==0) {
                 file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"\n",true);
+                file.writeString(allShips.get(0).dumpInfo(),true);/*
                 for (IntMap.Entry<Ship> entry : allShips.entries()) {
                     file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
-
-                 }
+                }*/
             }
             worldFrame++;
         }
