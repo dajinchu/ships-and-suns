@@ -7,9 +7,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-
 /**
  * Created by Da-Jin on 12/20/2014.
  */
@@ -21,18 +18,14 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     Vector3 touch = new Vector3();
     float previousDistance, previousInitial;
 
-    private final SocketClientManager socketManager;
+    private final SocketManager socketManager;
 
-    public Controller(Model model, OrthographicCamera camera, BufferedReader reader, BufferedWriter writer){
+    public Controller(Model model, OrthographicCamera camera, SocketManager socketManager){
         this.model = model;
         this.cam = camera;
-        socketManager = new SocketClientManager(writer,reader);
+        this.socketManager = socketManager;
         socketManager.setMessageReceived(this);
         clamp();
-    }
-
-    public void setPlayerDest(int playerId, int x, int y) {
-        model.players[playerId].setDest(x, y);
     }
 
     @Override
@@ -47,10 +40,9 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     @Override
     public boolean longPress(float x, float y) {
-        touch.set(x,y,0);
+        touch.set(x, y, 0);
         cam.unproject(touch);
-        setPlayerDest(model.me.playerNumber,(int)touch.x,(int)touch.y);
-        socketManager.sendMsg(model.me.playerNumber+","+(int)touch.x+","+(int)touch.y);
+        socketManager.sendMsg(new SetDestAction(model.worldFrame+100,model.me.playerNumber,(int)touch.x,(int)touch.y));
         return true;
     }
 
@@ -106,8 +98,8 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     }
 
     @Override
-    public void update(String msg) {
-        String[] line_split = msg.split(",");
-        setPlayerDest(Integer.parseInt(line_split[0]),Integer.parseInt(line_split[1]),Integer.parseInt(line_split[2]));
+    public void update(Message msg) {
+        Gdx.app.log("Controller", msg.serialize());
+        model.addFutureAction((SetDestAction) msg);
     }
 }

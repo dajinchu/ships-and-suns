@@ -3,8 +3,12 @@ package com.gmail.dajinchu;
 import com.badlogic.gdx.Gdx;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,26 +17,30 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SocketClientManager implements SocketManager {
 
-    private final BufferedReader reader;
-    private final Writer writer;
+    private BufferedReader reader;
+    private Writer writer;
 
-    private BlockingQueue<String> sendingQueue = new LinkedBlockingQueue<String>();
+    private BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<Message>();
 
     MessageObserver observer;
     private String readline;
 
     String TAG = "SocketClientManager";
 
-    public SocketClientManager(Writer writer, BufferedReader reader){
-        this.writer = writer;
-        this.reader = reader;
+    public SocketClientManager(Socket socket){
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         new Thread(new SocketSend()).start();
         new Thread(new SocketReceive()).start();
     }
     @Override
-    public void sendMsg(String msg) {
+    public void sendMsg(Message msg) {
         try {
-            Gdx.app.log(TAG, msg);
+            Gdx.app.log(TAG, msg.serialize());
             sendingQueue.put(msg);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -43,19 +51,19 @@ public class SocketClientManager implements SocketManager {
         observer = msgrec;
     }
     @Override
-    public void notifyObserver() {
+    public void notifyObserver(Message msg) {
         if(observer==null)return;
-        observer.update(readline);
+        observer.update(msg);
     }
     class SocketSend implements Runnable{
         @Override
         public void run() {
             while(true){
-                String str;
-                while((str = sendingQueue.poll()) != null){
+                Message msg;
+                while((msg = sendingQueue.poll()) != null){
                     Gdx.app.log(TAG, "Sending a thing! ");
                     try {
-                        writer.write(str+"\n");
+                        writer.write(msg.serialize()+"\n");
                         writer.flush();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -71,7 +79,7 @@ public class SocketClientManager implements SocketManager {
                 //Gdx.app.log("Receive", "Checking for more on ufferedREader");
                 try{
                     if((readline = reader.readLine())!=null){
-                        notifyObserver();
+                        notifyObserver(SetDestAction.deserialize(readline));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

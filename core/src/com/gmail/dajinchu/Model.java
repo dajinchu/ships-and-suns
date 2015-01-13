@@ -1,7 +1,7 @@
 package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Gdx;
-
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,12 +17,17 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 /**
  * Created by Da-Jin on 12/20/2014.
  */
 public class Model {
+    FileHandle file;
     Player[] players;
     Player me;
     IntMap<Ship> allShips =  new IntMap<Ship>();
@@ -33,7 +38,7 @@ public class Model {
 
     int gridHeight, gridWidth, mapHeight, mapWidth;
 
-    int shipIdCount = 0;
+    int shipIdCount = 0, randomcalls = 0;
 
     //Memory saving fields, unfortunate to expand score this way, but not much choice
     private Ship tempship;
@@ -45,12 +50,17 @@ public class Model {
     Array<Ship> scheduleForDelete = new Array<Ship>();
 
     float spawnAccumulator=0;
+    int worldFrame = 0;
+
+    Queue<FutureAction> actionQueue = new LinkedList<FutureAction>();
+    FutureAction nextAction;
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.world=world;
         world.setContactListener(new ShipContactListener());
+        file = Gdx.files.external("snapshots"+new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+".txt");
     }
 
     public void setSeed(long seed){
@@ -58,7 +68,7 @@ public class Model {
         random = new Random(seed);
     }
     public void initSunDistro(){
-        new Sun(100,100,players[0],0,this);
+        //new Sun(100,100,players[0],0,this);
     }
 
     public void initShipDistro(int numPlayers, int player_id, int shipsPerPlayer){
@@ -72,7 +82,7 @@ public class Model {
                 new Ship(players[p],this,x,y);
             }
             players[p].dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
-            players[p].setDest(random.nextInt(mapWidth), random.nextInt(mapHeight));
+            players[p].setDest(200,200);
         }
         me = players[player_id];
     }
@@ -82,7 +92,25 @@ public class Model {
         while (accumulator >= 1/60f) {
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
+
+            nextAction = actionQueue.peek();
+            while(nextAction!=null && nextAction.getScheduledFrame() == worldFrame){
+                nextAction.execute(this);
+                actionQueue.remove();
+                nextAction = actionQueue.peek();
+            }
+
+            if(worldFrame%300==0) {
+                file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"\n",true);
+                for (IntMap.Entry<Ship> entry : allShips.entries()) {
+                    file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
+
+                 }
+            }
+            worldFrame++;
         }
+
+
 
         spawnAccumulator+=frameTime;
         while(spawnAccumulator>=1){
@@ -130,6 +158,14 @@ public class Model {
     public Ship getShip(int id){
         return allShips.get(id);
     }
+    public void addFutureAction(FutureAction action){
+        if(action.getScheduledFrame() < worldFrame){
+            Gdx.app.log("Model","Tried to add future action, but its already in the past!..NOOOOO");
+            return;
+        }
+        actionQueue.add(action);
+    }
+
     public Body createCircleBody(int x, int y, float radius, BodyDef.BodyType type, boolean isSensor){
         BodyDef bodyDef = new BodyDef();
         // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody

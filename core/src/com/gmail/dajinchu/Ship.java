@@ -80,6 +80,7 @@ public class Ship implements Serializable, Entity {
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
         wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
         wanderdest.x = (int) (wanderxoffset+originx);
+        model.randomcalls++;
         //Gdx.app.log("Ship", "Calcdestwithwander"+originx+" "+originy+" "+wanderdest.x+" "+wanderdest.y);
     }
 

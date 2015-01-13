@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gmail.dajinchu.ConnectScreen;
 import com.gmail.dajinchu.Model;
+import com.gmail.dajinchu.SocketClientManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -58,6 +59,7 @@ public class LANConnect extends ConnectScreen {
     private Skin uiSkin;
     private int SOCKET_TIMEOUT=5000;
     private Model model;
+    private Socket socket;
 
     public LANConnect(AndroidLauncher androidLauncher){
         activity = androidLauncher;
@@ -246,7 +248,7 @@ public class LANConnect extends ConnectScreen {
         }
     }
 
-    public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
+    public void waitForStart(final BufferedReader reader, final Socket socket) {
         Gdx.app.log("Client", "Waiting "+reader.toString());
         try {
             if (reader.readLine().equals("Start")) {
@@ -255,7 +257,7 @@ public class LANConnect extends ConnectScreen {
                     @Override
                     public void run() {
 
-                        mainGame.startGame(model, reader, writer);
+                        mainGame.startGame(model, new SocketClientManager(socket));
                     }
                 });
             }
@@ -280,11 +282,11 @@ public class LANConnect extends ConnectScreen {
 
             try {
                 Gdx.app.log("CLient",port+"");
-                Socket socket = new Socket(host, 13079);//Random hardcoded port
+                socket = new Socket(host, 13079);//Random hardcoded port
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 readInitialSetup(br);
-                waitForStart(br, writer);
+                waitForStart(br, socket);
                 //br.close();
             } catch (IOException e) {
                 e.printStackTrace();

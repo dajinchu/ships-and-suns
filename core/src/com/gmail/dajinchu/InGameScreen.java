@@ -13,8 +13,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 /**
  * Created by Da-Jin on 12/5/2014.
  */
@@ -35,7 +33,7 @@ public class InGameScreen implements Screen {
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
     static final int SHIP_NUM = 500 ;//Ships per player
-    static final double DEST_RADIUS = 15;
+    static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 20;
     static final double MAX_FORCE = 5;
@@ -58,7 +56,7 @@ public class InGameScreen implements Screen {
     //View
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
 
-    public InGameScreen(MainGame game, Model model, BufferedReader reader, BufferedWriter writer) {
+    public InGameScreen(MainGame game, Model model, SocketManager socketManager) {
         Gdx.app.log("Ingame","GAME  screen STARTED");
         this.game = game;
         this.model = model;
@@ -78,7 +76,7 @@ public class InGameScreen implements Screen {
         start = TimeUtils.millis();
 
         //Controller
-        Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam, reader, writer)));
+        Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam, socketManager)));
     }
 
     //Game Mechanic Functions
@@ -145,6 +143,5 @@ public class InGameScreen implements Screen {
 
     @Override
     public void dispose() {
-
     }
 }
