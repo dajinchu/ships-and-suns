@@ -1,7 +1,6 @@
 package com.gmail.dajinchu;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -57,7 +56,12 @@ public class Ship implements Serializable, Entity {
         arrive();
 
         frame++;
-        Gdx.app.log("ShipOrder","FRAMING"+id);
+
+        try{
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //TODO efficiency here
 
