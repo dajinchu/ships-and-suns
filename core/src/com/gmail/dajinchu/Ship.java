@@ -36,6 +36,7 @@ public class Ship implements Serializable, Entity {
     volatile private double  dist, speed, steerMagnitude, ratio;
 
     static int newGrid = 0, loopcount = 0, dead = 0, outOfBounds = 0;
+    private int frame;
 
 
     public Ship(Player owner, Model model,int x, int y){//TODO make Model Singleton
@@ -55,7 +56,9 @@ public class Ship implements Serializable, Entity {
         pos = body.getPosition();//TODO check if I can do this only once, and the vector will update?
         arrive();
 
+        frame++;
         Gdx.app.log("ShipOrder","FRAMING"+id);
+
         //TODO efficiency here
 
         //Gdx.app.log("SHIP", newgridx + " " + my_tile.x+" "+newgridy+" "+my_tile.y);
@@ -144,6 +147,6 @@ public class Ship implements Serializable, Entity {
     }*/
 
     public String dumpInfo(){
-        return String.format("%.2f,%.2f,%.2f,%.2f", pos.x,pos.y,wanderdest.x,wanderdest.y);
+        return String.format("%f,%f,%f,%f    %d", pos.x,pos.y,wanderdest.x,wanderdest.y, frame);
     }
 }
