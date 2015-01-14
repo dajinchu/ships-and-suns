@@ -65,7 +65,7 @@ public class Model {
 
     public void setSeed(long seed){
         this.seed = seed;
-        random = new Random(seed);
+        random = new Random(50);
     }
     public void initSunDistro(){
         //new Sun(100,100,players[0],0,this);
@@ -147,6 +147,7 @@ public class Model {
         //Box2D
         Box2D.init();
         World world = new World(new Vector2(0,0), true);
+        world.setContinuousPhysics(false);
 
         Model model = new Model(1000,1000, world);
         model.setSeed(seed);
