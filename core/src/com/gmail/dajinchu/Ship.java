@@ -1,6 +1,7 @@
 package com.gmail.dajinchu;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -54,6 +55,7 @@ public class Ship implements Serializable, Entity {
         pos = body.getPosition();//TODO check if I can do this only once, and the vector will update?
         arrive();
 
+        Gdx.app.log("ShipOrder","FRAMING"+id);
         //TODO efficiency here
 
         //Gdx.app.log("SHIP", newgridx + " " + my_tile.x+" "+newgridy+" "+my_tile.y);
