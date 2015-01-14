@@ -99,7 +99,18 @@ public class Model {
                 actionQueue.remove();
                 nextAction = actionQueue.peek();
             }
+            for (IntMap.Entry<Ship> entry : allShips.entries()) {
+                tempship = entry.value;
+                tempship.frame();
+            }
+            for(Ship ship:scheduleForDelete){
+                if(bodies.contains(ship.body,true)){
+                    world.destroyBody(ship.body);
+                }
+                allShips.remove(ship.id);
+            }
 
+            scheduleForDelete.clear();
             if(worldFrame%30==0) {
                 file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"\n",true);
                 file.writeString(allShips.get(0).dumpInfo(),true);/*
@@ -120,24 +131,6 @@ public class Model {
             spawnAccumulator-=1;
         }
         world.getBodies(bodies);
-
-        for (Body b : bodies) {
-            // Get the body's user data - in this example, our user
-            // data is an instance of the Entity class
-            Object e = b.getUserData();
-
-            if (e instanceof Entity) {
-                ((Entity)e).frame();
-            }
-        }
-        for(Ship ship:scheduleForDelete){
-            if(bodies.contains(ship.body,true)){
-                world.destroyBody(ship.body);
-            }
-            allShips.remove(ship.id);
-        }
-
-        scheduleForDelete.clear();
     }
     public static Model defaultModel(long seed, int player_id){
         Gdx.app.log("Client", "Seed: " + seed);
