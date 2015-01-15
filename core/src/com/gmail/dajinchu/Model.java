@@ -103,6 +103,11 @@ public class Model {
                 tempship = entry.value;
                 tempship.frame();
             }
+            try{
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             for(Ship ship:scheduleForDelete){
                 if(bodies.contains(ship.body,true)){
                     world.destroyBody(ship.body);

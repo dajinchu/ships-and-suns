@@ -57,12 +57,6 @@ public class Ship implements Serializable, Entity {
 
         frame++;
 
-        try{
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         //TODO efficiency here
 
         //Gdx.app.log("SHIP", newgridx + " " + my_tile.x+" "+newgridy+" "+my_tile.y);
