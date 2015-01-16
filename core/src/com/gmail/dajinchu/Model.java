@@ -96,6 +96,7 @@ public class Model {
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
 
+            world.getBodies(bodies);
             nextAction = actionQueue.peek();
             while(nextAction!=null && nextAction.getScheduledFrame() == worldFrame){
                 nextAction.execute(this);
@@ -136,7 +137,6 @@ public class Model {
             }
             spawnAccumulator-=1;
         }
-        world.getBodies(bodies);
     }
     public static Model defaultModel(long seed, int player_id){
         Gdx.app.log("Client", "Seed: " + seed);
