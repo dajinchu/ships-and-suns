@@ -40,6 +40,7 @@ public class SocketClientManager implements SocketManager {
     @Override
     public void sendMsg(Message msg) {
         try {
+            InGameScreen.file.writeString("Sending msg to server. Frame "+Model.worldFrame+"\n", true);
             Gdx.app.log(TAG, msg.serialize());
             sendingQueue.put(msg);
         } catch (InterruptedException e) {
@@ -52,9 +53,16 @@ public class SocketClientManager implements SocketManager {
     }
     @Override
     public void notifyObserver(Message msg) {
+        InGameScreen.file.writeString("Received msg from server. Frame "+Model.worldFrame+"\n", true);
         if(observer==null)return;
         observer.update(msg);
     }
+
+    @Override
+    public String getName() {
+        return "client";
+    }
+
     class SocketSend implements Runnable{
         @Override
         public void run() {

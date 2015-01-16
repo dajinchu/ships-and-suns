@@ -8,4 +8,5 @@ public interface SocketManager {
     void sendMsg(Message msg);
     void setMessageReceived(MessageObserver msgrec);
     void notifyObserver(Message msg);
+    String getName();
 }

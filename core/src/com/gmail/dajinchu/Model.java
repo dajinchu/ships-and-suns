@@ -1,7 +1,6 @@
 package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,8 +16,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -27,7 +24,6 @@ import java.util.Random;
  * Created by Da-Jin on 12/20/2014.
  */
 public class Model {
-    FileHandle file;
     Player[] players;
     Player me;
     IntMap<Ship> allShips =  new IntMap<Ship>();
@@ -50,7 +46,7 @@ public class Model {
     Array<Ship> scheduleForDelete = new Array<Ship>();
 
     float spawnAccumulator=0;
-    int worldFrame = 0;
+    static int worldFrame = 0;
 
     StringBuilder delete = new StringBuilder();
 
@@ -62,7 +58,6 @@ public class Model {
         this.mapHeight = mapHeight;
         this.world=world;
         world.setContactListener(new ShipContactListener());
-        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+" print deletes2"+".txt");
     }
 
     public void setSeed(long seed){
@@ -91,7 +86,6 @@ public class Model {
     public void update(float delta){
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
-        file.writeString("Accumulator = "+accumulator,true);
         while (accumulator >= 1/60f) {
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
@@ -99,6 +93,7 @@ public class Model {
             world.getBodies(bodies);
             nextAction = actionQueue.peek();
             while(nextAction!=null && nextAction.getScheduledFrame() == worldFrame){
+                InGameScreen.file.writeString("Executing a futureAction. frame: "+worldFrame+"\n", true);
                 nextAction.execute(this);
                 actionQueue.remove();
                 nextAction = actionQueue.peek();
@@ -115,16 +110,9 @@ public class Model {
                 allShips.remove(ship.id);
                 delete.append(ship.id+",");
             }
-            file.writeString(delete.toString(), true);
 
             scheduleForDelete.clear();
             //if(worldFrame%30==0) {
-            file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"# of ships: "+allShips.size+"\n",true);
-            try{
-
-                file.writeString(allShips.get(0).dumpInfo(),true);
-
-            }catch(NullPointerException e){}
             /*for (IntMap.Entry<Ship> entry : allShips.entries()) {
                     file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
                 }*/
@@ -163,6 +151,7 @@ public class Model {
         return allShips.get(id);
     }
     public void addFutureAction(FutureAction action){
+        InGameScreen.file.writeString("\ngot future action set to happen at " +action.getScheduledFrame()+". Current frame is "+worldFrame+"\n", true);
         if(action.getScheduledFrame() < worldFrame){
             Gdx.app.log("Model","Tried to add future action, but its already in the past!..NOOOOO");
             return;

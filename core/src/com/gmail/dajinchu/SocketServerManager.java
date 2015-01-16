@@ -34,7 +34,8 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     @Override
     public void sendMsg(Message msg) {
         //sendMsg gets called by game, and this gets treated like any other client
-        update(msg);
+        InGameScreen.file.writeString("Sending msg to client. Frame "+Model.worldFrame+"\n", true);
+        process(msg);
     }
 
     @Override
@@ -47,15 +48,22 @@ public class SocketServerManager implements SocketManager, MessageObserver {
         observer.update(msg);
     }
 
-    public void process(){
+    @Override
+    public String getName() {
+        return "server";
+    }
+
+    public void process(Message msg){
+        processingQueue.add(msg);
+        clientManager.sendMsg(msg);
+        notifyObserver(msg);
 
     }
 
     @Override
     public void update(Message msg) {
         //When clients send messages over, including the client on server's device
-        processingQueue.add(msg);
-        clientManager.sendMsg(msg);
-        notifyObserver(msg);
+        InGameScreen.file.writeString("Received msg from client. Frame "+Model.worldFrame+"\n", true);
+        process(msg);
     }
 }

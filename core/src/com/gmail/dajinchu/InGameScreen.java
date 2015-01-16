@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +13,9 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Da-Jin on 12/5/2014.
@@ -56,6 +60,8 @@ public class InGameScreen implements Screen {
     //View
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
 
+    static FileHandle file;
+
     public InGameScreen(MainGame game, Model model, SocketManager socketManager) {
         Gdx.app.log("Ingame","GAME  screen STARTED");
         this.game = game;
@@ -77,6 +83,10 @@ public class InGameScreen implements Screen {
 
         //Controller
         Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam, socketManager)));
+
+        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+" print networking"+".txt");
+        InGameScreen.file.writeString("This is a "+socketManager.getName()+" log file\n", true);
+
     }
 
     //Game Mechanic Functions
