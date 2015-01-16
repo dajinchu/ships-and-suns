@@ -119,9 +119,13 @@ public class Model {
 
             scheduleForDelete.clear();
             //if(worldFrame%30==0) {
-                file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"# of ships: "+allShips.size+"\n",true);
-                file.writeString(allShips.get(0).dumpInfo(),true);/*
-                for (IntMap.Entry<Ship> entry : allShips.entries()) {
+            file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"# of ships: "+allShips.size+"\n",true);
+            try{
+
+                file.writeString(allShips.get(0).dumpInfo(),true);
+
+            }catch(NullPointerException e){}
+            /*for (IntMap.Entry<Ship> entry : allShips.entries()) {
                     file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
                 }*/
             //}
