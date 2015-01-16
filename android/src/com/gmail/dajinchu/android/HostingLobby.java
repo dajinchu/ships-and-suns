@@ -72,13 +72,13 @@ public class HostingLobby implements Screen{
         try {
             writer.write("Start\n");
             Gdx.app.log("HostingLobby", "sent start");
-            writer.flush();
             Gdx.app.postRunnable(new Runnable() {
                 @Override
                 public void run() {
                     mainGame.startGame(model, new SocketServerManager(client));
                 }
             });
+            writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

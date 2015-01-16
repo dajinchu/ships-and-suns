@@ -52,6 +52,8 @@ public class Model {
     float spawnAccumulator=0;
     int worldFrame = 0;
 
+    StringBuilder delete = new StringBuilder();
+
     Queue<FutureAction> actionQueue = new LinkedList<FutureAction>();
     FutureAction nextAction;
 
@@ -60,7 +62,7 @@ public class Model {
         this.mapHeight = mapHeight;
         this.world=world;
         world.setContactListener(new ShipContactListener());
-        file = Gdx.files.external("snapshots"+new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+".txt");
+        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+" print deletes2"+".txt");
     }
 
     public void setSeed(long seed){
@@ -89,6 +91,7 @@ public class Model {
     public void update(float delta){
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
+        file.writeString("Accumulator = "+accumulator,true);
         while (accumulator >= 1/60f) {
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
@@ -103,26 +106,24 @@ public class Model {
                 tempship = entry.value;
                 tempship.frame();
             }
-            try{
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            delete.setLength(0);
             for(Ship ship:scheduleForDelete){
                 if(bodies.contains(ship.body,true)){
                     world.destroyBody(ship.body);
                 }
                 allShips.remove(ship.id);
+                delete.append(ship.id+",");
             }
+            file.writeString(delete.toString(), true);
 
             scheduleForDelete.clear();
-            if(worldFrame%30==0) {
-                file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"\n",true);
+            //if(worldFrame%30==0) {
+                file.writeString("\nFRAME "+worldFrame+"randomcalls: "+randomcalls+"# of ships: "+allShips.size+"\n",true);
                 file.writeString(allShips.get(0).dumpInfo(),true);/*
                 for (IntMap.Entry<Ship> entry : allShips.entries()) {
                     file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
                 }*/
-            }
+            //}
             worldFrame++;
         }
 
@@ -145,7 +146,7 @@ public class Model {
         //Box2D
         Box2D.init();
         World world = new World(new Vector2(0,0), true);
-        world.setContinuousPhysics(false);
+        world.setContinuousPhysics(true);
 
         Model model = new Model(1000,1000, world);
         model.setSeed(seed);
