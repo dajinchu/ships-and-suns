@@ -15,6 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by Da-Jin on 1/1/2015.
  */
+//Manages a Socket connections, making it easier to send and receive messages(Command)
+//Client gets one each to talk to server, but ServerManager gets one for every client connected.
 public class SocketClientManager implements SocketManager {
 
     private BufferedReader reader;

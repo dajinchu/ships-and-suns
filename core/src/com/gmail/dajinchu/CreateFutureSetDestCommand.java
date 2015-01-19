@@ -3,6 +3,7 @@ package com.gmail.dajinchu;
 /**
  * Created by Da-Jin on 1/5/2015.
  */
+//Command to add a new SetDestAction to Model when executed
 public class CreateFutureSetDestCommand extends Command {
 
     private final int x,y;

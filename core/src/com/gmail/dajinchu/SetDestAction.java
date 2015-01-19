@@ -3,6 +3,7 @@ package com.gmail.dajinchu;
 /**
  * Created by Da-Jin on 1/18/2015.
  */
+//FutureAction that sets destination of a player in model.
 public class SetDestAction implements FutureAction {
 
     private final int x,y;

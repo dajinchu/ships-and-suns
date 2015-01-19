@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * Created by Da-Jin on 1/5/2015.
  */
+//Commands are to be sent serialized across sockets.
 public abstract class Command {
 
     public abstract String serialize();

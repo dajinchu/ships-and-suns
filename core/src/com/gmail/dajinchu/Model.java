@@ -36,7 +36,7 @@ public class Model {
 
     int shipIdCount = 0, randomcalls = 0;
 
-    //Memory saving fields, unfortunate to expand score this way, but not much choice
+    //Memory saving fields, unfortunate to expand scope this way, but not much choice
     private Ship tempship;
 
     World world;
