@@ -21,7 +21,7 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     private BufferedWriter writer;
     private BufferedReader reader;
 
-    BlockingQueue<Message> processingQueue = new LinkedBlockingQueue<Message>();
+    BlockingQueue<Command> processingQueue = new LinkedBlockingQueue<Command>();
 
     MessageObserver observer;
 
@@ -32,7 +32,7 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     }
 
     @Override
-    public void sendMsg(Message msg) {
+    public void sendMsg(Command msg) {
         //sendMsg gets called by game, and this gets treated like any other client
         InGameScreen.file.writeString("Sending msg to client. Frame "+Model.worldFrame+"\n", true);
         process(msg);
@@ -44,7 +44,7 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     }
 
     @Override
-    public void notifyObserver(Message msg) {
+    public void notifyObserver(Command msg) {
         observer.update(msg);
     }
 
@@ -53,7 +53,7 @@ public class SocketServerManager implements SocketManager, MessageObserver {
         return "server";
     }
 
-    public void process(Message msg){
+    public void process(Command msg){
         processingQueue.add(msg);
         clientManager.sendMsg(msg);
         notifyObserver(msg);
@@ -61,7 +61,7 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     }
 
     @Override
-    public void update(Message msg) {
+    public void update(Command msg) {
         //When clients send messages over, including the client on server's device
         InGameScreen.file.writeString("Received msg from client. Frame "+Model.worldFrame+"\n", true);
         process(msg);

@@ -20,7 +20,7 @@ public class SocketClientManager implements SocketManager {
     private BufferedReader reader;
     private Writer writer;
 
-    private BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<Message>();
+    private BlockingQueue<Command> sendingQueue = new LinkedBlockingQueue<Command>();
 
     MessageObserver observer;
     private String readline;
@@ -38,7 +38,7 @@ public class SocketClientManager implements SocketManager {
         new Thread(new SocketReceive()).start();
     }
     @Override
-    public void sendMsg(Message msg) {
+    public void sendMsg(Command msg) {
         try {
             InGameScreen.file.writeString("Sending msg to server. Frame "+Model.worldFrame+"\n", true);
             Gdx.app.log(TAG, msg.serialize());
@@ -52,7 +52,7 @@ public class SocketClientManager implements SocketManager {
         observer = msgrec;
     }
     @Override
-    public void notifyObserver(Message msg) {
+    public void notifyObserver(Command msg) {
         InGameScreen.file.writeString("Received msg from server. Frame "+Model.worldFrame+"\n", true);
         if(observer==null)return;
         observer.update(msg);
@@ -67,7 +67,7 @@ public class SocketClientManager implements SocketManager {
         @Override
         public void run() {
             while(true){
-                Message msg;
+                Command msg;
                 while((msg = sendingQueue.poll()) != null){
                     Gdx.app.log(TAG, "Sending a thing! ");
                     try {
@@ -87,7 +87,7 @@ public class SocketClientManager implements SocketManager {
                 //Gdx.app.log("Receive", "Checking for more on ufferedREader");
                 try{
                     if((readline = reader.readLine())!=null){
-                        notifyObserver(SetDestAction.deserialize(readline));
+                        notifyObserver(CreateFutureSetDestCommand.deserialize(readline));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -5,8 +5,8 @@ package com.gmail.dajinchu;
  */
 public interface SocketManager {
 
-    void sendMsg(Message msg);
+    void sendMsg(Command msg);
     void setMessageReceived(MessageObserver msgrec);
-    void notifyObserver(Message msg);
+    void notifyObserver(Command msg);
     String getName();
 }

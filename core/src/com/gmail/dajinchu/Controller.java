@@ -42,7 +42,7 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     public boolean longPress(float x, float y) {
         touch.set(x, y, 0);
         cam.unproject(touch);
-        socketManager.sendMsg(new SetDestAction(model.worldFrame+100,model.me.playerNumber,(int)touch.x,(int)touch.y));
+        socketManager.sendMsg(new CreateFutureSetDestCommand(model.worldFrame+100,model.me.playerNumber,(int)touch.x,(int)touch.y));
         return true;
     }
 
@@ -98,8 +98,8 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     }
 
     @Override
-    public void update(Message msg) {
+    public void update(Command msg) {
         Gdx.app.log("Controller", msg.serialize());
-        model.addFutureAction((SetDestAction) msg);
+        msg.execute(this);
     }
 }
