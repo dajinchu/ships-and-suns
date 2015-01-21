@@ -40,7 +40,11 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        return false;
+        if(model.state == Model.GameState.STARTING) {
+            socketManager.start();
+            setPlayerReady(model.me.playerNumber);
+        }
+        return true;
     }
 
     @Override

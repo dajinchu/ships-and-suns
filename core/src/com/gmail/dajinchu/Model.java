@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -88,6 +89,9 @@ public class Model {
         me = players[player_id];
     }
     public void update(float delta){
+
+        if(state != Model.GameState.PLAYING)return;
+
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
         while (accumulator >= 1/60f) {
@@ -174,6 +178,7 @@ public class Model {
             }
         }
         state = GameState.PLAYING;
+        InGameScreen.file.writeString("Setting GameState to PLAYING"+ "Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
     }
 
     public Body createCircleBody(int x, int y, float radius, BodyDef.BodyType type, boolean isSensor){

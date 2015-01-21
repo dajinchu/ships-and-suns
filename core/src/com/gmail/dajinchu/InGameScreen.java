@@ -50,7 +50,7 @@ public class InGameScreen implements Screen {
     float retarget = 0;
 
     private Ship ship;
-    private long start;
+    public static long start;
     private int drawShips;
     private int allShipRemove = 0;
 
@@ -63,8 +63,8 @@ public class InGameScreen implements Screen {
 
     public static FileHandle file;
 
-    public InGameScreen(MainGame game, Model model, SocketManager socketManager) {
-        Gdx.app.log("Ingame","GAME  screen STARTED");
+    public InGameScreen(MainGame game, final Model model, final SocketManager socketManager) {
+        Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
         this.model = model;
         this.spriteBatch = new SpriteBatch();
@@ -83,17 +83,15 @@ public class InGameScreen implements Screen {
         start = TimeUtils.millis();
 
         //Controller
-        Controller controller =new Controller(model, cam, socketManager);
+        final Controller controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
-        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+" print networking"+".txt");
-        file.writeString("This is a "+socketManager.getName()+" log file\n", true);
+        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date()) + " print networking" + ".txt");
+        file.writeString("This is a " + socketManager.getName() + " log file\n", true);
 
-        socketManager.start();
-        controller.setPlayerReady(model.me.playerNumber);
+
 
     }
-
     //Game Mechanic Functions
 
     public void update(float delta) {
@@ -102,8 +100,6 @@ public class InGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if(model.state != Model.GameState.PLAYING)return;
-
         cam.update();
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);

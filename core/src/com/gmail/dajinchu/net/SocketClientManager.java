@@ -1,6 +1,7 @@
 package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.InGameScreen;
 import com.gmail.dajinchu.Model;
 
@@ -40,7 +41,7 @@ public class SocketClientManager implements SocketManager {
     @Override
     public void sendMsg(Command msg) {
         try {
-            InGameScreen.file.writeString("Sending '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"\n", true);
+            InGameScreen.file.writeString("Sending '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
             Gdx.app.log(TAG, msg.serialize());
             sendingQueue.put(msg);
         } catch (InterruptedException e) {
@@ -53,7 +54,7 @@ public class SocketClientManager implements SocketManager {
     }
     @Override
     public void notifyObserver(Command msg) {
-        InGameScreen.file.writeString("Received '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"\n", true);
+        InGameScreen.file.writeString("Received '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
         if(observer==null)return;
         observer.update(msg);
     }
