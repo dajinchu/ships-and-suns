@@ -1,4 +1,7 @@
-package com.gmail.dajinchu;
+package com.gmail.dajinchu.net;
+
+import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.SetDestAction;
 
 /**
  * Created by Da-Jin on 1/5/2015.

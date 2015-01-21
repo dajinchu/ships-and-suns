@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.gmail.dajinchu.net.SocketManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class InGameScreen implements Screen {
     //View
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
 
-    static FileHandle file;
+    public static FileHandle file;
 
     public InGameScreen(MainGame game, Model model, SocketManager socketManager) {
         Gdx.app.log("Ingame","GAME  screen STARTED");
@@ -82,10 +83,14 @@ public class InGameScreen implements Screen {
         start = TimeUtils.millis();
 
         //Controller
-        Gdx.input.setInputProcessor(new GestureDetector(new Controller(model, cam, socketManager)));
+        Controller controller =new Controller(model, cam, socketManager);
+        Gdx.input.setInputProcessor(new GestureDetector(controller));
 
         file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date())+" print networking"+".txt");
-        InGameScreen.file.writeString("This is a "+socketManager.getName()+" log file\n", true);
+        file.writeString("This is a "+socketManager.getName()+" log file\n", true);
+
+        socketManager.start();
+        controller.setPlayerReady(model.me.playerNumber);
 
     }
 
@@ -97,6 +102,8 @@ public class InGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if(model.state != Model.GameState.PLAYING)return;
+
         cam.update();
         spriteBatch.setProjectionMatrix(cam.combined);
         shapeRenderer.setProjectionMatrix(cam.combined);

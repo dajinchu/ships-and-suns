@@ -21,6 +21,8 @@ public class Player implements Serializable {
 
     String TAG = "Player";
 
+    boolean readyToPlay = false;
+
     public Player(int playerNumber, Model model){
         this.model = model;
         this.playerNumber = playerNumber;

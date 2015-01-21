@@ -8,7 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
-import com.gmail.dajinchu.SocketServerManager;
+import com.gmail.dajinchu.net.SocketServerManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -75,7 +75,7 @@ public class HostingLobby implements Screen{
             Gdx.app.postRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    mainGame.startGame(model, new SocketServerManager(client));
+                    mainGame.startGame(model, new SocketServerManager(reader,writer));
                 }
             });
             writer.flush();

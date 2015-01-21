@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.gmail.dajinchu.net.SocketManager;
 
 public class MainGame extends Game {
 

@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gmail.dajinchu.ConnectScreen;
 import com.gmail.dajinchu.Model;
-import com.gmail.dajinchu.SocketClientManager;
+import com.gmail.dajinchu.net.SocketClientManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -248,7 +248,7 @@ public class LANConnect extends ConnectScreen {
         }
     }
 
-    public void waitForStart(final BufferedReader reader, final Socket socket) {
+    public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
         Gdx.app.log("Client", "Waiting "+reader.toString());
         try {
             if (reader.readLine().equals("Start")) {
@@ -257,7 +257,7 @@ public class LANConnect extends ConnectScreen {
                     @Override
                     public void run() {
 
-                        mainGame.startGame(model, new SocketClientManager(socket));
+                        mainGame.startGame(model, new SocketClientManager(reader,writer));
                     }
                 });
             }
@@ -286,7 +286,7 @@ public class LANConnect extends ConnectScreen {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 readInitialSetup(br);
-                waitForStart(br, socket);
+                waitForStart(br,writer);
                 //br.close();
             } catch (IOException e) {
                 e.printStackTrace();

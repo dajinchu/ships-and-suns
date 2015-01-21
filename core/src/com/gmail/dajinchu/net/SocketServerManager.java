@@ -1,8 +1,7 @@
-package com.gmail.dajinchu;
+package com.gmail.dajinchu.net;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -25,16 +24,20 @@ public class SocketServerManager implements SocketManager, MessageObserver {
 
     MessageObserver observer;
 
-    public SocketServerManager(Socket client){
-        clientManager = new SocketClientManager(client);
+    public SocketServerManager(BufferedReader reader, BufferedWriter writer){
+        clientManager = new SocketClientManager(reader,writer);
         //Subscribe this to listen on each socket connection to each client
         clientManager.setMessageReceived(this);
     }
 
     @Override
+    public void start() {
+        clientManager.start();
+    }
+
+    @Override
     public void sendMsg(Command msg) {
         //sendMsg gets called by game, and this gets treated like any other client
-        InGameScreen.file.writeString("Sending msg to client. Frame "+Model.worldFrame+"\n", true);
         process(msg);
     }
 
@@ -63,7 +66,6 @@ public class SocketServerManager implements SocketManager, MessageObserver {
     @Override
     public void update(Command msg) {
         //When clients send messages over, including the client on server's device
-        InGameScreen.file.writeString("Received msg from client. Frame "+Model.worldFrame+"\n", true);
         process(msg);
     }
 }

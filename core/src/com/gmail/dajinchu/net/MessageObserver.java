@@ -1,4 +1,4 @@
-package com.gmail.dajinchu;
+package com.gmail.dajinchu.net;
 
 /**
  * Created by Da-Jin on 1/2/2015.

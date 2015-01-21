@@ -1,14 +1,13 @@
-package com.gmail.dajinchu;
+package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
+import com.gmail.dajinchu.InGameScreen;
+import com.gmail.dajinchu.Model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -29,20 +28,19 @@ public class SocketClientManager implements SocketManager {
 
     String TAG = "SocketClientManager";
 
-    public SocketClientManager(Socket socket){
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public SocketClientManager(BufferedReader reader, BufferedWriter writer){
+        this.writer = writer;
+        this.reader = reader;
+    }
+    @Override
+    public void start(){
         new Thread(new SocketSend()).start();
         new Thread(new SocketReceive()).start();
     }
     @Override
     public void sendMsg(Command msg) {
         try {
-            InGameScreen.file.writeString("Sending msg to server. Frame "+Model.worldFrame+"\n", true);
+            InGameScreen.file.writeString("Sending '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"\n", true);
             Gdx.app.log(TAG, msg.serialize());
             sendingQueue.put(msg);
         } catch (InterruptedException e) {
@@ -55,7 +53,7 @@ public class SocketClientManager implements SocketManager {
     }
     @Override
     public void notifyObserver(Command msg) {
-        InGameScreen.file.writeString("Received msg from server. Frame "+Model.worldFrame+"\n", true);
+        InGameScreen.file.writeString("Received '"+msg.serialize()+"'. Frame "+ Model.worldFrame+"\n", true);
         if(observer==null)return;
         observer.update(msg);
     }
@@ -89,7 +87,7 @@ public class SocketClientManager implements SocketManager {
                 //Gdx.app.log("Receive", "Checking for more on ufferedREader");
                 try{
                     if((readline = reader.readLine())!=null){
-                        notifyObserver(CreateFutureSetDestCommand.deserialize(readline));
+                        notifyObserver(Command.deserialize(readline));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

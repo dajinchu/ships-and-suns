@@ -31,6 +31,9 @@ public class Model {
     long seed;
     Random random;
 
+    public enum GameState{STARTING,PLAYING,PAUSED};
+
+    public GameState state = GameState.STARTING;
 
     int gridHeight, gridWidth, mapHeight, mapWidth;
 
@@ -46,7 +49,7 @@ public class Model {
     Array<Ship> scheduleForDelete = new Array<Ship>();
 
     float spawnAccumulator=0;
-    static int worldFrame = 0;
+    public static int worldFrame = 0;
 
     StringBuilder delete = new StringBuilder();
 
@@ -58,6 +61,7 @@ public class Model {
         this.mapHeight = mapHeight;
         this.world=world;
         world.setContactListener(new ShipContactListener());
+
     }
 
     public void setSeed(long seed){
@@ -157,6 +161,19 @@ public class Model {
             return;
         }
         actionQueue.add(action);
+    }
+    public void setPlayerReady(int playerid){
+        InGameScreen.file.writeString("player "+playerid+"is now ready\n", true);
+        players[playerid].readyToPlay = true;
+
+        //See if everyone is ready to start
+        for(int i = 0; i < players.length; i++){
+            if(!players[i].readyToPlay){
+                InGameScreen.file.writeString("player "+i+"is not ready\n", true);
+                return;
+            }
+        }
+        state = GameState.PLAYING;
     }
 
     public Body createCircleBody(int x, int y, float radius, BodyDef.BodyType type, boolean isSensor){

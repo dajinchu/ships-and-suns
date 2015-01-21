@@ -6,6 +6,11 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.gmail.dajinchu.net.Command;
+import com.gmail.dajinchu.net.CreateFutureSetDestCommand;
+import com.gmail.dajinchu.net.MessageObserver;
+import com.gmail.dajinchu.net.ReadyToPlayCommand;
+import com.gmail.dajinchu.net.SocketManager;
 
 /**
  * Created by Da-Jin on 12/20/2014.
@@ -14,7 +19,7 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     //Controller handles input from player, and other players through sockets
 
     private final OrthographicCamera cam;
-    Model model;
+    public Model model;
     Vector3 touch = new Vector3();
     float previousDistance, previousInitial;
 
@@ -95,6 +100,10 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
         cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, model.mapHeight - effectiveViewportHeight / 2f);
         cam.update();
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
+    }
+
+    public void setPlayerReady(int playerid){
+        socketManager.sendMsg(new ReadyToPlayCommand(playerid));
     }
 
     @Override
