@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.net.SocketManager;
 
 public class MainGame extends Game {
@@ -26,8 +27,15 @@ public class MainGame extends Game {
 
     public void startGame(Model model, SocketManager socketManager){
         Gdx.app.log("MainGame","Starting Game");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long start = TimeUtils.millis();
+                conScreen.dispose();
+                Gdx.app.log("MaingGame", "Dispose conScreen took " + TimeUtils.timeSinceMillis(start));
+            }
+        }).start();
         igScreen = new InGameScreen(this, model, socketManager);
         setScreen(igScreen);
-        conScreen.dispose();
     }
 }
