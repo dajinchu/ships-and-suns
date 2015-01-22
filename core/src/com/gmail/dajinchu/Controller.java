@@ -21,9 +21,11 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     private final OrthographicCamera cam;
     public Model model;
     Vector3 touch = new Vector3();
+    Vector2 delta = new Vector2();
     float previousDistance, previousInitial;
 
     private final SocketManager socketManager;
+    private Vector2 previousPointer1, previousInitial2 = new Vector2(), previousInitial1 = new Vector2(), previousPointer2;
 
     public Controller(Model model, OrthographicCamera camera, SocketManager socketManager){
         this.model = model;
@@ -62,10 +64,13 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        cam.translate(-deltaX * cam.zoom, deltaY * cam.zoom);
+        return false;
+    }
+
+    public void pan(float deltaX, float deltaY) {
+        cam.translate(deltaX * cam.zoom, -deltaY * cam.zoom);
         cam.update();
         clamp();
-        return false;
     }
 
     @Override
@@ -75,6 +80,10 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    public void zom(float initialDistance, float distance) {
         if(previousInitial!=initialDistance){
             //Starting a new gesture
             //Just make previousDistance initial to avoid jumpiness from the previous gesture's values carrying over
@@ -86,13 +95,30 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
         //Set previous, as this frame has ended
         previousDistance = distance;
         previousInitial = initialDistance;
-        return false;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        Gdx.app.log("Pinch", initialPointer1+" "+initialPointer2+" "+pointer1+" "+pointer2);
-        return false;
+        try{
+            Gdx.app.log("Pinch before",initialPointer1+" "+initialPointer2+" "+ previousPointer1+" "+previousPointer2+" "+pointer1+" "+pointer2+" "+delta.x+" "+delta.y);
+        }catch (NullPointerException e){}
+        if(!previousInitial1.equals(initialPointer1)&&!previousInitial2.equals(initialPointer2)){
+            //Starting a new gesture
+            //Just make previous initial to avoid jumpiness from the previous gesture's values carrying over
+            previousPointer1 = initialPointer1;
+            previousPointer2 = initialPointer2;
+        }//*/
+
+        zom(initialPointer1.cpy().dst(initialPointer2), pointer1.cpy().dst(pointer2));
+        delta = previousPointer1.cpy().add(previousPointer2).scl(.5f).sub(pointer1.cpy().add(pointer2).scl(.5f));
+        pan(delta.x,delta.y);
+        Gdx.app.log("Pinch after", initialPointer1+" "+initialPointer2+" "+ previousPointer1+" "+previousPointer2+" "+pointer1+" "+pointer2+" "+delta.x+" "+delta.y);
+
+        previousInitial1 = initialPointer1.cpy();
+        previousInitial2 = initialPointer2.cpy();
+        previousPointer1 = pointer1.cpy();
+        previousPointer2 = pointer2.cpy();
+        return true;
     }
 
     public void clamp(){
