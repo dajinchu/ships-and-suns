@@ -38,7 +38,7 @@ public class InGameScreen implements Screen {
     static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
     static final int MAPHEIGHT = 400;
     static final int SHIP_NUM = 500 ;//Ships per player
-    static final double DEST_RADIUS = 50;
+    static final double DEST_RADIUS = 30;
     static final double ENGAGEMENT_RANGE = 50;
     static final double TERMINAL_VELOCITY = 20;
     static final double MAX_FORCE = 5;
@@ -60,6 +60,11 @@ public class InGameScreen implements Screen {
 
     //View
     static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
+    static Texture blue_earth = new Texture("blue_earth.png");
+    static Texture red_earth = new Texture("red_earth.png");
+    static Texture grey_earth = new Texture("grey_earth.png");
+
+    Texture tempTexture;
 
     public static FileHandle file;
 
@@ -107,7 +112,6 @@ public class InGameScreen implements Screen {
         Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //debugRenderer.render(world, cam.combined);
 
         spriteBatch.begin();
 
@@ -120,7 +124,19 @@ public class InGameScreen implements Screen {
             spriteBatch.draw(textureMap[ship.my_owner.playerNumber], (int) ship.pos.x - textureMap[ship.my_owner.playerNumber].getWidth()/2,
                     (int) ship.pos.y - textureMap[ship.my_owner.playerNumber].getHeight()/2);
         }
+        for(Sun sun : model.allSuns){
+            switch (sun.state){
+                case EMPTY: case CAPTURING: tempTexture = grey_earth; break;
+                case CAPTURED: case DECAPTURING:
+                    if(sun.occupant.playerNumber==0)tempTexture = red_earth;
+                    if(sun.occupant.playerNumber==1)tempTexture = blue_earth;
+                    break;
+            }
+            spriteBatch.draw(tempTexture,(int) sun.pos.x-Sun.size/2, (int) sun.pos.y-Sun.size/2, Sun.size, Sun.size);
+        }
         spriteBatch.end();
+
+        //debugRenderer.render(world, cam.combined);
 
         update(delta);
     }

@@ -19,8 +19,10 @@ public class Sun {
     enum STATE{EMPTY, CAPTURING, CAPTURED, DECAPTURING};
     STATE state = STATE.EMPTY;
 
+    public static final int size = 60;
+
     public Sun(int x, int y, Player occupant,int initialPopulation, Model model){
-        model.createCircleBody(x,y,20, BodyDef.BodyType.StaticBody,true).setUserData(this);
+        model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
 

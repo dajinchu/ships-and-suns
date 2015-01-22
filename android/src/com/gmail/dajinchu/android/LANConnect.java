@@ -203,7 +203,7 @@ public class LANConnect extends ConnectScreen {
         if (jmdns != null) {
             if (listener != null) {
                 jmdns.removeServiceListener(type, listener);
-                listener = null;
+                    listener = null;
             }
             jmdns.unregisterAllServices();
             try {

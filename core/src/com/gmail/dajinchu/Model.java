@@ -70,7 +70,9 @@ public class Model {
         random = new Random(50);
     }
     public void initSunDistro(){
-        //new Sun(100,100,players[0],0,this);
+        for(int s = 0; s< 5; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
+        }
     }
 
     public void initShipDistro(int numPlayers, int player_id, int shipsPerPlayer){
@@ -84,7 +86,7 @@ public class Model {
                 new Ship(players[p],this,x,y);
             }
             players[p].dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
-            players[p].setDest(200,200);
+            //players[p].setDest(200,200);
         }
         me = players[player_id];
     }
