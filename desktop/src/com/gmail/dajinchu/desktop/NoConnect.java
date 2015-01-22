@@ -21,7 +21,7 @@ public class NoConnect extends ConnectScreen {
 
     @Override
     public void show() {
-        mainGame.startGame();
+
     }
 
     @Override
