@@ -67,10 +67,10 @@ public class Model {
 
     public void setSeed(long seed){
         this.seed = seed;
-        random = new Random(50);
+        random = new Random(seed);
     }
     public void initSunDistro(){
-        for(int s = 0; s< 5; s++){
+        for(int s = 0; s< 7; s++){
             new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }

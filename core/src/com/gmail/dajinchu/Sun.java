@@ -1,6 +1,5 @@
 package com.gmail.dajinchu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
@@ -32,7 +31,7 @@ public class Sun {
         produceShip();
     }
     public void pulse(){
-        Gdx.app.log("Sun"," "+state);
+        //Gdx.app.log("Sun"," "+state);
         if(state == STATE.DECAPTURING || state == STATE.CAPTURED){
             produceShip();
         }
@@ -51,7 +50,7 @@ public class Sun {
             case CAPTURING: case DECAPTURING:
                 if(ship.my_owner==occupant){
                     capture(ship);
-                    if(progress>=100){
+                    if(progress>=50){
                         state=STATE.CAPTURED;
                     }
                 }else{
