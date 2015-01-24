@@ -2,8 +2,10 @@ package com.gmail.dajinchu;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 
 import java.io.Serializable;
@@ -23,9 +25,15 @@ public class Player implements Serializable {
 
     boolean readyToPlay = false;
 
+    Color color;
+
+    private Color[] colormap = new Color[]{new Color(Color.RED), new Color(Color.BLUE)};
+
     public Player(int playerNumber, Model model){
+        dest = model.createCircleBody(model.mapWidth/2, model.mapHeight/2, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
         this.model = model;
         this.playerNumber = playerNumber;
+        this.color = colormap[playerNumber];
     }
 
     //TODO maybe you'll need this?
@@ -44,7 +52,7 @@ public class Player implements Serializable {
             if(model.getShip(id)==null){
                 continue;
             }
-            model.getShip(id).calcDestWithWander(destx, desty);
+            model.getShip(id).calcDestWithWander();
         }
     }
 

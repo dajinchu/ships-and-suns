@@ -37,9 +37,44 @@ public class Ship implements Serializable, Entity {
     static int newGrid = 0, loopcount = 0, dead = 0, outOfBounds = 0;
     private int frame;
 
+    public int mass = 1;
+    public int radius;
 
-    public Ship(Player owner, Model model,int x, int y){//TODO make Model Singleton
-        this.body = model.createCircleBody(x,y,4, BodyDef.BodyType.DynamicBody, true);
+    public static Ship collide(Ship ship1, Ship ship2){
+        if(ship1.my_owner != ship2.my_owner){
+            //Enemy ships colliding
+            if(ship1.mass>ship2.mass){
+                //Ship1 will have remainder
+                return new Ship(ship1.my_owner, ship1.model, ship1.mass-ship2.mass, (int)(ship1.pos.x), (int)(ship1.pos.y));
+            }
+            if(ship2.mass>ship1.mass){
+                return new Ship(ship2.my_owner, ship2.model, ship2.mass-ship1.mass, (int)ship2.pos.x, (int)ship2.pos.y);
+            }
+            if(ship2.mass==ship2.mass){
+                return null;
+            }
+        }else{
+            //Friendly ships colliding
+            //if (ship1.my_owner.my_ships.size>100){
+                //Enough exist
+                return new Ship(ship1.my_owner, ship1.model, ship1.mass+ship2.mass, (int)(ship1.pos.x), (int)(ship1.pos.y));
+            //}
+        }
+        return null;
+    }
+
+    public Ship(Player owner, Model model, int x, int y){
+        this(owner,model,1,x,y);
+    }
+
+    public Ship(Player owner, Model model, int mass, int x, int y){//TODO make Model Singleton
+        if(mass<=0){
+            throw new RuntimeException("The mass of a ship reached "+mass+". How's that even possible!?");
+        }
+        this.mass = mass;
+        radius = (int) (4*Math.sqrt(mass));
+
+        this.body = model.createCircleBody(x,y, radius, BodyDef.BodyType.DynamicBody, true);
 
         //Add Ship userData to do the moving around stuff
         my_owner = owner;
@@ -47,6 +82,9 @@ public class Ship implements Serializable, Entity {
         this.id = model.shipIdCount;
         my_owner.my_ships.add(id);
         body.setUserData(this);
+
+        //Otherwise it will go to 0,0
+        calcDestWithWander();
         model.allShips.put(model.shipIdCount, this);
         model.shipIdCount++;
     }
@@ -63,7 +101,7 @@ public class Ship implements Serializable, Entity {
         loopcount++;
         //Have we arrived and needing a new wanderdest?
         if(wanderdest.dst(pos)<5){
-            calcDestWithWander((int)my_owner.dest.getWorldCenter().x, (int)my_owner.dest.getWorldCenter().y);
+            calcDestWithWander();
         }
 
     }
@@ -76,13 +114,13 @@ public class Ship implements Serializable, Entity {
         }
     }
 */
-    public void calcDestWithWander(int originx, int originy){
+    public void calcDestWithWander(){
         //Range after each operation, x=dest_radius: (interval notation)
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+originy);
-        wanderdest.x = (int) (wanderxoffset+originx);
+        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+my_owner.dest.getWorldCenter().y);
+        wanderdest.x = (int) (wanderxoffset+my_owner.dest.getWorldCenter().x);
         model.randomcalls++;
         //Gdx.app.log("Ship", "Calcdestwithwander"+originx+" "+originy+" "+wanderdest.x+" "+wanderdest.y);
     }

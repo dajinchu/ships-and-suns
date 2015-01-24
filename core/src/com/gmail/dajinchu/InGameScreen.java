@@ -3,6 +3,7 @@ package com.gmail.dajinchu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -59,11 +60,11 @@ public class InGameScreen implements Screen {
     private final Box2DDebugRenderer debugRenderer;
 
     //View
-    static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
+    //static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
     static Texture blue_earth = new Texture("blue_earth.png");
     static Texture red_earth = new Texture("red_earth.png");
     static Texture grey_earth = new Texture("grey_earth.png");
-
+    static Texture redship = new Texture("ship.png");
     Texture tempTexture;
 
     public static FileHandle file;
@@ -121,9 +122,11 @@ public class InGameScreen implements Screen {
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
             drawShips++;
-            spriteBatch.draw(textureMap[ship.my_owner.playerNumber], (int) ship.pos.x - textureMap[ship.my_owner.playerNumber].getWidth()/2,
-                    (int) ship.pos.y - textureMap[ship.my_owner.playerNumber].getHeight()/2);
+            spriteBatch.setColor(ship.my_owner.color);
+            spriteBatch.draw(redship, (int) ship.pos.x - ship.radius,
+                    (int) ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
         }
+        spriteBatch.setColor(Color.WHITE);
         for(Sun sun : model.allSuns){
             switch (sun.state){
                 case EMPTY: case CAPTURING: tempTexture = grey_earth; break;

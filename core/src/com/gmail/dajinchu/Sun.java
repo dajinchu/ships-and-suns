@@ -28,16 +28,15 @@ public class Sun {
         this.pos = new Vector2(x,y);
         this.occupant = occupant;
         this.model = model;
-        produceShip();
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
         if(state == STATE.DECAPTURING || state == STATE.CAPTURED){
-            produceShip();
+            produceShip(1);
         }
     }
-    public void produceShip(){
-        new Ship(occupant, model, (int)pos.x, (int)pos.y).calcDestWithWander((int)occupant.dest.getWorldCenter().x,(int)occupant.dest.getWorldCenter().y);
+    public void produceShip(int mass){
+        new Ship(occupant, model, mass, (int)pos.x, (int)pos.y);
     }
     public void consumeShip(Ship ship){
         //TODO safety ship==null check?
@@ -51,11 +50,24 @@ public class Sun {
                 if(ship.my_owner==occupant){
                     capture(ship);
                     if(progress>=50){
+                        //If overflow, refund the player, so if an enormous ship caps, it doesn't
+                        //1.) Make the sun impossible to take back by driving progress up
+                        //2.) Make the player lose access to the ship
+                        if(progress>50){
+                            produceShip(progress-50);
+                            progress=50;
+                        }
                         state=STATE.CAPTURED;
                     }
                 }else{
                     decapture(ship);
                     if(progress<=0){
+                        //Refund player to avoid negative progress
+
+                        if(progress<0){
+                            produceShip(-progress);
+                            progress=0;
+                        }
                         state=STATE.EMPTY;
                     }
                 }break;
@@ -67,11 +79,11 @@ public class Sun {
         }
     }
     private void capture(Ship ship){
-        progress++;
+        progress+=ship.mass;
         model.killShip(ship);
     }
     private void decapture(Ship ship){
-        progress--;
+        progress-=ship.mass;
         model.killShip(ship);
     }
 }

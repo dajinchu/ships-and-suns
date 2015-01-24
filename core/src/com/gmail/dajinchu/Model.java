@@ -31,6 +31,7 @@ public class Model {
     Array<Sun> allSuns = new Array<Sun>();
     long seed;
     Random random;
+    private Object aData, bData;
 
     public enum GameState{STARTING,PLAYING,PAUSED};
 
@@ -47,7 +48,7 @@ public class Model {
     private float accumulator = 0;
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
-    Array<Ship> scheduleForDelete = new Array<Ship>();
+    Array<Contact> contacts = new Array<Contact>();
 
     float spawnAccumulator=0;
     public static int worldFrame = 0;
@@ -70,7 +71,7 @@ public class Model {
         random = new Random(seed);
     }
     public void initSunDistro(){
-        for(int s = 0; s< 7; s++){
+        for(int s = 0; s< 6; s++){
             new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }
@@ -85,7 +86,6 @@ public class Model {
                 y=random.nextInt(mapHeight);
                 new Ship(players[p],this,x,y);
             }
-            players[p].dest = createCircleBody(0, 0, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
             //players[p].setDest(200,200);
         }
         me = players[player_id];
@@ -113,15 +113,27 @@ public class Model {
                 tempship.frame();
             }
             delete.setLength(0);
-            for(Ship ship:scheduleForDelete){
-                if(bodies.contains(ship.body,true)){
-                    world.destroyBody(ship.body);
-                }
-                allShips.remove(ship.id);
-                delete.append(ship.id+",");
-            }
+            for(Contact contact : contacts){
+                //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
+                if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
+                aData = contact.getFixtureA().getBody().getUserData();
+                bData = contact.getFixtureB().getBody().getUserData();
+                if(aData instanceof Ship && bData instanceof Ship){
 
-            scheduleForDelete.clear();
+                    Ship.collide((Ship)aData,(Ship)bData);
+                    killShip((Ship) aData);
+                    killShip((Ship) bData);
+                }
+                //Ship to Sun contact
+                if(aData instanceof Sun && bData instanceof Ship){
+                    ((Sun) aData).consumeShip((Ship) bData);
+                }
+                if(aData instanceof Ship && bData instanceof Sun){
+                    ((Sun) bData).consumeShip((Ship) aData);
+                }
+            }
+            contacts.clear();
+
             //if(worldFrame%30==0) {
             /*for (IntMap.Entry<Ship> entry : allShips.entries()) {
                     file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
@@ -215,8 +227,12 @@ public class Model {
     }
 
     public void killShip(Ship ship){
-        scheduleForDelete.add(ship);
+        if(bodies.contains(ship.body,true)){
+            world.destroyBody(ship.body);
+        }
+        ship.my_owner.my_ships.removeValue(ship.id,false);
         allShips.remove(ship.id);
+        delete.append(ship.id+",");
     }
     public class ShipContactListener implements ContactListener {
         private Object aData;
@@ -224,24 +240,7 @@ public class Model {
 
         @Override
         public void beginContact(Contact contact) {
-            aData = contact.getFixtureA().getBody().getUserData();
-            bData = contact.getFixtureB().getBody().getUserData();
-            if(aData instanceof Ship && bData instanceof Ship){
-                //Preventing friendly fire
-                if(((Ship) aData).my_owner==((Ship) bData).my_owner)return;
-                //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
-                if (scheduleForDelete.contains((Ship) aData, true)||scheduleForDelete.contains((Ship) bData,true))return;
-                killShip((Ship) aData);
-                killShip((Ship) bData);
-            }
-            //Ship to Sun contact
-            if(aData instanceof Sun && bData instanceof Ship){
-                ((Sun) aData).consumeShip((Ship) bData);
-            }
-            if(aData instanceof Ship && bData instanceof Sun){
-                ((Sun) bData).consumeShip((Ship) aData);
-            }
-
+            contacts.add(contact);
         }
 
         @Override
