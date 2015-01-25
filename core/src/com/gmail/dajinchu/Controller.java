@@ -25,7 +25,7 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     float previousDistance, previousInitial;
 
     private final SocketManager socketManager;
-    private Vector2 previousPointer1, previousInitial2 = new Vector2(), previousInitial1 = new Vector2(), previousPointer2;
+    private Vector2 previousPointer1= new Vector2(), previousInitial2 = new Vector2(), previousInitial1 = new Vector2(), previousPointer2 = new Vector2();
 
     public Controller(Model model, OrthographicCamera camera, SocketManager socketManager){
         this.model = model;
