@@ -6,18 +6,20 @@ import android.util.Log;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.MainGame;
@@ -48,15 +50,65 @@ public class HostingLobby implements Screen{
     private JmDNS jmdns;
     private ServiceInfo serviceInfo;
     private Model model;
-    private SpriteBatch spriteBatch;
-    private NinePatch label;
+    private SpriteBatch spriteBatch = new SpriteBatch();
+
+    //Scene2d set-up
+    private Skin skin;
     private Stage stage;
+
+    //UI
+    private final VerticalGroup playerList;
     private Table table;
 
     public HostingLobby(MainGame mainGame, JmDNS jmdns){
         this.mainGame = mainGame;
         this.jmdns = jmdns;
+
         shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
+
+        TextureAtlas atlas = new TextureAtlas("game.pack");
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin.addRegions(atlas);
+
+        stage = new Stage(new ExtendViewport(640,480));
+        Gdx.input.setInputProcessor(stage);
+
+        //Player List
+        playerList = new VerticalGroup();
+        playerList.setDebug(true);
+        playerList.space(10);
+        playerList.addActor(new Label("Participants", skin));
+        playerList.fill();
+        addParticipant("Da-Jin Chu");
+        addParticipant("Bob");
+        ScrollPane players = new ScrollPane(playerList);
+        players.setDebug(true);
+        //GO Button
+        ImageButton go = new ImageButton(skin.getDrawable("play"),skin.getDrawable("play_down"));
+        //Map selector
+        Drawable mapimg = skin.getDrawable("map1");
+        Image map = new Image(mapimg);
+        //Right Pane:
+        Table rightPane = new Table();
+        rightPane.setDebug(true);
+        rightPane.add(new Label("<",skin));
+        rightPane.add(map).height(300).width(300).pad(10);
+        rightPane.add(new Label(">", skin));
+        rightPane.row();
+        rightPane.add(go).colspan(3).width(200).height(75).expandY().right();
+
+        TextField nameText = new TextField("", skin);
+        Label addressLabel = new Label("Address:", skin);
+        TextField addressText = new TextField("", skin);
+
+        table = new Table();
+        table.setFillParent(true);
+        table.setDebug(true);
+        stage.addActor(table);
+        table.add(players).expand().top().fillX().pad(10);
+        table.add(rightPane).fill();
+
         new ASyncConnect().execute();
     }
 
@@ -118,16 +170,20 @@ public class HostingLobby implements Screen{
         }
     }
 
+
+    public void addParticipant(String name){
+        Stack participant = new Stack();
+        participant.add(new Image(skin.getPatch("button")));
+        participant.add(new Label(name, skin));
+        playerList.addActor(participant);
+    }
+
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0,0,0,0);
+        Gdx.gl.glClearColor(255,255,255,0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-
-/*        spriteBatch.begin();
-        table.drawDebug(shapeRenderer);
-        spriteBatch.end();*/
     }
 
     @Override
@@ -137,28 +193,6 @@ public class HostingLobby implements Screen{
 
     @Override
     public void show() {
-        TextureAtlas atlas = new TextureAtlas("game.pack");
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        skin.addRegions(atlas);
-
-        stage = new Stage(new ExtendViewport(640,480));
-        Gdx.input.setInputProcessor(stage);
-
-        table = new Table();
-        table.setFillParent(true);
-        table.setDebug(true);
-        stage.addActor(table);
-
-        VerticalGroup playerList = new VerticalGroup();
-        stage.addActor(new ScrollPane(playerList));
-
-        //GO Button
-        Stack stack = new Stack();
-        table.add(stack).expandY().bottom().fillX();
-        label = skin.getPatch("button");
-        Image image = new Image(label);
-        stack.add(image);
-        stack.add(new Label("GO", skin));
     }
 
     @Override

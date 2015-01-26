@@ -1,0 +1,34 @@
+
+game.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+play
+  rotate: false
+  xy: 1, 35
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+play_down
+  rotate: false
+  xy: 203, 35
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+map1
+  rotate: false
+  xy: 1, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+button
+  rotate: false
+  xy: 405, 102
+  size: 8, 8
+  split: 1, 1, 1, 1
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
