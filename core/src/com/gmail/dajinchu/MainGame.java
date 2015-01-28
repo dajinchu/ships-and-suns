@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.net.SocketManager;
 
@@ -16,9 +17,18 @@ public class MainGame extends Game {
 
 	@Override
 	public void create () {
+        Gdx.input.setCatchBackKey(true);
         conScreen.mainGame = this;
         setScreen(conScreen);
 	}
+
+    @Override
+    public void render(){
+        super.render();
+        if(Gdx.input.isKeyJustPressed(Input.Keys.BACK)){
+            Gdx.app.log("MainGame","Pressed back button");
+        }
+    }
 
     @Override
     public void dispose(){
