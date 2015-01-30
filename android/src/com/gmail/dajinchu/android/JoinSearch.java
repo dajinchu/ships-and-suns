@@ -21,8 +21,6 @@ import com.gmail.dajinchu.net.SocketClientManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import javax.jmdns.JmDNS;
@@ -186,10 +184,10 @@ public class JoinSearch implements Screen{
             try {
                 Gdx.app.log("CLient",port+"");
                 socket = new Socket(host, 13079);//Random hardcoded port
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                /*BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 readInitialSetup(br);
-                waitForStart(br,writer);
+                waitForStart(br,writer);*/
             } catch (IOException e) {
                 e.printStackTrace();
             }
