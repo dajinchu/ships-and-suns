@@ -1,7 +1,6 @@
 package com.gmail.dajinchu.android;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -19,12 +19,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
 import com.gmail.dajinchu.net.SocketServerManager;
+import com.splunk.mint.Mint;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,14 +45,16 @@ import javax.jmdns.ServiceInfo;
 public class HostingLobby implements Screen{
 
     private final MainGame mainGame;
-    private final ShapeRenderer shapeRenderer;
+    private String name;
     private ServerSocket serverSocket;
     String TAG = "HostingLobby";
     private Socket client;
     private JmDNS jmdns;
     private ServiceInfo serviceInfo;
     private Model model;
+
     private SpriteBatch spriteBatch = new SpriteBatch();
+    private final ShapeRenderer shapeRenderer;
 
     //Scene2d set-up
     private Skin skin;
@@ -59,10 +63,12 @@ public class HostingLobby implements Screen{
     //UI
     private final VerticalGroup playerList;
     private Table table;
+    private final ImageButton go;
 
-    public HostingLobby(MainGame mainGame, JmDNS jmdns){
+    public HostingLobby(MainGame mainGame, JmDNS jmdns, String name){
         this.mainGame = mainGame;
         this.jmdns = jmdns;
+        this.name = name;
 
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
@@ -84,8 +90,8 @@ public class HostingLobby implements Screen{
         addParticipant("Bob");
         ScrollPane players = new ScrollPane(playerList);
         players.setDebug(true);
-        //GO Button
-        ImageButton go = new ImageButton(skin.getDrawable("play"),skin.getDrawable("play_down"));
+        //GO Button, adding clickListener later, AFTER we have connected with someone
+        go = new ImageButton(skin.getDrawable("play"),skin.getDrawable("play_down"));
         //Map selector
         Drawable mapimg = skin.getDrawable("map1");
         Image map = new Image(mapimg);
@@ -117,21 +123,26 @@ public class HostingLobby implements Screen{
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                serviceInfo = ServiceInfo.create("_test2._tcp.local.", "AndroidTest", 0, "plain test service from android");
+                serviceInfo = ServiceInfo.create("_ships._tcp.local.", name, 13079, "plain test service from android");
                 //notifyUser("This IP: " + deviceIpAddress);
                 jmdns.registerService(serviceInfo);
                 if (serverSocket == null) {
                     serverSocket = new ServerSocket(13079);//Random hardcoded port
-                    Log.i(TAG, "Server socket opened");
+                    Mint.leaveBreadcrumb("Server socket opened");
                 }
+                Mint.leaveBreadcrumb("Server socket="+serverSocket.toString());
                 client = serverSocket.accept();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-                BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                final BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 // Write output
                 sendInitalSetup(writer);
-                sendStart(writer, br);
-
-                //writer.close();
+                //AFTER sending inital setup info, we can "activate" the go button to have actions
+                go.addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y){
+                        sendStart(br,writer);
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -140,7 +151,7 @@ public class HostingLobby implements Screen{
         }
     }
 
-    public void sendStart(final BufferedWriter writer, final BufferedReader reader){
+    public void sendStart(final BufferedReader reader, final BufferedWriter writer){
         try {
             writer.write("Start\n");
             Gdx.app.log("HostingLobby", "sent start");

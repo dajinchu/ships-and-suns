@@ -3,10 +3,10 @@ package com.gmail.dajinchu.android;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,41 +14,33 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.ConnectScreen;
 import com.gmail.dajinchu.Model;
-import com.gmail.dajinchu.net.SocketClientManager;
+import com.splunk.mint.Mint;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
 
 /**
  * Created by Da-Jin on 12/14/2014.
  */
+//LANConnect will instantiate JmDNS and give user option to host,join,and rename
 public class LANConnect extends ConnectScreen {
 
-    WifiManager.MulticastLock lock;
-    Handler handler = new Handler();
+    private Preferences prefs;
 
-
-    private String type = "_test2._tcp.local.";
     private static final String HOSTNAME = "dajinlol";
     private JmDNS jmdns = null;
     private ServiceListener listener = null;
-    private ServiceInfo serviceInfo;
     private AndroidLauncher activity;
 
     //UI
@@ -57,9 +49,10 @@ public class LANConnect extends ConnectScreen {
     //For debug
     private ShapeRenderer shapeRenderer;
     private Skin uiSkin;
-    private int SOCKET_TIMEOUT=5000;
     private Model model;
     private Socket socket;
+    private TextField name;
+    private WifiManager wifi;
 
     public LANConnect(AndroidLauncher androidLauncher){
         activity = androidLauncher;
@@ -71,33 +64,11 @@ public class LANConnect extends ConnectScreen {
         protected Void doInBackground(Void... params) {
             //http://stackoverflow.com/questions/18255329/how-to-make-jmdns-work-on-a-large-network
             //https://github.com/twitwi/AndroidDnssdDemo
-            android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager) activity.getSystemService(android.content.Context.WIFI_SERVICE);
+            wifi = (android.net.wifi.WifiManager) activity.getSystemService(android.content.Context.WIFI_SERVICE);
             final InetAddress deviceIpAddress = getDeviceIpAddress(wifi);
-            notifyUser("Your IP: "+deviceIpAddress);
-            lock = wifi.createMulticastLock("mylockthereturn");
-            lock.setReferenceCounted(true);
-            lock.acquire();
             try {
                 jmdns = JmDNS.create(deviceIpAddress, HOSTNAME);
-                jmdns.addServiceListener(type, listener = new ServiceListener() {
 
-                    @Override
-                    public void serviceResolved(ServiceEvent ev) {
-                        addConnect("Service resolved: " + ev.getInfo().getQualifiedName() + " port:" + ev.getInfo().getPort()+"IP: "+ Arrays.toString(ev.getInfo().getHostAddresses()),
-                                ev.getInfo().getHostAddresses()[0], ev.getInfo().getPort());
-                    }
-
-                    @Override
-                    public void serviceRemoved(ServiceEvent ev) {
-                        notifyUser("Service removed: " + ev.getName());
-                    }
-
-                    @Override
-                    public void serviceAdded(ServiceEvent event) {
-                        // Required to force serviceResolved to be called again (after the first search)
-                        jmdns.requestServiceInfo(event.getType(), event.getName(), 1);
-                    }
-                });
                 /*serviceInfo = ServiceInfo.create("_test2._tcp.local.", "AndroidTest", 0, "plain test service from android");
                 notifyUser("This IP: " + deviceIpAddress);
                 jmdns.registerService(serviceInfo);*/
@@ -116,25 +87,6 @@ public class LANConnect extends ConnectScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-
-        table.drawDebug(shapeRenderer);
-
-    }
-
-    public void notifyUser(String msg){
-        table.add(msg);
-    }
-
-    public void addConnect(String name, final String ip, final int port){
-        TextButton textButton = new TextButton(name,uiSkin.get(TextButton.TextButtonStyle.class));
-        table.add(textButton);
-        textButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                new ASyncConnect(ip,port).execute();
-            }
-        });
-
     }
 
 
@@ -145,35 +97,51 @@ public class LANConnect extends ConnectScreen {
 
     @Override
     public void show() {
+        prefs = Gdx.app.getPreferences("playerPrefs");
 
-        stage = new Stage();
+        stage = new Stage(new ExtendViewport(640,480));
         Gdx.input.setInputProcessor(stage);
 
         uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
 
         table = new Table(uiSkin);
         table.setFillParent(true);
+        table.setDebug(true);
         stage.addActor(table);
 
-        TextButton textButton =new TextButton("NO CONNECT", uiSkin.get(TextButton.TextButtonStyle.class));
-        table.add(textButton);
-        textButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-               //mainGame.startGame(Model.defaultModel(TimeUtils.millis(),0));
-            }
-        });
-        TextButton host =new TextButton("HOST", uiSkin.get(TextButton.TextButtonStyle.class));
-        table.add(host);
+        //Host and Join Buttons
+        TextButton host = new TextButton("HOST", uiSkin.get(TextButton.TextButtonStyle.class));
+        TextButton join = new TextButton("JOIN", uiSkin.get(TextButton.TextButtonStyle.class));
         host.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainGame.setScreen(new HostingLobby(mainGame, jmdns));
+                Mint.logEvent("Starting HostingLobby");
+                mainGame.setScreen(new HostingLobby(mainGame, jmdns, name.getText()));
+            }
+        });
+        join.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                Mint.logEvent("Starting JoinSearch");
+                mainGame.setScreen(new JoinSearch(mainGame, jmdns, wifi, name.getText()));
+            }
+        });
+        //Name field
+        name = new TextField(prefs.getString("name","Mr.E-Man"), uiSkin);
+        name.setTextFieldListener(new TextField.TextFieldListener() {
+            //Save name for player's convenience
+            @Override
+            public void keyTyped(TextField textField, char c) {
+                prefs.putString("name", textField.getText());
+                prefs.flush();
             }
         });
 
-        //Label label = new Label("HI", new Label.LabelStyle());
-        notifyUser("HI");
+        //Add to table
+        table.add(name).colspan(2).top();
+        table.row();
+        table.add(host).width(200).height(200).pad(100);
+        table.add(join).width(200).height(200).pad(100);
 
         shapeRenderer = new ShapeRenderer();
         new SetUp().execute();
@@ -200,21 +168,6 @@ public class LANConnect extends ConnectScreen {
         Gdx.app.log("LANConnect","Dispoingd");
         stage.dispose();
         shapeRenderer.dispose();
-        if (jmdns != null) {
-            if (listener != null) {
-                jmdns.removeServiceListener(type, listener);
-                    listener = null;
-            }
-            jmdns.unregisterAllServices();
-            try {
-                jmdns.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            jmdns = null;
-        }
-        lock.release();
         uiSkin.dispose();
     }
 
@@ -234,69 +187,5 @@ public class LANConnect extends ConnectScreen {
         }
 
         return result;
-    }
-
-    public void readInitialSetup(BufferedReader reader){
-        try {
-            long seed = Long.parseLong(reader.readLine());
-            int player_id = Integer.parseInt(reader.readLine());
-
-            model = Model.defaultModel(seed,player_id);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
-        Gdx.app.log("Client", "Waiting "+reader.toString());
-        try {
-            if (reader.readLine().equals("Start")) {
-                Gdx.app.log("Client", "waiting for start");
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        mainGame.startGame(model, new SocketClientManager(reader,writer));
-                    }
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Connect to IP
-    class ASyncConnect extends AsyncTask<Void,Void,Void> {
-
-        String host;
-        int port;
-
-        public ASyncConnect(String host, int port) {
-            this.host = host;
-            this.port = port;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            try {
-                Gdx.app.log("CLient",port+"");
-                socket = new Socket(host, 13079);//Random hardcoded port
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                readInitialSetup(br);
-                waitForStart(br,writer);
-                //br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v) {
-
-        }
     }
 }
