@@ -6,11 +6,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
 import com.gmail.dajinchu.net.SocketServerManager;
@@ -19,6 +31,8 @@ import com.splunk.mint.Mint;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -40,24 +54,23 @@ public class HostingLobby implements Screen{
     private Model model;
 
     private SpriteBatch spriteBatch = new SpriteBatch();
-    //private final ShapeRenderer shapeRenderer;
+    private final ShapeRenderer shapeRenderer;
 
     //Scene2d set-up
     private Skin skin;
-    //private Stage stage;
+    private Stage stage;
 
     //UI
-    /*private final VerticalGroup playerList;
+    private final VerticalGroup playerList;
     private Table table;
-    private final ImageButton go;*/
+    private final ImageButton go;
 
     public HostingLobby(MainGame mainGame, JmDNS jmdns, String name){
         this.mainGame = mainGame;
         this.jmdns = jmdns;
         this.name = name;
-        new ASyncConnect().execute();
 
-/*        shapeRenderer = new ShapeRenderer();
+        shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
         TextureAtlas atlas = new TextureAtlas("game.pack");
@@ -100,7 +113,9 @@ public class HostingLobby implements Screen{
         table.setDebug(true);
         stage.addActor(table);
         table.add(players).expand().top().fillX().pad(10);
-        table.add(rightPane).fill();*/
+        table.add(rightPane).fill();
+
+        new ASyncConnect().execute();
     }
 
     class ASyncConnect extends AsyncTask<Void,Void,Void> {
@@ -117,17 +132,17 @@ public class HostingLobby implements Screen{
                 }
                 Mint.leaveBreadcrumb("Server socket="+serverSocket.toString());
                 client = serverSocket.accept();
-                /*final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 final BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 // Write output
-                //sendInitalSetup(writer);
+                sendInitalSetup(writer);
                 //AFTER sending inital setup info, we can "activate" the go button to have actions
-                /*go.addListener(new ClickListener(){
+                go.addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y){
                         sendStart(br,writer);
                     }
-                });*/
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -171,20 +186,20 @@ public class HostingLobby implements Screen{
         Stack participant = new Stack();
         participant.add(new Image(skin.getPatch("button")));
         participant.add(new Label(name, skin));
-        //playerList.addActor(participant);
+        playerList.addActor(participant);
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(255,255,255,0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //stage.act(Gdx.graphics.getDeltaTime());
-        //stage.draw();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-//        stage.getViewport().update(width, height, true);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -208,7 +223,7 @@ public class HostingLobby implements Screen{
 
     @Override
     public void dispose() {
-        //stage.dispose();
-        //shapeRenderer.dispose();
+        stage.dispose();
+        shapeRenderer.dispose();
     }
 }
