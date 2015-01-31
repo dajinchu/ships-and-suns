@@ -45,7 +45,7 @@ public class HostingLobby implements Screen{
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                serviceInfo = ServiceInfo.create("_test2._tcp.local.", "AndroidTest", 0, "plain test service from android");
+                serviceInfo = ServiceInfo.create("_ships._tcp.local.", "AndroidTest", 0, "plain test service from android");
                 //notifyUser("This IP: " + deviceIpAddress);
                 jmdns.registerService(serviceInfo);
                 if (serverSocket == null) {
