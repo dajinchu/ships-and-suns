@@ -44,7 +44,7 @@ public class LANConnect extends ConnectScreen {
     Handler handler = new Handler();
 
 
-    private String type = "_test2._tcp.local.";
+    private String type = "_ships._tcp.local.";
     private static final String HOSTNAME = "dajinlol";
     private JmDNS jmdns = null;
     private ServiceListener listener = null;
