@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
 import com.gmail.dajinchu.net.SocketServerManager;
-import com.splunk.mint.Mint;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -128,9 +127,7 @@ public class HostingLobby implements Screen{
                 jmdns.registerService(serviceInfo);
                 if (serverSocket == null) {
                     serverSocket = new ServerSocket(13079);//Random hardcoded port
-                    Mint.leaveBreadcrumb("Server socket opened");
                 }
-                Mint.leaveBreadcrumb("Server socket="+serverSocket.toString());
                 client = serverSocket.accept();
                 final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 final BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));

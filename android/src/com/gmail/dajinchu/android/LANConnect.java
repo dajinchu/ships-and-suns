@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.ConnectScreen;
 import com.gmail.dajinchu.Model;
-import com.splunk.mint.Mint;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -115,14 +114,12 @@ public class LANConnect extends ConnectScreen {
         host.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Mint.logEvent("Starting HostingLobby");
                 mainGame.setScreen(new HostingLobby(mainGame, jmdns, name.getText()));
             }
         });
         join.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
-                Mint.logEvent("Starting JoinSearch");
                 mainGame.setScreen(new JoinSearch(mainGame, jmdns, wifi, name.getText()));
             }
         });

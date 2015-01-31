@@ -24,7 +24,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://mint.splunk.com/gradle/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
@@ -82,7 +81,6 @@ project(":core") {
 
 
     dependencies {
-        compile "com.splunk.mint:mint:4.0.8"
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     }
