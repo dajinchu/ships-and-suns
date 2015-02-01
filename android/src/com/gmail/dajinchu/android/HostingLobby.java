@@ -85,8 +85,7 @@ public class HostingLobby implements Screen{
         playerList.space(10);
         playerList.addActor(new Label("Participants", skin));
         playerList.fill();
-        addParticipant("Da-Jin Chu");
-        addParticipant("Bob");
+        addParticipant(name);
         ScrollPane players = new ScrollPane(playerList);
         players.setDebug(true);
         //GO Button, adding clickListener later, AFTER we have connected with someone
@@ -129,8 +128,13 @@ public class HostingLobby implements Screen{
                     serverSocket = new ServerSocket(13079);//Random hardcoded port
                 }
                 client = serverSocket.accept();
+                //Okay accepted one, and we only connect one.
+                //jmdns.unregisterService(serviceInfo);
+                //Get streams
                 final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 final BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                //Get name of new guy, and add it to list
+                addParticipant(br.readLine());
                 // Write output
                 sendInitalSetup(writer);
                 //AFTER sending inital setup info, we can "activate" the go button to have actions

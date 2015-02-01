@@ -188,6 +188,9 @@ public class JoinSearch implements Screen{
                 socket = new Socket(host, 13079);//Random hardcoded port
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                //Tell server name
+                writer.write(name+"\n");
+                writer.flush();
                 readInitialSetup(br);
                 waitForStart(br,writer);
             } catch (IOException e) {
