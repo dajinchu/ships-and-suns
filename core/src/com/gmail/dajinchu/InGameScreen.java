@@ -123,8 +123,8 @@ public class InGameScreen implements Screen {
             ship = entry.value;
             drawShips++;
             spriteBatch.setColor(ship.my_owner.color);
-            spriteBatch.draw(redship, (int) ship.pos.x - ship.radius,
-                    (int) ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
+            spriteBatch.draw(redship, ship.pos.x - ship.radius,
+                    ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
         }
         spriteBatch.setColor(Color.WHITE);
         for(Sun sun : model.allSuns){
