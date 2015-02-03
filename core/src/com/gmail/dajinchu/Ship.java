@@ -1,6 +1,7 @@
 package com.gmail.dajinchu;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -40,27 +41,45 @@ public class Ship implements Serializable, Entity {
     public int mass = 1;
     public int radius;
 
-    public static Ship collide(Ship ship1, Ship ship2){
+
+
+    public static void collide(Ship ship1, Ship ship2){
+        //Gdx.app.log("Ship", "Colliding "+ship1.dumpInfo()+" and "+ship2.dumpInfo());
         if(ship1.my_owner != ship2.my_owner){
             //Enemy ships colliding
+            Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are not friendly");
             if(ship1.mass>ship2.mass){
                 //Ship1 will have remainder
-                return new Ship(ship1.my_owner, ship1.model, ship1.mass-ship2.mass, (int)(ship1.pos.x), (int)(ship1.pos.y));
+                ship1.setMass(ship1.mass-ship2.mass);
+                ship1.model.killShip(ship2);//TODO make Model singleton
             }
             if(ship2.mass>ship1.mass){
-                return new Ship(ship2.my_owner, ship2.model, ship2.mass-ship1.mass, (int)ship2.pos.x, (int)ship2.pos.y);
+                ship2.setMass(ship2.mass-ship1.mass);
+                ship2.model.killShip(ship1);
             }
             if(ship2.mass==ship2.mass){
-                return null;
+                ship1.model.killShip(ship1);
+                ship2.model.killShip(ship2);
             }
         }else{
+            Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are friendly");
             //Friendly ships colliding
             //if (ship1.my_owner.my_ships.size>100){
                 //Enough exist
-                return new Ship(ship1.my_owner, ship1.model, ship1.mass+ship2.mass, (int)(ship1.pos.x), (int)(ship1.pos.y));
+            //Checking to see who is larger so that the larger one sets the position
+            if(ship1.mass>ship2.mass){
+                ship1.setMass(ship1.mass+ship2.mass);
+                ship1.model.killShip(ship2);//TODO make Model singleton
+            }else if(ship2.mass>ship1.mass){
+                ship2.setMass(ship2.mass+ship1.mass);
+                ship2.model.killShip(ship1);
+            }else {
+                ship1.setMass(ship2.mass+ship1.mass);//TODO this will cause desync, ship1 and ship2 will differ randomly
+                ship1.model.killShip(ship2);
+            }
+
             //}
         }
-        return null;
     }
 
     public Ship(Player owner, Model model, int x, int y){
@@ -182,7 +201,19 @@ public class Ship implements Serializable, Entity {
         return null;
     }*/
 
+    public int setMass(int mass){
+        /*this.mass = mass;
+        radius = (int) (4*Math.sqrt(mass));
+        Gdx.app.log("Ship"+id,"Setting mass to "+mass+" radius to "+radius);
+        if(model.allShips.containsKey(id)){
+            body.getFixtureList().get(0).getShape().setRadius(radius);
+        }else{
+            Gdx.app.log("Ship"+id,"WTF HAPPENED");
+        }*/
+        return 0;//TODO, should return overflow from a MAX ship size
+    }
+
     public String dumpInfo(){
-        return String.format("%f,%f,%f,%f    %d", pos.x,pos.y,wanderdest.x,wanderdest.y, frame);
+        return String.format("%f,%f,%f,%f,%d", pos.x,pos.y,wanderdest.x,wanderdest.y,my_owner.playerNumber);
     }
 }

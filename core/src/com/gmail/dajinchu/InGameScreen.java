@@ -118,6 +118,8 @@ public class InGameScreen implements Screen {
 
         drawShips = 0;
 
+        Gdx.app.log("InGameScreen","Drawing");
+
         //Draw all ships
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
             ship = entry.value;
@@ -175,5 +177,6 @@ public class InGameScreen implements Screen {
 
     @Override
     public void dispose() {
+        FixtureDefFactory.dispose();
     }
 }

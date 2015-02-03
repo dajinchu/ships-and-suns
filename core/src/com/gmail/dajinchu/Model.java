@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -48,7 +47,7 @@ public class Model {
     private float accumulator = 0;
     Array<Body> bodies = new Array<Body>();
     private Ship disShip;
-    Array<Contact> contacts = new Array<Contact>();
+    Array<ContactUserData> contacts = new Array<ContactUserData>();
 
     float spawnAccumulator=0;
     public static int worldFrame = 0;
@@ -68,11 +67,11 @@ public class Model {
 
     public void setSeed(long seed){
         this.seed = seed;
-        random = new Random(seed);
+        random = new Random(50);
     }
     public void initSunDistro(){
         for(int s = 0; s< 6; s++){
-            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
+            //new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }
 
@@ -97,8 +96,11 @@ public class Model {
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
         while (accumulator >= 1/60f) {
+            Gdx.app.log("Model", "world stepping");
             world.step(1/60f, 6, 2);
             accumulator -= 1/60f;
+
+            Gdx.app.log("Model", "updating");
 
             world.getBodies(bodies);
             nextAction = actionQueue.peek();
@@ -113,16 +115,16 @@ public class Model {
                 tempship.frame();
             }
             delete.setLength(0);
-            for(Contact contact : contacts){
-                //Preventing double deletion, as well as contacts where one fixture is already dead from a previous contact
-                if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
-                aData = contact.getFixtureA().getBody().getUserData();
-                bData = contact.getFixtureB().getBody().getUserData();
+            for(ContactUserData contact : contacts){
+                aData = contact.a;
+                bData = contact.b;
+                Gdx.app.log("Collision Cycle", "Colliding ids "+aData+" and "+bData);
+                if(!allShips.containsKey((Integer) aData)||!allShips.containsKey((Integer) bData))continue;
+                Ship.collide(allShips.get((Integer) aData),allShips.get((Integer) bData));
                 if(aData instanceof Ship && bData instanceof Ship){
-
+                    Gdx.app.log("Contact Cycle", ((Ship) aData).id+", "+((Ship) bData).id+" checking number "+contacts.indexOf(contact, true)+"/"+contacts.size);
+                    if(!allShips.containsKey(((Ship) aData).id)||!allShips.containsKey(((Ship) bData).id))continue;
                     Ship.collide((Ship)aData,(Ship)bData);
-                    killShip((Ship) aData);
-                    killShip((Ship) bData);
                 }
                 //Ship to Sun contact
                 if(aData instanceof Sun && bData instanceof Ship){
@@ -205,24 +207,10 @@ public class Model {
         // Create our body in the world using our body definition
         Body body = world.createBody(bodyDef);
 
-        // Create a circle shape and set its radius to 6
-        CircleShape circle = new CircleShape();
-        circle.setRadius(radius);
-
-        // Create a fixture definition to apply our shape to
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
-        fixtureDef.density = 0f;
-        fixtureDef.friction = 0f;
-        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-
+        FixtureDef fixtureDef = FixtureDefFactory.getCircleDef((int)radius);
         // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setSensor(isSensor);
-
-        // Remember to dispose of any shapes after you're done with them!
-        // BodyDef and FixtureDef don't need disposing, but shapes do.
-        circle.dispose();
         return body;
     }
 
@@ -240,7 +228,15 @@ public class Model {
 
         @Override
         public void beginContact(Contact contact) {
-            contacts.add(contact);
+            Gdx.app.log("Model", "contact");
+            //Preventing double deletion, as well as contacts where one ship is already dead from a previous contact
+            if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
+            aData = contact.getFixtureA().getBody().getUserData();
+            bData = contact.getFixtureB().getBody().getUserData();
+            if(aData instanceof Ship && bData instanceof Ship){
+                contacts.add(new ContactUserData(((Ship) aData).id, ((Ship) bData).id));
+            }
+            Gdx.app.log("Model", "contact proccessed");
         }
 
         @Override
