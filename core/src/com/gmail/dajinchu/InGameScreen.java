@@ -1,5 +1,6 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -25,7 +26,7 @@ import java.util.Date;
 public class InGameScreen implements Screen {
 
     //Screems
-    MainGame game;
+    Game game;
 
     //Classes that help make stuff work
     OrthographicCamera cam;
@@ -69,7 +70,7 @@ public class InGameScreen implements Screen {
 
     public static FileHandle file;
 
-    public InGameScreen(MainGame game, final Model model, final SocketManager socketManager) {
+    public InGameScreen(Game game, final Model model, final SocketManager socketManager) {
         Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
         this.model = model;

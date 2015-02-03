@@ -7,6 +7,6 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
         //new EchoClient();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Quick(), config);
+		new LwjglApplication(new SinglePlayerTester(), config);
 	}
 }
