@@ -204,7 +204,7 @@ public class Ship implements Serializable, Entity {
         radius = (int) (4*Math.sqrt(mass));
         Gdx.app.log("Ship"+id,"Setting mass to "+mass+" radius to "+radius);
         if(model.allShips.containsKey(id)){
-            //body.getFixtureList().get(0).getShape().setRadius(radius);
+            body.getFixtureList().get(0).getShape().setRadius(radius);
         }else{
             Gdx.app.log("Ship"+id,"WTF HAPPENED");
         }
