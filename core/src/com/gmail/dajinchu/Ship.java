@@ -52,12 +52,10 @@ public class Ship implements Serializable, Entity {
                 //Ship1 will have remainder
                 ship1.setMass(ship1.mass-ship2.mass);
                 ship1.model.killShip(ship2);//TODO make Model singleton
-            }
-            if(ship2.mass>ship1.mass){
+            }else if(ship2.mass>ship1.mass){
                 ship2.setMass(ship2.mass-ship1.mass);
                 ship2.model.killShip(ship1);
-            }
-            if(ship2.mass==ship2.mass){
+            }else if(ship2.mass==ship2.mass){
                 ship1.model.killShip(ship1);
                 ship2.model.killShip(ship2);
             }
@@ -202,7 +200,7 @@ public class Ship implements Serializable, Entity {
     }*/
 
     public int setMass(int mass){
-        //this.mass = mass;
+        this.mass = mass;
         radius = (int) (4*Math.sqrt(mass));
         Gdx.app.log("Ship"+id,"Setting mass to "+mass+" radius to "+radius);
         if(model.allShips.containsKey(id)){
