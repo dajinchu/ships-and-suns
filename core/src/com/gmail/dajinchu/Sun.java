@@ -49,25 +49,12 @@ public class Sun {
             case CAPTURING: case DECAPTURING:
                 if(ship.my_owner==occupant){
                     capture(ship);
-                    if(progress>=50){
-                        //If overflow, refund the player, so if an enormous ship caps, it doesn't
-                        //1.) Make the sun impossible to take back by driving progress up
-                        //2.) Make the player lose access to the ship
-                        if(progress>50){
-                            produceShip(progress-50);
-                            progress=50;
-                        }
+                    if(progress==50){
                         state=STATE.CAPTURED;
                     }
                 }else{
                     decapture(ship);
-                    if(progress<=0){
-                        //Refund player to avoid negative progress
-
-                        if(progress<0){
-                            produceShip(-progress);
-                            progress=0;
-                        }
+                    if(progress==0){
                         state=STATE.EMPTY;
                     }
                 }break;
@@ -80,10 +67,22 @@ public class Sun {
     }
     private void capture(Ship ship){
         progress+=ship.mass;
-        model.killShip(ship);
+        if(progress>50){
+            //If the ship overflows, setMass to refund the extra
+            ship.setMass(progress - 50);
+            progress=50;
+        }else{
+            model.killShip(ship);
+        }
     }
-    private void decapture(Ship ship){
-        progress-=ship.mass;
-        model.killShip(ship);
+    private void decapture(Ship ship) {
+        progress -= ship.mass;
+        if (progress < 0) {
+            //Took too much off, refund!
+            ship.setMass(-progress);
+            progress = 0;
+        } else {
+            model.killShip(ship);
+        }
     }
 }
