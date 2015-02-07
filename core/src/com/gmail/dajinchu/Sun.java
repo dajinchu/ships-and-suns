@@ -36,6 +36,7 @@ public class Sun {
 
         this.state = STATE.CAPTURED;
         this.occupant = occupant;
+        this.progress = 50;
         produceShip(initialPopulation);
     }
     public void pulse(){
