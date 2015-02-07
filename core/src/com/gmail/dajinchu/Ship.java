@@ -72,8 +72,15 @@ public class Ship implements Serializable, Entity {
                 ship2.setMass(ship2.mass+ship1.mass);
                 ship2.model.killShip(ship1);
             }else {
-                ship1.setMass(ship2.mass+ship1.mass);//TODO this will cause desync, ship1 and ship2 will differ randomly
-                ship1.model.killShip(ship2);
+                //A deterministic way to decide which one lives
+                //Decided that whichever ship has a lower id number lives
+                if(ship1.id<ship2.id){
+                    ship1.setMass(ship2.mass+ship1.mass);
+                    ship1.model.killShip(ship2);
+                }else{
+                    ship2.setMass(ship2.mass+ship1.mass);
+                    ship2.model.killShip(ship1);
+                }
             }
 
             //}
