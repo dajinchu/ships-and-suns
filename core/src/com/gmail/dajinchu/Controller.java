@@ -42,11 +42,7 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        if(model.state == Model.GameState.STARTING) {
-            socketManager.start();
-            setPlayerReady(model.me.playerNumber);
-        }
-        return true;
+        return false;
     }
 
     @Override
@@ -132,6 +128,12 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
     }
 
+    public void start(){
+        if(model.state == Model.GameState.STARTING) {
+            socketManager.start();
+            setPlayerReady(model.me.playerNumber);
+        }
+    }
     public void setPlayerReady(int playerid){
         socketManager.sendMsg(new ReadyToPlayCommand(playerid));
     }

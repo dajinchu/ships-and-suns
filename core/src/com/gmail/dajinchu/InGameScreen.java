@@ -25,6 +25,7 @@ import java.util.Date;
  */
 public class InGameScreen implements Screen {
 
+    private final Controller controller;
     //Screems
     Game game;
 
@@ -90,7 +91,7 @@ public class InGameScreen implements Screen {
         start = TimeUtils.millis();
 
         //Controller
-        final Controller controller = new Controller(model, cam, socketManager);
+        controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
         file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date()) + " print networking" + ".txt");
@@ -158,7 +159,7 @@ public class InGameScreen implements Screen {
 
     @Override
     public void show() {
-
+        controller.start();
     }
 
     @Override
