@@ -71,15 +71,25 @@ public class Model {
     }
     public void initSunDistro(){
         for(int s = 0; s< 6; s++){
-            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),this);
+        }
+        for(int s = 0; s< 2; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[s],25,this);
         }
     }
-
-    public void initShipDistro(int numPlayers, int player_id, int shipsPerPlayer){
+    public void initPlayerDistro(int numPlayers, int player_id){
+        //Make the Player array
         players = new Player[numPlayers];
-        int x,y;
-        for(int p = 0; p < numPlayers; p++){//use the "Player player: players" syntax?
+        //Instantiate the players
+        for(int p =0; p<numPlayers; p++){
             players[p] = new Player(p,this);
+        }
+        //Define which one is "me," the person on this device
+        me = players[player_id];
+    }
+    public void initShipDistro(int shipsPerPlayer){
+        int x,y;
+        for(int p = 0; p < players.length; p++){//use the "Player player: players" syntax?
             for(int i = 0; i < shipsPerPlayer; i++){
                 x=random.nextInt(mapWidth);
                 y=random.nextInt(mapHeight);
@@ -87,7 +97,6 @@ public class Model {
             }
             //players[p].setDest(200,200);
         }
-        me = players[player_id];
     }
     public void update(float delta){
 
@@ -163,7 +172,8 @@ public class Model {
 
         Model model = new Model(1000,1000, world);
         model.setSeed(seed);
-        model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
+        model.initPlayerDistro(2,player_id);
+        //model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
         model.initSunDistro();
         return model;
     }

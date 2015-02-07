@@ -20,14 +20,22 @@ public class Sun {
 
     public static final int size = 60;
 
-    public Sun(int x, int y, Player occupant,int initialPopulation, Model model){
+    public Sun(int x, int y, Model model){
         model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
 
         this.pos = new Vector2(x,y);
-        this.occupant = occupant;
         this.model = model;
+
+    }
+
+    public Sun(int x, int y, Player occupant,int initialPopulation, Model model){
+        this(x,y,model);
+
+        this.state = STATE.CAPTURED;
+        this.occupant = occupant;
+        produceShip(initialPopulation);
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
