@@ -133,10 +133,9 @@ public class Model {
                     Ship.collide((Ship)aData,(Ship)bData);
                 }
                 //Ship to Sun contact
-                if(aData instanceof Sun && bData instanceof Ship){
+                else if(aData instanceof Sun && bData instanceof Ship){
                     ((Sun) aData).consumeShip((Ship) bData);
-                }
-                if(aData instanceof Ship && bData instanceof Sun){
+                }else if(aData instanceof Ship && bData instanceof Sun){
                     ((Sun) bData).consumeShip((Ship) aData);
                 }
             }
