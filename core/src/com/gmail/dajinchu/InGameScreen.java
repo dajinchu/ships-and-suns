@@ -121,14 +121,6 @@ public class InGameScreen implements Screen {
 
         Gdx.app.log("InGameScreen","Drawing");
 
-        //Draw all ships
-        for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
-            ship = entry.value;
-            drawShips++;
-            spriteBatch.setColor(ship.my_owner.color);
-            spriteBatch.draw(redship, ship.pos.x - ship.radius,
-                    ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
-        }
         spriteBatch.setColor(Color.WHITE);
         for(Sun sun : model.allSuns){
             switch (sun.state){
@@ -139,6 +131,14 @@ public class InGameScreen implements Screen {
                     break;
             }
             spriteBatch.draw(tempTexture,(int) sun.pos.x-Sun.size/2, (int) sun.pos.y-Sun.size/2, Sun.size, Sun.size);
+        }
+        //Draw all ships
+        for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
+            ship = entry.value;
+            drawShips++;
+            spriteBatch.setColor(ship.my_owner.color);
+            spriteBatch.draw(redship, ship.pos.x - ship.radius,
+                    ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
         }
         spriteBatch.end();
 

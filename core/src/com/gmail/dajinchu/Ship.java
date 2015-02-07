@@ -212,6 +212,6 @@ public class Ship implements Serializable, Entity {
     }
 
     public String dumpInfo(){
-        return String.format("%f,%f,%f,%f,%d", pos.x,pos.y,wanderdest.x,wanderdest.y,my_owner.playerNumber);
+        return String.format("%d,%f,%f,%f,%d", mass,pos.y,wanderdest.x,wanderdest.y,my_owner.playerNumber);
     }
 }

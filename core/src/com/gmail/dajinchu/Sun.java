@@ -1,5 +1,6 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
@@ -47,6 +48,7 @@ public class Sun {
         new Ship(occupant, model, mass, (int)pos.x, (int)pos.y);
     }
     public void consumeShip(Ship ship){
+        Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
         //TODO safety ship==null check?
         switch (state){
             case EMPTY:
