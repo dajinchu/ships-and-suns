@@ -136,8 +136,8 @@ public class Ship implements Serializable, Entity {
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+my_owner.dest.getWorldCenter().y);
-        wanderdest.x = (int) (wanderxoffset+my_owner.dest.getWorldCenter().x);
+        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+my_owner.dest.y);
+        wanderdest.x = (int) (wanderxoffset+my_owner.dest.x);
         model.randomcalls++;
         //Gdx.app.log("Ship", "Calcdestwithwander"+originx+" "+originy+" "+wanderdest.x+" "+wanderdest.y);
     }

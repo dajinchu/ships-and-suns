@@ -4,8 +4,7 @@ package com.gmail.dajinchu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import java.io.Serializable;
@@ -19,7 +18,7 @@ public class Player implements Serializable {
     int playerNumber;//For identification across devices, each number corresponds to a color
     Texture texture;
 
-    Body dest;
+    Vector2 dest;
 
     String TAG = "Player";
 
@@ -30,7 +29,7 @@ public class Player implements Serializable {
     private Color[] colormap = new Color[]{new Color(Color.RED), new Color(Color.BLUE)};
 
     public Player(int playerNumber, Model model){
-        dest = model.createCircleBody(model.mapWidth/2, model.mapHeight/2, (float) InGameScreen.DEST_RADIUS, BodyDef.BodyType.StaticBody, true);
+        dest = new Vector2(model.mapWidth/2,model.mapHeight/2);
         this.model = model;
         this.playerNumber = playerNumber;
         this.color = colormap[playerNumber];
@@ -44,8 +43,8 @@ public class Player implements Serializable {
     }*/
 
     public void setDest(int destx, int desty){
-        dest.setTransform(destx,desty,dest.getAngle());
-        Gdx.app.log("Player", "settingdest "+dest.getPosition().x);
+        dest.set(destx,desty);
+        Gdx.app.log("Player", "settingdest "+dest.x);
 
         for(int id : my_ships){
             //System.out.print(id);

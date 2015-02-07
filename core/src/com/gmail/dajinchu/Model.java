@@ -67,11 +67,11 @@ public class Model {
 
     public void setSeed(long seed){
         this.seed = seed;
-        random = new Random(50);
+        random = new Random(seed);
     }
     public void initSunDistro(){
         for(int s = 0; s< 6; s++){
-            //new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }
 
@@ -118,9 +118,6 @@ public class Model {
             for(ContactUserData contact : contacts){
                 aData = contact.a;
                 bData = contact.b;
-                Gdx.app.log("Collision Cycle", "Colliding ids "+aData+" and "+bData);
-                if(!allShips.containsKey((Integer) aData)||!allShips.containsKey((Integer) bData))continue;
-                Ship.collide(allShips.get((Integer) aData),allShips.get((Integer) bData));
                 if(aData instanceof Ship && bData instanceof Ship){
                     Gdx.app.log("Contact Cycle", ((Ship) aData).id+", "+((Ship) bData).id+" checking number "+contacts.indexOf(contact, true)+"/"+contacts.size);
                     if(!allShips.containsKey(((Ship) aData).id)||!allShips.containsKey(((Ship) bData).id))continue;
@@ -233,9 +230,7 @@ public class Model {
             if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
             aData = contact.getFixtureA().getBody().getUserData();
             bData = contact.getFixtureB().getBody().getUserData();
-            if(aData instanceof Ship && bData instanceof Ship){
-                contacts.add(new ContactUserData(((Ship) aData).id, ((Ship) bData).id));
-            }
+            contacts.add(new ContactUserData(aData,bData));
             Gdx.app.log("Model", "contact proccessed");
         }
 
