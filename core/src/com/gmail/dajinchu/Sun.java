@@ -16,6 +16,8 @@ public class Sun {
 
     int progress=0;
 
+    private static final int MAXCAP = 100;
+
     enum STATE{EMPTY, CAPTURING, CAPTURED, DECAPTURING};
     STATE state = STATE.EMPTY;
 
@@ -36,7 +38,7 @@ public class Sun {
 
         this.state = STATE.CAPTURED;
         this.occupant = occupant;
-        this.progress = 50;
+        this.progress = MAXCAP;
         produceShip(initialPopulation);
     }
     public void pulse(){
@@ -60,7 +62,7 @@ public class Sun {
             case CAPTURING: case DECAPTURING:
                 if(ship.my_owner==occupant){
                     capture(ship);
-                    if(progress==50){
+                    if(progress==MAXCAP){
                         state=STATE.CAPTURED;
                     }
                 }else{
@@ -78,10 +80,10 @@ public class Sun {
     }
     private void capture(Ship ship){
         progress+=ship.mass;
-        if(progress>50){
+        if(progress>MAXCAP){
             //If the ship overflows, setMass to refund the extra
-            ship.setMass(progress - 50);
-            progress=50;
+            ship.setMass(progress - MAXCAP);
+            progress=MAXCAP;
         }else{
             model.killShip(ship);
         }
