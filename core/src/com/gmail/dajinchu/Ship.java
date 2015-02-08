@@ -16,10 +16,11 @@ import java.io.Serializable;
 public class Ship implements Serializable, Entity {
     final Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
-    Vector2 wanderdest = new Vector2();//Eventually give this back to give player control over individual ships
+    private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
+    private Vector2 dest = new Vector2();
     Vector2 pos = new Vector2();
-    Vector2 desired = new Vector2();
-    Vector2 steer = new Vector2();
+    private Vector2 desired = new Vector2();
+    private Vector2 steer = new Vector2();
     //int color;
 
     boolean destroyed = false;
@@ -95,9 +96,9 @@ public class Ship implements Serializable, Entity {
         if(mass<=0){
             throw new RuntimeException("The mass of a ship reached "+mass+". How's that even possible!?");
         }
+
         this.mass = mass;
         radius = (int) (4*Math.sqrt(mass));
-
         this.body = model.createCircleBody(x,y, radius, BodyDef.BodyType.DynamicBody, true);
 
         //Add Ship userData to do the moving around stuff
@@ -108,9 +109,15 @@ public class Ship implements Serializable, Entity {
         body.setUserData(this);
 
         //Otherwise it will go to 0,0
-        calcDestWithWander();
+        setDest(pos.set(body.getPosition()));
+        //Sort of register the ship
         model.allShips.put(model.shipIdCount, this);
         model.shipIdCount++;
+    }
+
+    public void setDest(Vector2 newdest){
+        dest = newdest;
+        calcDestWithWander();
     }
 
     public void frame(){
@@ -143,8 +150,8 @@ public class Ship implements Serializable, Entity {
         //                                  [0,1]  ->         [0,x] ->        [0,2x]->  [-x,x]
         wanderxoffset = (int) (model.random.nextDouble()*InGameScreen.DEST_RADIUS*2-InGameScreen.DEST_RADIUS);
         maxy = Math.sqrt((InGameScreen.DEST_RADIUS*InGameScreen.DEST_RADIUS)-(wanderxoffset*wanderxoffset));
-        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+my_owner.dest.y);
-        wanderdest.x = (int) (wanderxoffset+my_owner.dest.x);
+        wanderdest.y = (int)(model.random.nextDouble()*maxy*2-maxy+dest.y);
+        wanderdest.x = (int) (wanderxoffset+dest.x);
         model.randomcalls++;
         //Gdx.app.log("Ship", "Calcdestwithwander"+originx+" "+originy+" "+wanderdest.x+" "+wanderdest.y);
     }

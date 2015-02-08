@@ -143,6 +143,12 @@ public class InGameScreen implements Screen {
         }
         spriteBatch.end();
 
+        if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
+            shapeRenderer.setColor(Color.RED);
+            shapeRenderer.begin();
+            shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
+            shapeRenderer.end();
+        }
         //debugRenderer.render(world, cam.combined);
 
         update(delta);
