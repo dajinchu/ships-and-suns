@@ -146,12 +146,9 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     //Should clamp after moving camera, it keeps cam within bounds
     public void clamp(){
-        float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
-        float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
-
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, model.mapWidth / cam.viewportWidth);
-        cam.position.x = MathUtils.clamp(cam.position.x, effectiveViewportWidth / 2f, model.mapWidth - effectiveViewportWidth / 2f);
-        cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, model.mapHeight - effectiveViewportHeight / 2f);
+        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, model.mapWidth*2 / cam.viewportWidth);
+        cam.position.x = MathUtils.clamp(cam.position.x, 0, model.mapWidth);
+        cam.position.y = MathUtils.clamp(cam.position.y, 0, model.mapHeight);
         cam.update();
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
     }
