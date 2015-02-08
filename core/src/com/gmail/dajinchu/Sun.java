@@ -39,7 +39,9 @@ public class Sun {
         this.state = STATE.CAPTURED;
         this.occupant = occupant;
         this.progress = MAXCAP;
-        produceShip(initialPopulation);
+        if(initialPopulation>0){
+            produceShip(initialPopulation);
+        }
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
@@ -62,14 +64,8 @@ public class Sun {
             case CAPTURING: case DECAPTURING:
                 if(ship.my_owner==occupant){
                     capture(ship);
-                    if(progress==MAXCAP){
-                        state=STATE.CAPTURED;
-                    }
                 }else{
                     decapture(ship);
-                    if(progress==0){
-                        state=STATE.EMPTY;
-                    }
                 }break;
             case CAPTURED:
                 if(ship.my_owner!=occupant){
@@ -87,6 +83,9 @@ public class Sun {
         }else{
             model.killShip(ship);
         }
+        if(progress==MAXCAP){
+            state=STATE.CAPTURED;
+        }
     }
     private void decapture(Ship ship) {
         progress -= ship.mass;
@@ -96,6 +95,9 @@ public class Sun {
             progress = 0;
         } else {
             model.killShip(ship);
+        }
+        if(progress==0){
+            state=STATE.EMPTY;
         }
     }
 }
