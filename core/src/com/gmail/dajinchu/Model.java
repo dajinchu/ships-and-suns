@@ -73,8 +73,11 @@ public class Model {
         for(int s = 0; s< 6; s++){
             new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),this);
         }
-        for(int s = 0; s< 2; s++){
-            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[s],25,this);
+        for(int s = 0; s< 1; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[1],500,this);
+        }
+        for(int s = 0; s< 4; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }
     public void initPlayerDistro(int numPlayers, int player_id){
@@ -234,13 +237,13 @@ public class Model {
 
         @Override
         public void beginContact(Contact contact) {
-            Gdx.app.log("Model", "contact");
+            //Gdx.app.log("Model", "contact");
             //Preventing double deletion, as well as contacts where one ship is already dead from a previous contact
             if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
             aData = contact.getFixtureA().getBody().getUserData();
             bData = contact.getFixtureB().getBody().getUserData();
             contacts.add(new ContactUserData(aData,bData));
-            Gdx.app.log("Model", "contact proccessed");
+            //Gdx.app.log("Model", "contact proccessed");
         }
 
         @Override

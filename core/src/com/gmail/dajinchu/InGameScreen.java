@@ -120,7 +120,7 @@ public class InGameScreen implements Screen {
 
         drawShips = 0;
 
-        Gdx.app.log("InGameScreen","Drawing");
+        //Gdx.app.log("InGameScreen","Drawing");
 
         spriteBatch.setColor(Color.WHITE);
         for(Sun sun : model.allSuns){
@@ -144,7 +144,7 @@ public class InGameScreen implements Screen {
         spriteBatch.end();
 
         if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
-            shapeRenderer.setColor(Color.RED);
+            shapeRenderer.setColor(model.me.color);
             shapeRenderer.begin();
             shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
             shapeRenderer.end();
