@@ -172,7 +172,7 @@ public class Model {
         World world = new World(new Vector2(0,0), true);
         world.setContinuousPhysics(true);
 
-        Model model = new Model(1000,1000, world);
+        Model model = new Model(InGameScreen.MAPWIDTH,InGameScreen.MAPHEIGHT, world);
         model.setSeed(seed);
         model.initPlayerDistro(2,player_id);
         //model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
