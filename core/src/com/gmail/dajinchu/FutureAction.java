@@ -7,4 +7,5 @@ package com.gmail.dajinchu;
 public interface FutureAction {
     public void execute(Model model);
     public int getScheduledFrame();
+    public int getPlayerId();
 }

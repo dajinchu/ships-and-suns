@@ -71,6 +71,10 @@ public class InGameScreen implements Screen {
 
     public static FileHandle file;
 
+    //For average 60 fps system to step model
+    private float frameTime;
+    private float accumulator;
+
     public InGameScreen(Game game, final Model model, final SocketManager socketManager) {
         Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
@@ -103,7 +107,15 @@ public class InGameScreen implements Screen {
     //Game Mechanic Functions
 
     public void update(float delta) {
-        model.update(delta);
+        if(model.state != Model.GameState.PLAYING)return;
+        frameTime = Math.min(delta, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= 1 / 60f) {
+            model.step(1/60f);
+            //Make a Turn instance
+            controller.setDoneSending();
+            accumulator -= 1/60f;
+        }
     }
 
     @Override
