@@ -17,7 +17,7 @@ public class Ship implements Serializable, Entity {
     final Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
-    private Vector2 dest = new Vector2();
+    Vector2 dest = new Vector2();
     Vector2 pos = new Vector2();
     private Vector2 desired = new Vector2();
     private Vector2 steer = new Vector2();
