@@ -15,6 +15,7 @@ public class Turn {
         actions[action.getPlayerId()] = action;
     }
     public void setPlayerDone(int playerid){
+        InGameScreen.file.writeString("Turn "+frame+"is setting player "+playerid+" to 'done'\n", true);
         playersDone[playerid] = true;
     }
     public boolean isDone(){

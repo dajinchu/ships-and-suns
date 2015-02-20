@@ -28,7 +28,9 @@ public class TurnBuffer {
     }
     public void executeFrame(Model model, int frame){
         temp = getTurn(frame);
-        while (!temp.isDone()) ;//TODO Add exception for first 100 frames?
+        while (!temp.isDone()){
+            InGameScreen.file.writeString("waiting on turn "+frame+"\n",true); //TODO Add exception for first 100 frames?
+        }
         temp.execute(model);
         buffer.remove(frame);
     }

@@ -2,14 +2,15 @@ package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
 import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.Model;
 
 /**
  * Created by Da-Jin on 2/9/2015.
  */
 public class DoneSendingCommand extends Command{
 
-    private final int frame;
-    private final int player;
+    final int frame;
+    final int player;
 
     public DoneSendingCommand(int frame, int player){
         this.frame = frame;
@@ -22,7 +23,7 @@ public class DoneSendingCommand extends Command{
 
     @Override
     public void execute(Controller controller) {
-        Gdx.app.log("Done setting Command","setting player "+player+" to done on frame "+frame);
+        Gdx.app.log("Done setting Command","setting player "+player+" to done for frame "+frame+" currently frame "+ Model.worldFrame);
         controller.model.turnBuffer.setDoneSending(frame,player);
     }
 }
