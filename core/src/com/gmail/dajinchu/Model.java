@@ -208,7 +208,9 @@ public class Model {
 
     public void killShip(Ship ship){
         if(bodies.contains(ship.body,true)){
+            ship.body.setUserData(null);
             world.destroyBody(ship.body);
+            ship.body = null;
         }
         ship.my_owner.my_ships.removeValue(ship.id,false);
         allShips.remove(ship.id);
