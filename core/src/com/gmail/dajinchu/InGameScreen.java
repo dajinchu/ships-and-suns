@@ -71,6 +71,10 @@ public class InGameScreen implements Screen {
 
     public static FileHandle file;
 
+    //For average 60 fps system to step model
+    private float frameTime;
+    private float accumulator;
+
     public InGameScreen(Game game, final Model model, final SocketManager socketManager) {
         Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
@@ -94,7 +98,7 @@ public class InGameScreen implements Screen {
         controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
-        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date()) + " print networking" + ".txt");
+        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/true lockstep 'hh-mm a'.txt'").format(new Date()));
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
 
 
@@ -103,7 +107,15 @@ public class InGameScreen implements Screen {
     //Game Mechanic Functions
 
     public void update(float delta) {
-        model.update(delta);
+        if(model.state != Model.GameState.PLAYING)return;
+        frameTime = Math.min(delta, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= 1 / 60f) {
+            model.step(1/60f);
+            //Make a Turn instance
+            controller.setDoneSending();
+            accumulator -= 1/60f;
+        }
     }
 
     @Override
@@ -120,7 +132,7 @@ public class InGameScreen implements Screen {
 
         drawShips = 0;
 
-        Gdx.app.log("InGameScreen","Drawing");
+        //Gdx.app.log("InGameScreen","Drawing");
 
         spriteBatch.setColor(Color.WHITE);
         for(Sun sun : model.allSuns){
@@ -143,12 +155,14 @@ public class InGameScreen implements Screen {
         }
         spriteBatch.end();
 
+        shapeRenderer.begin();
+        shapeRenderer.setColor(model.me.color);
         if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
-            shapeRenderer.setColor(Color.RED);
-            shapeRenderer.begin();
             shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
-            shapeRenderer.end();
         }
+        shapeRenderer.rect(0,0,MAPWIDTH,MAPHEIGHT);
+        shapeRenderer.end();
+
         //debugRenderer.render(world, cam.combined);
 
         update(delta);

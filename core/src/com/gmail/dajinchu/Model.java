@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -54,8 +52,7 @@ public class Model {
 
     StringBuilder delete = new StringBuilder();
 
-    Queue<FutureAction> actionQueue = new LinkedList<FutureAction>();
-    FutureAction nextAction;
+    public TurnBuffer turnBuffer = new TurnBuffer();
 
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
@@ -73,8 +70,11 @@ public class Model {
         for(int s = 0; s< 6; s++){
             new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),this);
         }
-        for(int s = 0; s< 2; s++){
-            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[s],25,this);
+        for(int s = 0; s< 1; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[1],500,this);
+        }
+        for(int s = 0; s< 4; s++){
+            new Sun(random.nextInt(mapWidth),random.nextInt(mapHeight),players[0],0,this);
         }
     }
     public void initPlayerDistro(int numPlayers, int player_id){
@@ -98,60 +98,46 @@ public class Model {
             //players[p].setDest(200,200);
         }
     }
-    public void update(float delta){
+    public void step(float timestep){
 
-        if(state != Model.GameState.PLAYING)return;
+        Gdx.app.log("Model", "world stepping");
+        world.step(1/60f, 6, 2);
+        //Gdx.app.log("Model", "updating");
 
-        float frameTime = Math.min(delta, 0.25f);
-        accumulator += frameTime;
-        while (accumulator >= 1/60f) {
-            Gdx.app.log("Model", "world stepping");
-            world.step(1/60f, 6, 2);
-            accumulator -= 1/60f;
-
-            Gdx.app.log("Model", "updating");
-
-            world.getBodies(bodies);
-            nextAction = actionQueue.peek();
-            while(nextAction!=null && nextAction.getScheduledFrame() == worldFrame){
-                InGameScreen.file.writeString("Executing a futureAction. frame: "+worldFrame+"\n", true);
-                nextAction.execute(this);
-                actionQueue.remove();
-                nextAction = actionQueue.peek();
-            }
-            for (IntMap.Entry<Ship> entry : allShips.entries()) {
-                tempship = entry.value;
-                tempship.frame();
-            }
-            delete.setLength(0);
-            for(ContactUserData contact : contacts){
-                aData = contact.a;
-                bData = contact.b;
-                if(aData instanceof Ship && bData instanceof Ship){
-                    Gdx.app.log("Contact Cycle", ((Ship) aData).id+", "+((Ship) bData).id+" checking number "+contacts.indexOf(contact, true)+"/"+contacts.size);
-                    if(!allShips.containsKey(((Ship) aData).id)||!allShips.containsKey(((Ship) bData).id))continue;
-                    Ship.collide((Ship)aData,(Ship)bData);
-                }
-                //Ship to Sun contact
-                else if(aData instanceof Sun && bData instanceof Ship){
-                    ((Sun) aData).consumeShip((Ship) bData);
-                }else if(aData instanceof Ship && bData instanceof Sun){
-                    ((Sun) bData).consumeShip((Ship) aData);
-                }
-            }
-            contacts.clear();
-
-            //if(worldFrame%30==0) {
-            /*for (IntMap.Entry<Ship> entry : allShips.entries()) {
-                    file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
-                }*/
-            //}
-            worldFrame++;
+        world.getBodies(bodies);
+        if(worldFrame>100) {
+            turnBuffer.executeFrame(this, worldFrame);
         }
 
+        for (IntMap.Entry<Ship> entry : allShips.entries()) {
+            tempship = entry.value;
+            tempship.frame();
+        }
+        delete.setLength(0);
+        for(ContactUserData contact : contacts){
+            aData = contact.a;
+            bData = contact.b;
+            if(aData instanceof Ship && bData instanceof Ship){
+                Gdx.app.log("Contact Cycle", ((Ship) aData).id+", "+((Ship) bData).id+" checking number "+contacts.indexOf(contact, true)+"/"+contacts.size);
+                if(!allShips.containsKey(((Ship) aData).id)||!allShips.containsKey(((Ship) bData).id))continue;
+                Ship.collide((Ship)aData,(Ship)bData);
+            }
+            //Ship to Sun contact
+            else if(aData instanceof Sun && bData instanceof Ship){
+                ((Sun) aData).consumeShip((Ship) bData);
+            }else if(aData instanceof Ship && bData instanceof Sun){
+                ((Sun) bData).consumeShip((Ship) aData);
+            }
+        }
+        contacts.clear();
+        //if(worldFrame%30==0) {
+        /*for (IntMap.Entry<Ship> entry : allShips.entries()) {
+                file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
+            }*/
+        //}
+        worldFrame++;
 
-
-        spawnAccumulator+=frameTime;
+        spawnAccumulator+=timestep;
         while(spawnAccumulator>=1){
             for(Sun sun : allSuns){
                 sun.pulse();
@@ -169,7 +155,7 @@ public class Model {
         World world = new World(new Vector2(0,0), true);
         world.setContinuousPhysics(true);
 
-        Model model = new Model(1000,1000, world);
+        Model model = new Model(InGameScreen.MAPWIDTH,InGameScreen.MAPHEIGHT, world);
         model.setSeed(seed);
         model.initPlayerDistro(2,player_id);
         //model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
@@ -186,7 +172,7 @@ public class Model {
             Gdx.app.log("Model","Tried to add future action, but its already in the past!..NOOOOO");
             return;
         }
-        actionQueue.add(action);
+        turnBuffer.addAction(action);
     }
     public void setPlayerReady(int playerid){
         InGameScreen.file.writeString("player "+playerid+"is now ready\n", true);
@@ -222,7 +208,9 @@ public class Model {
 
     public void killShip(Ship ship){
         if(bodies.contains(ship.body,true)){
+            ship.body.setUserData(null);
             world.destroyBody(ship.body);
+            ship.body = null;
         }
         ship.my_owner.my_ships.removeValue(ship.id,false);
         allShips.remove(ship.id);
@@ -234,13 +222,13 @@ public class Model {
 
         @Override
         public void beginContact(Contact contact) {
-            Gdx.app.log("Model", "contact");
+            //Gdx.app.log("Model", "contact");
             //Preventing double deletion, as well as contacts where one ship is already dead from a previous contact
             if(contact.getFixtureA()==null||contact.getFixtureB()==null)return;
             aData = contact.getFixtureA().getBody().getUserData();
             bData = contact.getFixtureB().getBody().getUserData();
             contacts.add(new ContactUserData(aData,bData));
-            Gdx.app.log("Model", "contact proccessed");
+            //Gdx.app.log("Model", "contact proccessed");
         }
 
         @Override

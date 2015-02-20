@@ -23,6 +23,9 @@ public class SinglePlayerSocketManager implements SocketManager{
     public void sendMsg(Command msg) {
         //Just bounce it back
         notifyObserver(msg);
+        if(msg instanceof DoneSendingCommand){
+            notifyObserver(new DoneSendingCommand(((DoneSendingCommand) msg).frame, 1));
+        }
     }
 
     @Override
