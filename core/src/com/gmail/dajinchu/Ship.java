@@ -41,7 +41,7 @@ public class Ship implements Serializable, Entity {
 
     public int mass = 1;
     public int radius;
-
+    public final static int MAXMASS = 20;
 
 
     public static void collide(Ship ship1, Ship ship2){
@@ -63,23 +63,28 @@ public class Ship implements Serializable, Entity {
         }else{
             Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are friendly");
             //Friendly ships colliding
-            //if (ship1.my_owner.my_ships.size>100){
-                //Enough exist
-            //Checking to see who is larger so that the larger one sets the position
-            if(ship1.mass>ship2.mass){
-                ship1.setMass(ship1.mass+ship2.mass);
+            int combinedMass=ship1.mass+ship2.mass;
+            //If they are too big to make one ship, just average them, and give ship1 extra if odd
+            if(combinedMass>MAXMASS){
+                ship1.setMass((int) Math.ceil(combinedMass / 2f));
+                ship2.setMass((int) Math.floor(combinedMass / 2f));
+            }
+            //If the two ships are small enough to combine and not exceed max...
+            //Check to see who is larger so that the larger one sets the position
+            else if(ship1.mass>ship2.mass){
+                ship1.setMass(combinedMass);
                 ship1.model.killShip(ship2);//TODO make Model singleton
             }else if(ship2.mass>ship1.mass){
-                ship2.setMass(ship2.mass+ship1.mass);
+                ship2.setMass(combinedMass);
                 ship2.model.killShip(ship1);
             }else {
                 //A deterministic way to decide which one lives
                 //Decided that whichever ship has a lower id number lives
                 if(ship1.id<ship2.id){
-                    ship1.setMass(ship2.mass+ship1.mass);
+                    ship1.setMass(combinedMass);
                     ship1.model.killShip(ship2);
                 }else{
-                    ship2.setMass(ship2.mass+ship1.mass);
+                    ship2.setMass(combinedMass);
                     ship2.model.killShip(ship1);
                 }
             }
