@@ -53,6 +53,9 @@ public class Sun {
         new Ship(occupant, model, mass, (int)pos.x, (int)pos.y);
     }
     public void consumeShip(Ship ship){
+        //We will only consume this ship IF it is actually trying to arrive here.
+        if(ship.dest.dst(this.pos)>this.size)return;
+        
         Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
         //TODO safety ship==null check?
         switch (state){
