@@ -176,7 +176,7 @@ public class HostingLobby implements Screen{
 
             writer.write(seed + "\n" + client_player_id+"\n");
             writer.flush();
-            model = Model.defaultModel(seed, my_player_id);
+            model = Model.ModelFactory.defaultModel(seed, my_player_id);
         } catch (IOException e) {
             e.printStackTrace();
         }

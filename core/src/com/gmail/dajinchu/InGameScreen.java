@@ -38,8 +38,6 @@ public class InGameScreen implements Screen {
     Model model;
 
     //Ships and Suns CONSTANTS
-    static final int MAPWIDTH = 400;//TODO make this *map* w/h, annotate theses constants
-    static final int MAPHEIGHT = 400;
     static final int SHIP_NUM = 500 ;//Ships per player
     static final double DEST_RADIUS = 30;
     static final double ENGAGEMENT_RANGE = 50;
@@ -148,7 +146,7 @@ public class InGameScreen implements Screen {
         if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
             shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
         }
-        shapeRenderer.rect(0,0,MAPWIDTH,MAPHEIGHT);
+        shapeRenderer.rect(0,0,model.mapWidth,model.mapHeight);
         shapeRenderer.end();
 
         //debugRenderer.render(world, cam.combined);

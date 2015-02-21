@@ -210,7 +210,7 @@ public class JoinSearch implements Screen{
             long seed = Long.parseLong(reader.readLine());
             int player_id = Integer.parseInt(reader.readLine());
 
-            model = Model.defaultModel(seed, player_id);
+            model = Model.ModelFactory.defaultModel(seed, player_id);
 
         } catch (IOException e) {
             e.printStackTrace();

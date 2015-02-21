@@ -11,6 +11,6 @@ import com.gmail.dajinchu.net.SinglePlayerSocketManager;
 public class SinglePlayerTester extends Game {
     @Override
     public void create() {
-        setScreen(new InGameScreen(this, Model.defaultModel(50,0),new SinglePlayerSocketManager()));
+        setScreen(new InGameScreen(this, Model.ModelFactory.defaultModel(50,0),new SinglePlayerSocketManager()));
     }
 }

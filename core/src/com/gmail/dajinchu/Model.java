@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Created by Da-Jin on 12/20/2014.
@@ -162,23 +163,7 @@ public class Model {
             spawnAccumulator-=1;
         }
     }
-    public static Model defaultModel(long seed, int player_id){
-        Gdx.app.log("Client", "Seed: " + seed);
-        Gdx.app.log("Client", "Player ID: " + player_id);
 
-
-        //Box2D
-        Box2D.init();
-        World world = new World(new Vector2(0,0), true);
-        world.setContinuousPhysics(true);
-
-        Model model = new Model(InGameScreen.MAPWIDTH,InGameScreen.MAPHEIGHT, world);
-        model.setSeed(seed);
-        model.initPlayerDistro(2,player_id);
-        //model.initShipDistro(2, player_id, InGameScreen.SHIP_NUM);
-        model.initSunDistro();
-        return model;
-    }
     //Getter-Setter
     public Ship getShip(int id){
         return allShips.get(id);
@@ -259,6 +244,38 @@ public class Model {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
 
+        }
+    }
+
+    public static class ModelFactory{
+
+        public static Model defaultModel(long seed, int player_id){
+            Gdx.app.log("Client", "Seed: " + seed);
+            Gdx.app.log("Client", "Player ID: " + player_id);
+
+            Scanner map = new Scanner(Gdx.files.internal("map.txt").read()).useDelimiter(" ");
+
+            int width = map.nextInt();
+            int height = map.nextInt();
+            int unoccupied = map.nextInt();
+            int occupied = map.nextInt();
+
+            //Box2D
+            Box2D.init();
+            World world = new World(new Vector2(0,0), true);
+            world.setContinuousPhysics(true);
+
+            Model model = new Model(width, height, world);
+            model.setSeed(seed);
+            model.initPlayerDistro(2,player_id);
+
+            for(int i = 0; i < unoccupied; i++){
+                new Sun(map.nextInt(),map.nextInt(),model);
+            }
+            for(int i = 0; i < occupied; i++){
+                new Sun(map.nextInt(),map.nextInt(),model.players[map.nextInt()],map.nextInt(),model);
+            }
+            return model;
         }
     }
 }
