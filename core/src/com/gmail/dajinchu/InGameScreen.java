@@ -124,12 +124,12 @@ public class InGameScreen implements Screen {
         for(Sun sun : model.allSuns){
             switch (sun.state){
                 case EMPTY: case CAPTURING: tempTexture = grey_earth; break;
-                case CAPTURED: case DECAPTURING:
+                case CAPTURED:case DECAPTURING: case UPGRADING:
                     if(sun.occupant.playerNumber==0)tempTexture = red_earth;
                     if(sun.occupant.playerNumber==1)tempTexture = blue_earth;
                     break;
             }
-            spriteBatch.draw(tempTexture,(int) sun.pos.x-Sun.size/2, (int) sun.pos.y-Sun.size/2, Sun.size, Sun.size);
+            spriteBatch.draw(tempTexture,(int) sun.pos.x-sun.size/2, (int) sun.pos.y-sun.size/2, sun.size, sun.size);
         }
         //Draw all ships
         for (IntMap.Entry<Ship> entry : model.allShips.entries()) {

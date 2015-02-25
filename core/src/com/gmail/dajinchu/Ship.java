@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class Ship implements Serializable, Entity {
     final Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
+    boolean gotPlayerDirections = false;
     private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
     Vector2 dest = new Vector2();
     Vector2 pos = new Vector2();
@@ -88,7 +89,6 @@ public class Ship implements Serializable, Entity {
                     ship2.model.killShip(ship1);
                 }
             }
-
             //}
         }
     }
@@ -114,13 +114,16 @@ public class Ship implements Serializable, Entity {
         body.setUserData(this);
 
         //Otherwise it will go to 0,0
-        setDest(pos.set(body.getPosition()));
+        dest = new Vector2(body.getPosition());
+        calcDestWithWander();
+
         //Sort of register the ship
         model.allShips.put(model.shipIdCount, this);
         model.shipIdCount++;
     }
 
     public void setDest(Vector2 newdest){
+        gotPlayerDirections=true;
         dest = newdest;
         calcDestWithWander();
     }

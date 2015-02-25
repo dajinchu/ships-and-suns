@@ -14,14 +14,15 @@ public class Sun {
 
     private boolean occupied;
 
+    //Instead of progress just going up to, say MAXCAP*2 as an upgrade, it goes up each time.
+    //This makes it so stealing a sun is always the same difficulty regardless of upgrade
     int progress=0;
-
-    private static final int MAXCAP = 100;
-
-    enum STATE{EMPTY, CAPTURING, CAPTURED, DECAPTURING};
+    int level = 1;
+    enum STATE{EMPTY, CAPTURING, CAPTURED, DECAPTURING, UPGRADING};
     STATE state = STATE.EMPTY;
 
-    public static final int size = 60;
+    private static final int MAXCAP = 100;
+    public int size = 60;
 
     public Sun(int x, int y, Model model){
         model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
@@ -45,17 +46,18 @@ public class Sun {
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
-        if(state == STATE.DECAPTURING || state == STATE.CAPTURED){
-            produceShip(1);
+        if(state == STATE.DECAPTURING || state == STATE.CAPTURED || state == STATE.UPGRADING){
+            produceShip(level);
         }
     }
     public void produceShip(int mass){
         new Ship(occupant, model, mass, (int)pos.x, (int)pos.y);
     }
     public void consumeShip(Ship ship){
-        //We will only consume this ship IF it is actually trying to arrive here.
-        if(ship.dest.dst(this.pos)>this.size)return;
-        
+        //We will only consume this ship IF it is trying to arrive here.
+        //AND the player wants the ship to arrive there, normally dest is on spawn pos, on sun
+        if(ship.dest.dst(this.pos)>this.size||!ship.gotPlayerDirections)return;
+
         Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
         //TODO safety ship==null check?
         switch (state){
@@ -71,11 +73,31 @@ public class Sun {
                     decapture(ship);
                 }break;
             case CAPTURED:
-                if(ship.my_owner!=occupant){
-                    decapture(ship);
+                if(ship.my_owner==occupant){
+                    state = STATE.UPGRADING;
+                    progress=0;//Sort of hijack the capture system by setting progress to 0, this MIGHT cause issues, not sure
+                    capture(ship);
+                }else{
                     state=STATE.DECAPTURING;
+                    decapture(ship);
+                }break;
+            case UPGRADING:
+                if(ship.my_owner==occupant){
+                    capture(ship);//It will set state to captured if done. That is OK, we can use it
+                    if(state==STATE.CAPTURED){
+                        upgrade();
+                        Gdx.app.log("Sun", "Captured");
+                    }
+                }else{
+                    state=STATE.DECAPTURING;
+                    progress = MAXCAP;
+                    decapture(ship);
                 }break;
         }
+    }
+    private void upgrade(){
+        level++;
+        size+=5;
     }
     private void capture(Ship ship){
         progress+=ship.mass;
