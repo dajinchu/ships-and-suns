@@ -57,7 +57,7 @@ public class Sun {
         //We will only consume this ship IF it is trying to arrive here.
         //AND the player wants the ship to arrive there, normally dest is on spawn pos, on sun
         //In this if, we are returning if ship does NOT
-        if(ship.dest.dst(this.pos)>this.size||!ship.tryingToCapture())return;
+        if(ship.dest.dst(this.pos)>this.size/2||!ship.tryingToCapture())return;
 
         Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
         //TODO safety ship==null check?
