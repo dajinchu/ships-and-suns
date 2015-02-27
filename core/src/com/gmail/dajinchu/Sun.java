@@ -56,7 +56,8 @@ public class Sun {
     public void consumeShip(Ship ship){
         //We will only consume this ship IF it is trying to arrive here.
         //AND the player wants the ship to arrive there, normally dest is on spawn pos, on sun
-        if(ship.dest.dst(this.pos)>this.size||!ship.gotPlayerDirections)return;
+        //In this if, we are returning if ship does NOT
+        if(ship.dest.dst(this.pos)>this.size||!ship.tryingToCapture())return;
 
         Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
         //TODO safety ship==null check?
@@ -110,6 +111,8 @@ public class Sun {
         }
         if(progress==MAXCAP){
             state=STATE.CAPTURED;
+            //Good job ship! set platoon to done
+            ship.completeObjective();
         }
     }
     private void decapture(Ship ship) {
@@ -123,6 +126,8 @@ public class Sun {
         }
         if(progress==0){
             state=STATE.EMPTY;
+            //Good job ship! set platoon to done
+            ship.completeObjective();
         }
     }
 }

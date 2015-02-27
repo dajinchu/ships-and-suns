@@ -16,6 +16,8 @@ public class Player implements Serializable {
     int playerNumber;//For identification across devices, each number corresponds to a color
     Texture texture;
 
+    Array<Boolean> platoonFinished = new Array<Boolean>();
+
     String TAG = "Player";
 
     boolean readyToPlay = false;
@@ -28,6 +30,11 @@ public class Player implements Serializable {
         this.model = model;
         this.playerNumber = playerNumber;
         this.color = colormap[playerNumber];
+        platoonFinished.add(true);//Make default platoon that is always done, aka wandering
+    }
+    public int newPlatoon(){
+        platoonFinished.add(false);
+        return platoonFinished.size-1;
     }
 
     //TODO maybe you'll need this?

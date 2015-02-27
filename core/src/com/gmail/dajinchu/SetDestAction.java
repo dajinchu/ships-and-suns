@@ -26,10 +26,11 @@ public class SetDestAction implements FutureAction {
     }
     @Override
     public void execute(Model model) {
+        int platoon = model.players[playerid].newPlatoon();
         for(int id : model.players[playerid].my_ships){
             tmp = model.allShips.get(id);
             if(tmp.pos.dst2(effectedCenter)<effectedRadiusSq){
-                tmp.setDest(dest);
+                tmp.setDest(dest,platoon);
             }
         }
     }
