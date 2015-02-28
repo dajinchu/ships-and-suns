@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.IntMap;
  */
 //Turn Buffer. Eventually may figure out slowing and speeding up timestep to keep buffer consistent
 public class TurnBuffer {
-    private IntMap<Turn> buffer = new IntMap<Turn>();
+    private volatile IntMap<Turn> buffer = new IntMap<Turn>();
     private Turn temp;
 
     public TurnBuffer(){
@@ -16,6 +16,9 @@ public class TurnBuffer {
     private Turn getTurn(int frame){
         if(!buffer.containsKey(frame)){
             //Make new Turn if not already existing
+            InGameScreen.file.writeString("frame "+frame+" was created", true);
+            //Sometimes the InGameScreen thread and the Socket thread
+            //make the same frame at the same time and make two different turns for the same frame
             buffer.put(frame, new Turn(frame));
         }
         return buffer.get(frame);
@@ -23,7 +26,7 @@ public class TurnBuffer {
     public void addAction(FutureAction action){
         getTurn(action.getScheduledFrame()).addAction(action);
     }
-    public void setDoneSending(int frame, int player){
+    public synchronized void setDoneSending(int frame, int player){
         getTurn(frame).setPlayerDone(player);
     }
     public void executeFrame(Model model, int frame){
