@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 
 public class Ship implements Serializable, Entity {
-    final Body body;
+    Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
     Vector2 dest = new Vector2();

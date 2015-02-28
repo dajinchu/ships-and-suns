@@ -22,7 +22,10 @@ public class SinglePlayerSocketManager implements SocketManager{
     @Override
     public void sendMsg(Command msg) {
         //Just bounce it back
-        notifyObserver(Command.deserialize(msg.serialize()));
+        notifyObserver(msg);
+        if(msg instanceof DoneSendingCommand){
+            notifyObserver(new DoneSendingCommand(((DoneSendingCommand) msg).frame, 1));
+        }
     }
 
     @Override

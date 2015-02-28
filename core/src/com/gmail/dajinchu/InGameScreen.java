@@ -69,6 +69,10 @@ public class InGameScreen implements Screen {
 
     public static FileHandle file;
 
+    //For average 60 fps system to step model
+    private float frameTime;
+    private float accumulator;
+
     public InGameScreen(Game game, final Model model, final SocketManager socketManager) {
         Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
@@ -92,7 +96,7 @@ public class InGameScreen implements Screen {
         controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
-        file = Gdx.files.external(new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date()) + " print networking" + ".txt");
+        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/true lockstep 'hh-mm a'.txt'").format(new Date()));
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
 
 
@@ -101,7 +105,15 @@ public class InGameScreen implements Screen {
     //Game Mechanic Functions
 
     public void update(float delta) {
-        model.update(delta);
+        if(model.state != Model.GameState.PLAYING)return;
+        frameTime = Math.min(delta, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= 1 / 60f) {
+            model.step(1/60f);
+            //Make a Turn instance
+            controller.setDoneSending();
+            accumulator -= 1/60f;
+        }
     }
 
     @Override

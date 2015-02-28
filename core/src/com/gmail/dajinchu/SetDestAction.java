@@ -39,4 +39,9 @@ public class SetDestAction implements FutureAction {
     public int getScheduledFrame() {
         return frame;
     }
+
+    @Override
+    public int getPlayerId() {
+        return playerid;
+    }
 }

@@ -10,7 +10,7 @@ import java.util.HashMap;
  */
 public final class FixtureDefFactory {
 
-    private static CircleShape circle = new CircleShape();
+    private static CircleShape circle;
     private static HashMap<Integer, FixtureDef> circleFixtureDefs = new HashMap<Integer, FixtureDef>();
 
     private FixtureDefFactory(){
@@ -23,6 +23,7 @@ public final class FixtureDefFactory {
             return circleFixtureDefs.get(radius);
         }
         //We haven't already created a circle of this radius, so make one:
+        circle = new CircleShape();
         circle.setRadius(radius);
 
         FixtureDef fixtureDef = new FixtureDef();

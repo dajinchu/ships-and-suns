@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gmail.dajinchu.net.Command;
 import com.gmail.dajinchu.net.CreateFutureSetDestCommand;
+import com.gmail.dajinchu.net.DoneSendingCommand;
 import com.gmail.dajinchu.net.MessageObserver;
 import com.gmail.dajinchu.net.ReadyToPlayCommand;
 import com.gmail.dajinchu.net.SocketManager;
@@ -162,6 +163,9 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
     }
     public void setPlayerReady(int playerid){
         socketManager.sendMsg(new ReadyToPlayCommand(playerid));
+    }
+    public void setDoneSending(){
+        socketManager.sendMsg(new DoneSendingCommand(Model.worldFrame+100, model.me.playerNumber));
     }
 
     //update gets called by the socketManagers, telling Controller a command has arrived
