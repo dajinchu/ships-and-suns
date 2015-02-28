@@ -129,7 +129,7 @@ public class LANConnect extends ConnectScreen {
         single.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainGame.setScreen(new InGameScreen(mainGame, Model.defaultModel(50,0),new SinglePlayerSocketManager()));
+                mainGame.setScreen(new InGameScreen(mainGame, Model.ModelFactory.defaultModel(50,0),new SinglePlayerSocketManager()));
             }
         });
         //Name field
