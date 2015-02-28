@@ -172,6 +172,13 @@ public class Model {
         state = GameState.PLAYING;
         InGameScreen.file.writeString("Setting GameState to PLAYING"+ "Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
     }
+    public int checkSum() {
+        int sum = 0;
+        for (Ship ship : allShips.values()) {
+            sum+=ship.pos.x+ship.pos.y;
+        }
+        return sum;
+    }
 
     public Body createCircleBody(int x, int y, float radius, BodyDef.BodyType type, boolean isSensor){
         BodyDef bodyDef = new BodyDef();

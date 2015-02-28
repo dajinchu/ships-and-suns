@@ -67,7 +67,7 @@ public class InGameScreen implements Screen {
     static Texture redship = new Texture("ship.png");
     Texture tempTexture;
 
-    public static FileHandle file;
+    public static FileHandle file, checksumFile;
 
     //For average 60 fps system to step model
     private float frameTime;
@@ -96,8 +96,10 @@ public class InGameScreen implements Screen {
         controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
-        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/true lockstep 'hh-mm a'.txt'").format(new Date()));
+        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/network 'hh-mm a'.txt'").format(new Date()));
+        checksumFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/checksums 'hh-mm a'.txt'").format(new Date()));
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
+        checksumFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
 
 
 
@@ -109,6 +111,7 @@ public class InGameScreen implements Screen {
         frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
         while (accumulator >= 1 / 60f) {
+            checksumFile.writeString("Frame "+Model.worldFrame+"|"+model.checkSum()+"\n",true);
             model.step(1/60f);
             //Make a Turn instance
             controller.setDoneSending();
