@@ -138,9 +138,9 @@ public class Model {
                 }
                 //Ship to Sun contact
                 else if(aData instanceof Sun && bData instanceof Ship){
-                    ((Sun) aData).consumeShip((Ship) bData);
+                    ((Ship) bData).captureSun((Sun) aData);
                 }else if(aData instanceof Ship && bData instanceof Sun){
-                    ((Sun) bData).consumeShip((Ship) aData);
+                    ((Ship) aData).captureSun((Sun) bData);
                 }
             }
             contacts.clear();

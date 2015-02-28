@@ -25,6 +25,8 @@ public class Ship implements Serializable, Entity {
 
     int platoonNumber=0;
 
+    Sun hostingSun;
+
     boolean destroyed = false;
 
     //Temp stuff, local variables here to save memory
@@ -129,12 +131,15 @@ public class Ship implements Serializable, Entity {
         calcDestWithWander();
     }
 
+    public void captureSun(Sun sun){
+        hostingSun = sun;
+    }
+
     public boolean tryingToCapture(){
         return !my_owner.platoonFinished.get(platoonNumber);
     }
-
     public void completeObjective(){
-        my_owner.platoonFinished.set(platoonNumber,true);
+        my_owner.platoonFinished.set(platoonNumber, true);
     }
 
     public void frame(){
@@ -149,6 +154,12 @@ public class Ship implements Serializable, Entity {
         loopcount++;
         //Have we arrived and needing a new wanderdest?
         if(wanderdest.dst(pos)<5){
+            //We will only consume this ship IF it is trying to arrive here.
+            //AND the player wants the ship to arrive there, normally dest is on spawn pos, on sun
+            if(tryingToCapture()&&dest.dst(hostingSun.pos)<=hostingSun.size/2) {
+                hostingSun.consumeShip(this);
+            }
+
             calcDestWithWander();
         }
 
