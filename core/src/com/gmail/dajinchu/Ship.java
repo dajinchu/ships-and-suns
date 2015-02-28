@@ -25,6 +25,8 @@ public class Ship implements Serializable, Entity {
 
     int platoonNumber=0;
 
+    //Hosting sun isn't technically necessary,
+    //it just saves Ship from having to do a large number of pythag to every Sun to see if it hit one
     Sun hostingSun;
 
     boolean destroyed = false;
@@ -136,7 +138,12 @@ public class Ship implements Serializable, Entity {
     }
 
     public boolean tryingToCapture(){
-        return !my_owner.platoonFinished.get(platoonNumber);
+        //Ship has not even contacted a sun! Can't cap if we aren't there.
+        if(hostingSun==null)return false;
+        //Only cap the sun if platoon is still trying to, this also means the player wants ship here,
+        // it's not just random wander
+        // ALSO ship has have dest inside sun, so it doesn't cap while flying by
+        return !my_owner.platoonFinished.get(platoonNumber)&&dest.dst(hostingSun.pos)<=hostingSun.size/2;
     }
     public void completeObjective(){
         my_owner.platoonFinished.set(platoonNumber, true);
@@ -154,9 +161,7 @@ public class Ship implements Serializable, Entity {
         loopcount++;
         //Have we arrived and needing a new wanderdest?
         if(wanderdest.dst(pos)<5){
-            //We will only consume this ship IF it is trying to arrive here.
-            //AND the player wants the ship to arrive there, normally dest is on spawn pos, on sun
-            if(tryingToCapture()&&dest.dst(hostingSun.pos)<=hostingSun.size/2) {
+            if(tryingToCapture()) {
                 hostingSun.consumeShip(this);
             }
 
