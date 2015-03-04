@@ -259,14 +259,13 @@ public class Model {
             Model model = new Model(width, height, world);
             model.setSeed(seed);
             model.initPlayerDistro(2,player_id);
-            model.initShipDistro(100);
-/*
+
             for(int i = 0; i < unoccupied; i++){
                 new Sun(map.nextInt(),map.nextInt(),model);
             }
             for(int i = 0; i < occupied; i++){
                 new Sun(map.nextInt(),map.nextInt(),model.players[map.nextInt()],map.nextInt(),model);
-            }*/
+            }
             return model;
         }
     }
