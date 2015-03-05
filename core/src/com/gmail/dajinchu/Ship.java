@@ -52,7 +52,9 @@ public class Ship implements Serializable, Entity {
 
     public static void collide(Ship ship1, Ship ship2){
         //Gdx.app.log("Ship", "Colliding "+ship1.dumpInfo()+" and "+ship2.dumpInfo());
-
+        if(true){
+            return;
+        }
         if(ship1.my_owner != ship2.my_owner){
             //Enemy ships colliding
             Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are not friendly");
