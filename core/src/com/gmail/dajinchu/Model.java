@@ -117,14 +117,17 @@ public class Model {
             aData = contact.a;
             bData = contact.b;
             if(aData instanceof Ship && bData instanceof Ship){
+                InGameScreen.deternismFile.writeString("Contact "+((Ship) aData).id+", "+((Ship) bData).id+"\n", true);
                 Gdx.app.log("Contact Cycle", ((Ship) aData).id+", "+((Ship) bData).id+" checking number "+contacts.indexOf(contact, true)+"/"+contacts.size);
                 if(!allShips.containsKey(((Ship) aData).id)||!allShips.containsKey(((Ship) bData).id))continue;
                 Ship.collide((Ship)aData,(Ship)bData);
             }
             //Ship to Sun contact
             else if(aData instanceof Sun && bData instanceof Ship){
+                InGameScreen.deternismFile.writeString("Contact "+((Ship) bData).id+", sun\n", true);
                 ((Ship) bData).captureSun((Sun) aData);
             }else if(aData instanceof Ship && bData instanceof Sun){
+                InGameScreen.deternismFile.writeString("Contact "+((Ship) aData).id+", sun\n", true);
                 ((Ship) aData).captureSun((Sun) bData);
             }
         }
