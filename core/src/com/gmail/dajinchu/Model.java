@@ -48,7 +48,6 @@ public class Model {
     private Ship disShip;
     Array<ContactUserData> contacts = new Array<ContactUserData>();
 
-    float spawnAccumulator=0;
     public static int worldFrame = 0;
 
     StringBuilder delete = new StringBuilder();
@@ -137,12 +136,10 @@ public class Model {
         //}
         worldFrame++;
 
-        spawnAccumulator+=timestep;
-        while(spawnAccumulator>=1){
-            for(Sun sun : allSuns){
+        if(worldFrame%60==0) {
+            for (Sun sun : allSuns) {
                 sun.pulse();
             }
-            spawnAccumulator-=1;
         }
     }
 
@@ -170,7 +167,7 @@ public class Model {
             }
         }
         state = GameState.PLAYING;
-        InGameScreen.file.writeString("Setting GameState to PLAYING"+ "Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
+        InGameScreen.file.writeString("Setting GameState to PLAYING" + "Time " + TimeUtils.timeSinceMillis(InGameScreen.start) + "\n", true);
     }
     public int checkSum() {
         int sum = 0;
