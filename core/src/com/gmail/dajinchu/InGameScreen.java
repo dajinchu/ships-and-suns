@@ -67,7 +67,7 @@ public class InGameScreen implements Screen {
     static Texture redship = new Texture("ship.png");
     Texture tempTexture;
 
-    public static FileHandle file, checksumFile;
+    public static FileHandle file, checksumFile, deternismFile;
 
     //For average 60 fps system to step model
     private float frameTime;
@@ -98,6 +98,8 @@ public class InGameScreen implements Screen {
 
         file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/network 'hh-mm a'.txt'").format(new Date()));
         checksumFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/checksums 'hh-mm a'.txt'").format(new Date()));
+        deternismFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/determinism 'hh-mm a'.txt'").format(new Date()));
+        deternismFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
         checksumFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
 

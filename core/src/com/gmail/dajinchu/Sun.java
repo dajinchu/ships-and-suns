@@ -54,7 +54,7 @@ public class Sun {
         new Ship(occupant, model, mass, (int)pos.x, (int)pos.y);
     }
     public void consumeShip(Ship ship){
-        Gdx.app.log("Sun", state+" "+ship.dumpInfo()+" progress="+progress);
+        InGameScreen.deternismFile.writeString("Sun "+ state+" "+ship.dumpInfo()+" progress="+progress,true);
         //TODO safety ship==null check?
         switch (state){
             case EMPTY:
