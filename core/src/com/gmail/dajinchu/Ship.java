@@ -52,6 +52,7 @@ public class Ship implements Serializable, Entity {
 
     public static void collide(Ship ship1, Ship ship2){
         //Gdx.app.log("Ship", "Colliding "+ship1.dumpInfo()+" and "+ship2.dumpInfo());
+
         if(ship1.my_owner != ship2.my_owner){
             //Enemy ships colliding
             Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are not friendly");
@@ -70,10 +71,16 @@ public class Ship implements Serializable, Entity {
             Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are friendly");
             //Friendly ships colliding
             int combinedMass=ship1.mass+ship2.mass;
-            //If they are too big to make one ship, just average them, and give ship1 extra if odd
+            //If they are too big to make one ship, just average them, and give larger id extra if odd
             if(combinedMass>MAXMASS){
-                ship1.setMass((int) Math.ceil(combinedMass / 2f));
-                ship2.setMass((int) Math.floor(combinedMass / 2f));
+                //Decided that whichever ship has a lower id number lives
+                if(ship1.id<ship2.id){
+                    ship1.setMass((int) Math.ceil(combinedMass / 2f));
+                    ship2.setMass((int) Math.floor(combinedMass / 2f));
+                }else{
+                    ship2.setMass((int) Math.ceil(combinedMass / 2f));
+                    ship1.setMass((int) Math.floor(combinedMass / 2f));
+                }
             }
             //If the two ships are small enough to combine and not exceed max...
             //Check to see who is larger so that the larger one sets the position
