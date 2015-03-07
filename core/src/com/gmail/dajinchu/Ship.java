@@ -47,7 +47,7 @@ public class Ship implements Serializable, Entity {
 
     public int mass = 1;
     public int radius;
-    public final static int MAXMASS = 20;
+    public final static int MAXMASS = 5;
 
 
     public static void collide(Ship ship1, Ship ship2){
