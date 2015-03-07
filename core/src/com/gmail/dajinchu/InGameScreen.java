@@ -113,7 +113,6 @@ public class InGameScreen implements Screen {
         frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
         while (accumulator >= 1 / 60f) {
-            checksumFile.writeString("Frame "+Model.worldFrame+"|"+model.checkSum()+"\n",true);
             model.step(1/60f);
             //Make a Turn instance
             controller.setDoneSending();

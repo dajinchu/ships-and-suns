@@ -103,6 +103,10 @@ public class Model {
         world.step(1/60f, 6, 2);
         //Gdx.app.log("Model", "updating");
 
+
+        InGameScreen.checksumFile.writeString("Frame "+worldFrame+"|"+checkSum()+"\n",true);
+
+
         world.getBodies(bodies);
         if(worldFrame>100) {
             turnBuffer.executeFrame(this, worldFrame);
@@ -176,7 +180,7 @@ public class Model {
     public double checkSum() {
         double sum = 0;
         for (Ship ship : allShips.values()) {
-            sum+=ship.pos.x+ship.pos.y+ship.mass;
+            sum+=(ship.pos.x+ship.pos.y)*ship.mass;
         }
         return sum;
     }
