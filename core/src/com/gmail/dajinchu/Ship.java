@@ -34,7 +34,7 @@ public class Ship implements Serializable, Entity {
     //Temp stuff, local variables here to save memory
     double minx,maxx,miny,maxy,wanderxoffset;
     int newgridx,newgridy;
-    Ship target;
+    static Ship temp;
 
     int id;
 
@@ -52,9 +52,14 @@ public class Ship implements Serializable, Entity {
 
     public static void collide(Ship ship1, Ship ship2){
         //Gdx.app.log("Ship", "Colliding "+ship1.dumpInfo()+" and "+ship2.dumpInfo());
-        if(true){
-            return;
+
+        //Ship1 is bigger id
+        if(ship1.id<ship2.id) {
+            temp = ship1;
+            ship1 = ship2;
+            ship2 = temp;
         }
+
         if(ship1.my_owner != ship2.my_owner){
             //Enemy ships colliding
             Gdx.app.log("Ship",ship1.id+" and "+ship2.id+" are not friendly");
@@ -75,14 +80,8 @@ public class Ship implements Serializable, Entity {
             int combinedMass=ship1.mass+ship2.mass;
             //If they are too big to make one ship, just average them, and give larger id extra if odd
             if(combinedMass>MAXMASS){
-                //Decided that whichever ship has a lower id number lives
-                if(ship1.id<ship2.id){
-                    ship1.setMass((int) Math.ceil(combinedMass / 2f));
-                    ship2.setMass((int) Math.floor(combinedMass / 2f));
-                }else{
-                    ship2.setMass((int) Math.ceil(combinedMass / 2f));
-                    ship1.setMass((int) Math.floor(combinedMass / 2f));
-                }
+                ship1.setMass((int) Math.ceil(combinedMass / 2f));
+                ship2.setMass((int) Math.floor(combinedMass / 2f));
             }
             //If the two ships are small enough to combine and not exceed max...
             //Check to see who is larger so that the larger one sets the position
@@ -93,15 +92,9 @@ public class Ship implements Serializable, Entity {
                 ship2.setMass(combinedMass);
                 ship2.model.killShip(ship1);
             }else {
-                //A deterministic way to decide which one lives
-                //Decided that whichever ship has a lower id number lives
-                if(ship1.id<ship2.id){
-                    ship1.setMass(combinedMass);
-                    ship1.model.killShip(ship2);
-                }else{
-                    ship2.setMass(combinedMass);
-                    ship2.model.killShip(ship1);
-                }
+                //else just use ship1
+                ship1.setMass(combinedMass);
+                ship1.model.killShip(ship2);
             }
             //}
         }
