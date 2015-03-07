@@ -70,9 +70,9 @@ public class Sun {
                 }break;
             case CAPTURED:
                 if(ship.my_owner==occupant){
-                    state = STATE.UPGRADING;
+                    /*state = STATE.UPGRADING;
                     progress=0;//Sort of hijack the capture system by setting progress to 0, this MIGHT cause issues, not sure
-                    capture(ship);
+                    capture(ship);*/
                 }else{
                     state=STATE.DECAPTURING;
                     decapture(ship);
