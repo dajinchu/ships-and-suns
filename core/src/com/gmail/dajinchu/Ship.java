@@ -14,6 +14,11 @@ import java.io.Serializable;
 
 
 public class Ship implements Serializable, Entity {
+
+
+    static int collisions=0;
+
+
     Body body;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
@@ -47,10 +52,11 @@ public class Ship implements Serializable, Entity {
 
     public int mass = 1;
     public int radius;
-    public final static int MAXMASS = 5;
+    public final static int MAXMASS = 10;
 
 
     public static void collide(Ship ship1, Ship ship2){
+        collisions++;
         //Gdx.app.log("Ship", "Colliding "+ship1.dumpInfo()+" and "+ship2.dumpInfo());
 
         //Ship1 is bigger id
@@ -210,7 +216,8 @@ public class Ship implements Serializable, Entity {
         //Gdx.app.log("ship", speed+" "+dist);
         steer.set(desired).sub(currentVel);
         steer.limit((float) InGameScreen.MAX_FORCE);
-        body.applyLinearImpulse(steer, body.getWorldCenter(), true);
+        body.setTransform(pos.add(steer),0);
+        //body.applyLinearImpulse(steer, body.getWorldCenter(), true);
     }
 
     /*public Ship getTarget(){

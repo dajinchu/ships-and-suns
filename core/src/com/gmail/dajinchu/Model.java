@@ -104,7 +104,7 @@ public class Model {
         //Gdx.app.log("Model", "updating");
 
 
-        InGameScreen.checksumFile.writeString("Frame "+worldFrame+"|"+checkSum()+"\n",true);
+        InGameScreen.checksumFile.writeString("Frame "+worldFrame+"\nChecksum: "+checkSum()+"\n"+Ship.collisions+" ship collisions\n",true);
 
 
         world.getBodies(bodies);
@@ -142,13 +142,13 @@ public class Model {
                 file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
             }*/
         //}
-        worldFrame++;
-
         if(worldFrame%60==0) {
             for (Sun sun : allSuns) {
                 sun.pulse();
             }
         }
+
+        worldFrame++;
     }
 
     //Getter-Setter
