@@ -113,6 +113,7 @@ public class Model {
             tempship.frame();
         }
         delete.setLength(0);
+        InGameScreen.deternismFile.writeString("New frame"+worldFrame+"\n",true);
         for(ContactUserData contact : contacts){
             aData = contact.a;
             bData = contact.b;
@@ -172,10 +173,10 @@ public class Model {
         state = GameState.PLAYING;
         InGameScreen.file.writeString("Setting GameState to PLAYING" + "Time " + TimeUtils.timeSinceMillis(InGameScreen.start) + "\n", true);
     }
-    public int checkSum() {
-        int sum = 0;
+    public double checkSum() {
+        double sum = 0;
         for (Ship ship : allShips.values()) {
-            sum+=ship.pos.x+ship.pos.y;
+            sum+=ship.pos.x+ship.pos.y+ship.mass;
         }
         return sum;
     }
