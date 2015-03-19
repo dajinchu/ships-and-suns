@@ -54,6 +54,9 @@ public class Model {
 
     public TurnBuffer turnBuffer = new TurnBuffer();
 
+    //Checksums
+    double XY, totalmass, massID;
+
     public Model(int mapWidth, int mapHeight, World world){
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
@@ -103,8 +106,17 @@ public class Model {
         world.step(1/60f, 6, 2);
         //Gdx.app.log("Model", "updating");
 
+        XY=totalmass=massID=0;
+        for(Ship ship: allShips.values()){
+            XY+=ship.pos.x+ship.pos.y;
+            totalmass+=ship.mass;
+            massID+=ship.mass*ship.id;
+        }
 
-        InGameScreen.checksumFile.writeString("Frame "+worldFrame+"\nChecksum: "+checkSum()+"\n"+Ship.collisions+" ship collisions\n",true);
+        InGameScreen.checksumFile.writeString("Frame "+worldFrame+
+                "\nXY-Checksum: "+XY+
+                "\ntotalmass-Checksum: "+totalmass+
+                "\nmass*ID-Checksum: "+massID+"\n"+Ship.collisions+" ship collisions\n",true);
 
 
         world.getBodies(bodies);
@@ -180,7 +192,7 @@ public class Model {
     public double checkSum() {
         double sum = 0;
         for (Ship ship : allShips.values()) {
-            sum+=(ship.pos.x+ship.pos.y)*ship.mass;
+            sum+=(ship.pos.x+ship.pos.y)*ship.mass*ship.id;
         }
         return sum;
     }
