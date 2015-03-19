@@ -106,6 +106,12 @@ public class Model {
         world.step(1/60f, 6, 2);
         //Gdx.app.log("Model", "updating");
 
+        if(worldFrame%60==0) {
+            for (Sun sun : allSuns) {
+                sun.pulse();
+            }
+        }
+
         XY=totalmass=massID=0;
         for(Ship ship: allShips.values()){
             XY+=ship.pos.x+ship.pos.y;
@@ -154,11 +160,6 @@ public class Model {
                 file.writeString(entry.value.pos.x + "," + entry.value.pos.y+"\n",true);
             }*/
         //}
-        if(worldFrame%60==0) {
-            for (Sun sun : allSuns) {
-                sun.pulse();
-            }
-        }
 
         worldFrame++;
     }
