@@ -278,6 +278,8 @@ public class Model {
             model.setSeed(seed);
             model.initPlayerDistro(2,player_id);
 
+
+
             for(int i = 0; i < unoccupied; i++){
                 new Sun(map.nextInt(),map.nextInt(),model);
             }

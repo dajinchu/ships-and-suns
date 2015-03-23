@@ -216,8 +216,8 @@ public class Ship implements Serializable, Entity {
         //Gdx.app.log("ship", speed+" "+dist);
         steer.set(desired).sub(currentVel);
         steer.limit((float) InGameScreen.MAX_FORCE);
-        body.setTransform(pos.add(steer),0);
-        //body.applyLinearImpulse(steer, body.getWorldCenter(), true);
+        //body.setTransform(pos.add(steer),0);
+        body.applyLinearImpulse(steer, body.getWorldCenter(), true);
     }
 
     /*public Ship getTarget(){
