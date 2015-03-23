@@ -20,8 +20,8 @@ public class CreateFutureSetDestCommand extends Command {
     public CreateFutureSetDestCommand(int frame, int player, Vector2 dest, Vector2 effectedCenter, float effectedRadius){
         this.frame = frame;
         this.playerid = player;
-        this.dest = dest;
-        this.effectedCenter = effectedCenter;
+        this.dest = dest.cpy();
+        this.effectedCenter = effectedCenter.cpy();
         this.effectedRadius = effectedRadius;
     }
 
