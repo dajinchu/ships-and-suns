@@ -96,9 +96,9 @@ public class InGameScreen implements Screen {
         controller = new Controller(model, cam, socketManager);
         Gdx.input.setInputProcessor(new GestureDetector(controller));
 
-        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/network 'hh-mm a'.txt'").format(new Date()));
-        checksumFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/checksums 'hh-mm a'.txt'").format(new Date()));
-        deternismFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/determinism 'hh-mm a'.txt'").format(new Date()));
+        file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation network 'hh-mm a'.txt'").format(new Date()));
+        checksumFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation checksums 'hh-mm a'.txt'").format(new Date()));
+        deternismFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation determinism 'hh-mm a'.txt'").format(new Date()));
         deternismFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
         checksumFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
@@ -115,7 +115,6 @@ public class InGameScreen implements Screen {
         while (accumulator >= 1 / 60f) {
             model.step(1/60f);
             //Make a Turn instance
-            controller.setDoneSending();
             accumulator -= 1/60f;
         }
     }
