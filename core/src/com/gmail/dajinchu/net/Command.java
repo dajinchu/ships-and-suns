@@ -24,7 +24,6 @@ public abstract class Command {
         switch (msg_type){
             case 0: return SetDest(args);
             case 1: return Ready(args);
-            case 2: return DoneSending(args);
         }
         //If returning null like this, SOMETHING IS BAD
         return null;
@@ -38,8 +37,5 @@ public abstract class Command {
     }
     private static ReadyToPlayCommand Ready(List<String> args){
         return new ReadyToPlayCommand(Integer.parseInt(args.get(0)));
-    }
-    private static DoneSendingCommand DoneSending(List<String> args){
-        return new DoneSendingCommand(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)));
     }
 }

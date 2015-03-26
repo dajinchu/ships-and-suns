@@ -26,14 +26,8 @@ public class TurnBuffer {
     public void addAction(FutureAction action){
         getTurn(action.getScheduledFrame()).addAction(action);
     }
-    public synchronized void setDoneSending(int frame, int player){
-        getTurn(frame).setPlayerDone(player);
-    }
     public void executeFrame(Model model, int frame){
         temp = getTurn(frame);
-        while (!temp.isDone()){
-            InGameScreen.file.writeString("waiting on turn "+frame+"\n",true); //TODO Add exception for first 100 frames?
-        }
         temp.execute(model);
         buffer.remove(frame);
     }
