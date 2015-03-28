@@ -88,8 +88,8 @@ public class Controller implements GestureDetector.GestureListener {
         if(setDestState==SETDESTSTATE.NEEDTARGET){
             //If we have a selection, and need a target
             cam.unproject(touch.set(x,y,0));
-            socketManager.sendMsg(new CreateFutureSetDestCommand(model.worldFrame()+100,model.me(),
-                    new Vector2(touch.x,touch.y),setDestSelectCenter,setDestRadius).serialize());
+            socketManager.sendCmd(new CreateFutureSetDestCommand(model.worldFrame()+100,model.me(),
+                    new Vector2(touch.x,touch.y),setDestSelectCenter,setDestRadius));
             //Okay, we sent the Command, NOT settingDest anymore
             setDestState=SETDESTSTATE.NOT;
         }
@@ -158,6 +158,6 @@ public class Controller implements GestureDetector.GestureListener {
         }
     }
     public void setPlayerReady(int playerid){
-        socketManager.sendMsg(new ReadyToPlayCommand(playerid).serialize());
+        socketManager.sendCmd(new ReadyToPlayCommand(playerid));
     }
 }

@@ -1,9 +1,11 @@
 package com.gmail.dajinchu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.gmail.dajinchu.net.Command;
 import com.gmail.dajinchu.net.SocketManager;
+
+import java.util.Scanner;
 
 /**
  * Created by Da-Jin on 3/26/2015.
@@ -11,29 +13,41 @@ import com.gmail.dajinchu.net.SocketManager;
 //Interpolates snapshots. Fits into InGameScreen same as HostModel.
 public class SpectateModel implements Model{
 
+    private final Vector2 mapsize;
     private GameState state = GameState.STARTING;
 
-    public SpectateModel(Vector2 mapSize, SocketManager socketManager){
+    int me;
+
+    SocketManager sm;
+
+    Snapshot now;
+
+    public SpectateModel(Vector2 mapSize, int player_id, SocketManager socketManager){
         socketManager.setMessageReceived(this);
+        me = player_id;
+        this.mapsize = mapSize;
+        sm = socketManager;
     }
     @Override
     public void step(float timestep) {
+        if(now!=null){
 
+        }
     }
 
     @Override
     public Array<? extends ObjectData> getShips() {
-        return null;
+        return now.ships;
     }
 
     @Override
     public ObjectData[] getSuns() {
-        return null;
+        return now.suns.toArray();//TODO convert this to getShips style possibly
     }
 
     @Override
     public int me() {
-        return 0;
+        return me;
     }
 
     @Override
@@ -43,7 +57,7 @@ public class SpectateModel implements Model{
 
     @Override
     public Vector2 mapSize() {
-        return null;
+        return mapsize;
     }
 
     @Override
@@ -52,7 +66,26 @@ public class SpectateModel implements Model{
     }
 
     @Override
-    public void update(Command msg) {
+    public SocketManager socket() {
+        return sm;
+    }
 
+    @Override
+    public void update(String msg) {
+        state = GameState.PLAYING;
+        now=new Snapshot(msg);
+    }
+
+
+    public static class ModelFactory {
+
+        public static SpectateModel defaultSpectateModel(int player_id, SocketManager socketManager) {
+            Scanner map = new Scanner(Gdx.files.internal("map.txt").read()).useDelimiter(" ");
+
+            int width = map.nextInt();
+            int height = map.nextInt();
+
+            return new SpectateModel(new Vector2(width,height),player_id,socketManager);
+        }
     }
 }

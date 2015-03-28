@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by Da-Jin on 1/1/2015.
  */
-public abstract class SocketManager {
+public class SocketManager {
 
     private BufferedReader reader;
     private Writer writer;
@@ -33,15 +33,19 @@ public abstract class SocketManager {
         new Thread(new SocketReceive()).start();
     }
 
-
-    public abstract void decodeMessage(String msg);
-
+    public void decodeMessage(String msg) {
+        observer.update(msg);
+    }
 
     public void setMessageReceived(MessageObserver msgrec) {
         observer = msgrec;
     }
 
-    public void sendMsg(String msg){
+    public void sendCmd(Command cmd){
+        sendMsg(cmd.serialize());
+    }
+
+    void sendMsg(String msg){
         try {
             //InGameScreen.file.writeString("Sending '"+msg+"'. Frame "+ +"Time "+ TimeUtils.timeSinceMillis(InGameScreen.start)+"\n", true);
             sendingQueue.put(msg);

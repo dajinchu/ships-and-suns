@@ -16,8 +16,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.net.Command;
-import com.gmail.dajinchu.net.SnapshotServerSocketManager;
 import com.gmail.dajinchu.net.SocketManager;
+import com.gmail.dajinchu.net.SocketServerManager;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -27,7 +27,7 @@ import java.util.Scanner;
  */
 //Model with Box2d and does collisions. Should be on Host device.
 public class HostModel implements Model{
-    private final SocketManager socketManager;
+    private final SocketServerManager socketManager;
     Player[] players;
     Player me;
     IntMap<Ship> allShips =  new IntMap<Ship>();
@@ -60,7 +60,7 @@ public class HostModel implements Model{
     //Checksums
     double XY, totalmass, massID;
 
-    public HostModel(Vector2 mapSize, World world, SnapshotServerSocketManager socketManager){
+    public HostModel(Vector2 mapSize, World world, SocketServerManager socketManager){
         this.mapSize = mapSize;
         this.world=world;
         world.setContactListener(new ShipContactListener());
@@ -108,7 +108,7 @@ public class HostModel implements Model{
         world.step(1/60f, 6, 2);
         //Gdx.app.log("HostModel", "updating");
 
-        socketManager.sendMsg(new Snapshot(this).ret.toString());
+        socketManager.sendSnap(new Snapshot(this));
 
         if(worldFrame%60==0) {
             for (Sun sun : allSuns) {
@@ -197,9 +197,15 @@ public class HostModel implements Model{
     public int worldFrame() {
         return worldFrame;
     }
-    @Override
-    public void update(Command msg) {
 
+    @Override
+    public SocketManager socket() {
+        return socketManager;
+    }
+
+    @Override
+    public void update(String msg) {
+        Command.deserialize(msg).execute(this);
     }
 
     //Getter-Setter
@@ -296,7 +302,7 @@ public class HostModel implements Model{
 
     public static class ModelFactory{
 
-        public static HostModel defaultHostModel(long seed, int player_id){
+        public static HostModel defaultHostModel(long seed, int player_id, SocketServerManager socketManager){
             Gdx.app.log("Client", "Seed: " + seed);
             Gdx.app.log("Client", "Player ID: " + player_id);
 
@@ -312,7 +318,7 @@ public class HostModel implements Model{
             World world = new World(new Vector2(0,0), true);
             world.setContinuousPhysics(true);
 
-            HostModel model = new HostModel(new Vector2(width, height), world);
+            HostModel model = new HostModel(new Vector2(width, height), world, socketManager);
             model.setSeed(seed);
             model.initPlayerDistro(2,player_id);
 
