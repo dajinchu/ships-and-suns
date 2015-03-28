@@ -11,9 +11,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gmail.dajinchu.net.SocketManager;
 
@@ -55,12 +52,8 @@ public class InGameScreen implements Screen {
     private int drawShips;
     private int allShipRemove = 0;
 
-    //Box2D
-    private final World world;
-    private final Box2DDebugRenderer debugRenderer;
-
     //View
-    //static Texture[] textureMap = new Texture[]{new Texture(Gdx.files.internal("red.png")),new Texture(Gdx.files.internal("blue.png"))};//number->color link
+    private Color[] colormap = new Color[]{new Color(Color.RED), new Color(Color.BLUE)};
     static Texture blue_earth = new Texture("blue_earth.png");
     static Texture red_earth = new Texture("red_earth.png");
     static Texture grey_earth = new Texture("grey_earth.png");
@@ -73,14 +66,13 @@ public class InGameScreen implements Screen {
     private float frameTime;
     private float accumulator;
 
-    public InGameScreen(Game game, final Model model, final SocketManager socketManager) {
+    public InGameScreen(Game game, final Model model) {
         Gdx.app.log("Ingame", "GAME  screen STARTED");
         this.game = game;
         this.model = model;
         this.spriteBatch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
-        this.world = model.world;
 
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
@@ -88,9 +80,9 @@ public class InGameScreen implements Screen {
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
 
-        debugRenderer = new Box2DDebugRenderer();
-
         start = TimeUtils.millis();
+
+        SocketManager socketManager = model.socket();
 
         //Controller
         controller = new Controller(model, cam, socketManager);
@@ -109,7 +101,7 @@ public class InGameScreen implements Screen {
     //Game Mechanic Functions
 
     public void update(float delta) {
-        if(model.state != Model.GameState.PLAYING)return;
+        if(model.state() != Model.GameState.PLAYING)return;
         frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
         while (accumulator >= 1 / 60f) {
@@ -136,32 +128,29 @@ public class InGameScreen implements Screen {
         //Gdx.app.log("InGameScreen","Drawing");
 
         spriteBatch.setColor(Color.WHITE);
-        for(Sun sun : model.allSuns){
-            switch (sun.state){
-                case EMPTY: case CAPTURING: tempTexture = grey_earth; break;
-                case CAPTURED:case DECAPTURING: case UPGRADING:
-                    if(sun.occupant.playerNumber==0)tempTexture = red_earth;
-                    if(sun.occupant.playerNumber==1)tempTexture = blue_earth;
-                    break;
+        for(ObjectData sun : model.getSuns()){
+            switch (sun.spritekey){
+                case -1: tempTexture = grey_earth; break;
+                case 0: tempTexture = red_earth; break;
+                case 1: tempTexture = blue_earth; break;
             }
             spriteBatch.draw(tempTexture,(int) sun.pos.x-sun.size/2, (int) sun.pos.y-sun.size/2, sun.size, sun.size);
         }
         //Draw all ships
-        for (IntMap.Entry<Ship> entry : model.allShips.entries()) {
-            ship = entry.value;
+        for (ObjectData ship:model.getShips()) {
             drawShips++;
-            spriteBatch.setColor(ship.my_owner.color);
-            spriteBatch.draw(redship, ship.pos.x - ship.radius,
-                    ship.pos.y - ship.radius, ship.radius*2, ship.radius*2);
+            spriteBatch.setColor(colormap[ship.spritekey]);
+            spriteBatch.draw(redship, ship.pos.x - ship.size,
+                    ship.pos.y - ship.size, ship.size*2, ship.size*2);
         }
         spriteBatch.end();
 
         shapeRenderer.begin();
-        shapeRenderer.setColor(model.me.color);
+        shapeRenderer.setColor(colormap[model.me()]);
         if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
             shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
         }
-        shapeRenderer.rect(0,0,model.mapWidth,model.mapHeight);
+        shapeRenderer.rect(0,0,model.mapSize().x,model.mapSize().y);
         shapeRenderer.end();
 
         //debugRenderer.render(world, cam.combined);

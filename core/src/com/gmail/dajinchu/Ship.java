@@ -6,14 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
-import java.io.Serializable;
-
 /**
  * Created by Da-Jin on 12/5/2014.
  */
 
-
-public class Ship implements Serializable, Entity {
+//Represents Ship. Is companion to the body in Box2D. ONLY FOR HOST
+public class Ship extends ObjectData implements Entity {
 
 
     static int collisions=0;
@@ -23,7 +21,6 @@ public class Ship implements Serializable, Entity {
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     private Vector2 wanderdest = new Vector2();//TODO doing now: Eventually give this back to give player control over individual ships
     Vector2 dest = new Vector2();
-    Vector2 pos = new Vector2();
     private Vector2 desired = new Vector2();
     private Vector2 steer = new Vector2();
     //int color;
@@ -44,14 +41,13 @@ public class Ship implements Serializable, Entity {
     int id;
 
     Player my_owner;
-    Model model;
+    HostModel model;
     volatile private double  dist, speed, steerMagnitude, ratio;
 
     static int newGrid = 0, loopcount = 0, dead = 0, outOfBounds = 0;
     private int frame;
 
     public int mass = 1;
-    public int radius;
     public final static int MAXMASS = 10;
 
 
@@ -106,21 +102,22 @@ public class Ship implements Serializable, Entity {
         }
     }
 
-    public Ship(Player owner, Model model, int x, int y){
+    public Ship(Player owner, HostModel model, int x, int y){
         this(owner,model,1,x,y);
     }
 
-    public Ship(Player owner, Model model, int mass, int x, int y){//TODO make Model Singleton
+    public Ship(Player owner, HostModel model, int mass, int x, int y){//TODO make Model Singleton
         if(mass<=0){
             throw new RuntimeException("The mass of a ship reached "+mass+". How's that even possible!?");
         }
 
         this.mass = mass;
-        radius = (int) (4*Math.sqrt(mass));
-        this.body = model.createCircleBody(x,y, radius, BodyDef.BodyType.DynamicBody, true);
+        size = (int) (4*Math.sqrt(mass));
+        this.body = model.createCircleBody(x,y, size, BodyDef.BodyType.DynamicBody, true);
 
         //Add Ship userData to do the moving around stuff
         my_owner = owner;
+        spritekey = my_owner.playerNumber;
         this.model = model;
         this.id = model.shipIdCount;
         my_owner.my_ships.add(id);
@@ -257,10 +254,10 @@ public class Ship implements Serializable, Entity {
 
     public int setMass(int mass){
         this.mass = mass;
-        radius = (int) (4*Math.sqrt(mass));
-        Gdx.app.log("Ship"+id,"Setting mass to "+mass+" radius to "+radius);
+        size = (int) (4*Math.sqrt(mass));
+        Gdx.app.log("Ship"+id,"Setting mass to "+mass+" radius to "+size);
         if(model.allShips.containsKey(id)){
-            body.getFixtureList().get(0).getShape().setRadius(radius);
+            body.getFixtureList().get(0).getShape().setRadius(size);
         }else{
             Gdx.app.log("Ship"+id,"WTF HAPPENED");
         }

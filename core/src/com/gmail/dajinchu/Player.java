@@ -1,7 +1,6 @@
 package com.gmail.dajinchu;
 
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
@@ -22,14 +21,9 @@ public class Player implements Serializable {
 
     boolean readyToPlay = false;
 
-    Color color;
-
-    private Color[] colormap = new Color[]{new Color(Color.RED), new Color(Color.BLUE)};
-
     public Player(int playerNumber, Model model){
         this.model = model;
         this.playerNumber = playerNumber;
-        this.color = colormap[playerNumber];
         platoonFinished.add(true);//Make default platoon that is always done, aka wandering
     }
     public int newPlatoon(){

@@ -7,10 +7,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 /**
  * Created by Da-Jin on 12/30/2014.
  */
-public class Sun {
+//Like ship, it is class for the Box2D Sun body. ONLY FOR HOST
+public class Sun extends ObjectData{
     Player occupant;
-    Vector2 pos;
-    Model model;
+    HostModel model;
 
     private boolean occupied;
 
@@ -22,19 +22,18 @@ public class Sun {
     STATE state = STATE.EMPTY;
 
     private static final int MAXCAP = 100;
-    public int size = 60;
 
-    public Sun(int x, int y, Model model){
+    public Sun(int x, int y, HostModel model){
         model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
 
         this.pos = new Vector2(x,y);
+        this.size = 60;
         this.model = model;
-
     }
 
-    public Sun(int x, int y, Player occupant,int initialPopulation, Model model){
+    public Sun(int x, int y, Player occupant,int initialPopulation, HostModel model){
         this(x,y,model);
 
         this.state = STATE.CAPTURED;
@@ -89,6 +88,19 @@ public class Sun {
                     progress = MAXCAP;
                     decapture(ship);
                 }break;
+        }
+        //Set key for color
+        switch (state) {
+            case EMPTY:
+            case CAPTURING:
+                spritekey = -1;
+                break;
+            case CAPTURED:
+            case DECAPTURING:
+            case UPGRADING:
+                if (occupant.playerNumber == 0) spritekey=0;
+                if (occupant.playerNumber == 1) spritekey=1;
+                break;
         }
         InGameScreen.deternismFile.writeString("Sun "+ state+" "+ship.dumpInfo()+" progress="+progress+"\n",true);
     }
