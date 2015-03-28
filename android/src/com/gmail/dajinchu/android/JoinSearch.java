@@ -16,7 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.MainGame;
 import com.gmail.dajinchu.Model;
-import com.gmail.dajinchu.net.SocketClientManager;
+import com.gmail.dajinchu.SpectateModel;
+import com.gmail.dajinchu.net.SocketManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -191,8 +192,8 @@ public class JoinSearch implements Screen{
                 //Tell server name
                 writer.write(name+"\n");
                 writer.flush();
-                readInitialSetup(br);
-                waitForStart(br,writer);
+                readInitialSetup(br,writer);
+                waitForStart(br);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -205,19 +206,19 @@ public class JoinSearch implements Screen{
         }
     }
 
-    public void readInitialSetup(BufferedReader reader){
+    public void readInitialSetup(BufferedReader reader, final BufferedWriter writer){
         try {
             long seed = Long.parseLong(reader.readLine());
             int player_id = Integer.parseInt(reader.readLine());
 
-            model = Model.ModelFactory.defaultModel(seed, player_id);
+            model = SpectateModel.ModelFactory.defaultSpectateModel(player_id, new SocketManager(reader, writer));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void waitForStart(final BufferedReader reader, final BufferedWriter writer) {
+    public void waitForStart(final BufferedReader reader) {
         Gdx.app.log("Client", "Waiting "+reader.toString());
         try {
             if (reader.readLine().equals("Start")) {
@@ -226,7 +227,7 @@ public class JoinSearch implements Screen{
                     @Override
                     public void run() {
 
-                        mainGame.startGame(model, new SocketClientManager(reader,writer));
+                        mainGame.startGame(model);
                     }
                 });
             }

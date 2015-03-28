@@ -35,7 +35,7 @@ public class MainGame extends Game {
         igScreen.dispose();
     }
 
-    public void startGame(Model model, SocketManager socketManager){
+    public void startGame(Model model){
         Gdx.app.log("MainGame","Starting Game");
         new Thread(new Runnable() {
             @Override
@@ -45,7 +45,7 @@ public class MainGame extends Game {
                 Gdx.app.log("MaingGame", "Dispose conScreen took " + TimeUtils.timeSinceMillis(start));
             }
         }).start();
-        igScreen = new InGameScreen(this, model, socketManager);
+        igScreen = new InGameScreen(this, model);
         setScreen(igScreen);
     }
 }
