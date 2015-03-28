@@ -118,6 +118,7 @@ public class Ship extends ObjectData implements Entity {
         //Add Ship userData to do the moving around stuff
         my_owner = owner;
         spritekey = my_owner.playerNumber;
+        pos=body.getPosition();
         this.model = model;
         this.id = model.shipIdCount;
         my_owner.my_ships.add(id);

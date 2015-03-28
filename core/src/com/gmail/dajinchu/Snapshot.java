@@ -47,7 +47,7 @@ public class Snapshot {
             ships.add(new ObjectData(new Vector2(Float.parseFloat(data.next()),Float.parseFloat(data.next())),Integer.parseInt(data.next()),Integer.parseInt(data.next())));
         }
         for(int i=0; i<numsuns; i++){
-            ships.add(new ObjectData(new Vector2(Float.parseFloat(data.next()),Float.parseFloat(data.next())),Integer.parseInt(data.next()),Integer.parseInt(data.next())));
+            suns.add(new ObjectData(new Vector2(Float.parseFloat(data.next()),Float.parseFloat(data.next())),Integer.parseInt(data.next()),Integer.parseInt(data.next())));
         }
     }
 

@@ -20,7 +20,8 @@ public class SpectateModel implements Model{
 
     SocketManager sm;
 
-    Snapshot now;
+    //Begin with null Snapshot
+    Snapshot now = new Snapshot("0 0");
 
     public SpectateModel(Vector2 mapSize, int player_id, SocketManager socketManager){
         socketManager.setMessageReceived(this);
@@ -41,8 +42,8 @@ public class SpectateModel implements Model{
     }
 
     @Override
-    public ObjectData[] getSuns() {
-        return now.suns.toArray();//TODO convert this to getShips style possibly
+    public Array<? extends ObjectData> getSuns() {
+        return now.suns;//TODO convert this to getShips style possibly
     }
 
     @Override

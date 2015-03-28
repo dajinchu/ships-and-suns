@@ -13,7 +13,7 @@ public class Turn {
     public void addAction(FutureAction action){
         actions[action.getPlayerId()] = action;
     }
-    public void execute(Model model){
+    public void execute(HostModel model){
         for(int i = 0; i < 2; i++){
             if(actions[i]!=null){
                 actions[i].execute(model);

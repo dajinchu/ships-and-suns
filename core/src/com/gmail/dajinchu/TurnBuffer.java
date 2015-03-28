@@ -26,7 +26,7 @@ public class TurnBuffer {
     public void addAction(FutureAction action){
         getTurn(action.getScheduledFrame()).addAction(action);
     }
-    public void executeFrame(Model model, int frame){
+    public void executeFrame(HostModel model, int frame){
         temp = getTurn(frame);
         temp.execute(model);
         buffer.remove(frame);

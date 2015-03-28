@@ -65,6 +65,7 @@ public class HostModel implements Model{
         this.world=world;
         world.setContactListener(new ShipContactListener());
         this.socketManager = socketManager;
+        socketManager.setMessageReceived(this);
     }
 
     public void setSeed(long seed){
@@ -174,8 +175,8 @@ public class HostModel implements Model{
     }
 
     @Override
-    public ObjectData[] getSuns() {
-        return allSuns.toArray();
+    public Array<? extends ObjectData> getSuns() {
+        return allSuns;
     }
 
     @Override

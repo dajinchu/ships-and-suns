@@ -14,7 +14,7 @@ public interface Model extends MessageObserver {
 
     public void step(float timestep);
     public Array<? extends ObjectData> getShips();
-    public ObjectData[] getSuns();
+    public Array<? extends ObjectData> getSuns();
     public int me();
 
     public GameState state();
