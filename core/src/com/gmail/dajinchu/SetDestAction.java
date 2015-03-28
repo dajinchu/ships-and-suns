@@ -25,7 +25,7 @@ public class SetDestAction implements FutureAction {
         this.effectedRadiusSq = effectedRadius*effectedRadius;
     }
     @Override
-    public void execute(Model model) {
+    public void execute(HostModel model) {
         int platoon = model.players[playerid].newPlatoon();
         for(int id : model.players[playerid].my_ships){
             tmp = model.allShips.get(id);

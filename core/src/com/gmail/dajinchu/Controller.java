@@ -6,16 +6,14 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.gmail.dajinchu.net.Command;
 import com.gmail.dajinchu.net.CreateFutureSetDestCommand;
-import com.gmail.dajinchu.net.MessageObserver;
 import com.gmail.dajinchu.net.ReadyToPlayCommand;
 import com.gmail.dajinchu.net.SocketManager;
 
 /**
  * Created by Da-Jin on 12/20/2014.
  */
-public class Controller implements GestureDetector.GestureListener, MessageObserver {
+public class Controller implements GestureDetector.GestureListener {
     //Controller handles input from player, and other players through sockets
 
     private final OrthographicCamera cam;
@@ -38,7 +36,6 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
         this.model = model;
         this.cam = camera;
         this.socketManager = socketManager;
-        socketManager.setMessageReceived(this);
         clamp();
     }
 
@@ -91,8 +88,8 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
         if(setDestState==SETDESTSTATE.NEEDTARGET){
             //If we have a selection, and need a target
             cam.unproject(touch.set(x,y,0));
-            socketManager.sendMsg(new CreateFutureSetDestCommand(model.worldFrame+100,model.me.playerNumber,
-                    new Vector2(touch.x,touch.y),setDestSelectCenter,setDestRadius));
+            socketManager.sendMsg(new CreateFutureSetDestCommand(model.worldFrame()+100,model.me(),
+                    new Vector2(touch.x,touch.y),setDestSelectCenter,setDestRadius).serialize());
             //Okay, we sent the Command, NOT settingDest anymore
             setDestState=SETDESTSTATE.NOT;
         }
@@ -146,28 +143,21 @@ public class Controller implements GestureDetector.GestureListener, MessageObser
 
     //Should clamp after moving camera, it keeps cam within bounds
     public void clamp(){
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, model.mapWidth*2 / cam.viewportWidth);
-        cam.position.x = MathUtils.clamp(cam.position.x, 0, model.mapWidth);
-        cam.position.y = MathUtils.clamp(cam.position.y, 0, model.mapHeight);
+        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, model.mapSize().x*2 / cam.viewportWidth);
+        cam.position.x = MathUtils.clamp(cam.position.x, 0, model.mapSize().x);
+        cam.position.y = MathUtils.clamp(cam.position.y, 0, model.mapSize().y);
         cam.update();
         //Gdx.app.log("GESTURES",cam.viewportWidth+" "+cam.zoom);
     }
 
     //For the beginning of the game, declare this player is okay to go
     public void start(){
-        if(model.state == Model.GameState.STARTING) {
+        if(model.state() == Model.GameState.STARTING) {
             socketManager.start();
-            setPlayerReady(model.me.playerNumber);
+            setPlayerReady(model.me());
         }
     }
     public void setPlayerReady(int playerid){
-        socketManager.sendMsg(new ReadyToPlayCommand(playerid));
-    }
-
-    //update gets called by the socketManagers, telling Controller a command has arrived
-    @Override
-    public void update(Command msg) {
-        Gdx.app.log("Controller", msg.serialize());
-        msg.execute(this);
+        socketManager.sendMsg(new ReadyToPlayCommand(playerid).serialize());
     }
 }

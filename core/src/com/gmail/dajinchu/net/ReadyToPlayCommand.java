@@ -1,6 +1,6 @@
 package com.gmail.dajinchu.net;
 
-import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.HostModel;
 
 /**
  * Created by Da-Jin on 1/20/2015.
@@ -18,7 +18,7 @@ public class ReadyToPlayCommand extends Command{
     }
 
     @Override
-    public void execute(Controller controller) {
-        controller.model.setPlayerReady(playerid);
+    public void execute(HostModel hostModel) {
+        hostModel.setPlayerReady(playerid);
     }
 }

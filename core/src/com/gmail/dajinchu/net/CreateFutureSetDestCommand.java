@@ -1,7 +1,7 @@
 package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.math.Vector2;
-import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.HostModel;
 import com.gmail.dajinchu.SetDestAction;
 
 /**
@@ -31,7 +31,7 @@ public class CreateFutureSetDestCommand extends Command {
     }
 
     @Override
-    public void execute(Controller controller) {
-        controller.model.addFutureAction(new SetDestAction(frame,playerid,dest,effectedCenter,effectedRadius));
+    public void execute(HostModel hostModel) {
+        hostModel.addFutureAction(new SetDestAction(frame,playerid,dest,effectedCenter,effectedRadius));
     }
 }

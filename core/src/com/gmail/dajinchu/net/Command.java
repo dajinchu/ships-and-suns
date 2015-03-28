@@ -2,7 +2,7 @@ package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.HostModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class Command {
 
     public abstract String serialize();
-    public abstract void execute(Controller controller);
+    public abstract void execute(HostModel hostModel);
 
     public static Command deserialize(String in){
         Gdx.app.log("Command", "deserializing "+in);
