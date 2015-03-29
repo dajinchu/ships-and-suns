@@ -140,7 +140,7 @@ public class InGameScreen implements Screen {
         for (ObjectData ship:model.getShips()) {
             drawShips++;
             spriteBatch.setColor(colormap[ship.spritekey]);
-            spriteBatch.draw(sredship, ship.pos.x - ship.size,
+            spriteBatch.draw(redship, ship.pos.x - ship.size,
                     ship.pos.y - ship.size, ship.size*2, ship.size*2);
         }
         spriteBatch.end();

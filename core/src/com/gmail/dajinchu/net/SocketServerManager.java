@@ -19,7 +19,7 @@ public class SocketServerManager extends SocketManager {
     @Override
     public void sendCmd(Command msg){
         //To be compatible with client, so controller can call them same way
-        msg.execute((HostModel)observer);//TODO fix this terrible crap
+        msg.execute((HostModel)observer);//TODO fix this terrible casting crap
     }
 
     public void sendSnap(Snapshot snapshot){

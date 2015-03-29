@@ -206,6 +206,7 @@ public class HostModel implements Model{
 
     @Override
     public void update(String msg) {
+        InGameScreen.file.writeString("RECEIVED:"+msg, true);
         Command.deserialize(msg).execute(this);
     }
 

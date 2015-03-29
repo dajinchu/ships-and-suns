@@ -1,6 +1,7 @@
 package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
+import com.gmail.dajinchu.InGameScreen;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,6 +43,7 @@ public class SocketManager {
     }
 
     public void sendCmd(Command cmd){
+        InGameScreen.file.writeString("Sending cmd: '"+cmd.serialize()+"'", true);
         sendMsg(cmd.serialize());
     }
 
