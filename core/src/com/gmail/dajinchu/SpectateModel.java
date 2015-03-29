@@ -15,6 +15,7 @@ public class SpectateModel implements Model{
 
     private final Vector2 mapsize;
     private GameState state = GameState.STARTING;
+    int worldFrame=0;
 
     int me;
 
@@ -31,9 +32,7 @@ public class SpectateModel implements Model{
     }
     @Override
     public void step(float timestep) {
-        if(now!=null){
-
-        }
+        worldFrame++;
     }
 
     @Override
@@ -63,7 +62,7 @@ public class SpectateModel implements Model{
 
     @Override
     public int worldFrame() {
-        return 0;
+        return worldFrame;
     }
 
     @Override
