@@ -92,6 +92,8 @@ public class Controller implements GestureDetector.GestureListener {
                     new Vector2(touch.x,touch.y),setDestSelectCenter,setDestRadius));
             //Okay, we sent the Command, NOT settingDest anymore
             setDestState=SETDESTSTATE.NOT;
+            //Sometimes the setDest circle shows up, this safeguards that
+            setDestRadius=0;
         }
         Gdx.app.log("Controller","TAPPED");
         return false;
