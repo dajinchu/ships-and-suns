@@ -9,6 +9,10 @@ public class ObjectData{
     Vector2 pos;
     int size;
     int spritekey;
+    int id;
+    int progress;
+    int maxupgrade;
+
     public ObjectData(Vector2 pos, int size, int spritekey){
         this.pos = pos;
         this.size = size;
