@@ -129,9 +129,6 @@ public class HostModel implements Model{
 
 
         world.getBodies(bodies);
-        /*if(worldFrame>100) {
-            turnBuffer.executeFrame(this, worldFrame);
-        }*/
 
         for (IntMap.Entry<Ship> entry : allShips.entries()) {
             tempship = entry.value;
@@ -212,15 +209,7 @@ public class HostModel implements Model{
     public Ship getShip(int id){
         return allShips.get(id);
     }
-    public void addFutureAction(FutureAction action){
-        action.execute(this);
-        /*InGameScreen.file.writeString("\ngot future action set to happen at " +action.getScheduledFrame()+". Current frame is "+worldFrame+"\n", true);
-        if(action.getScheduledFrame() < worldFrame){
-            Gdx.app.log("HostModel","Tried to add future action, but its already in the past!..NOOOOO");
-            return;
-        }
-        turnBuffer.addAction(action);*/
-    }
+    
     public void setPlayerReady(int playerid){
         InGameScreen.file.writeString("player "+playerid+"is now ready\n", true);
         players[playerid].readyToPlay = true;

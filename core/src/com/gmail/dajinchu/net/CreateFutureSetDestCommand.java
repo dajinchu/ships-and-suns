@@ -20,8 +20,8 @@ public class CreateFutureSetDestCommand extends Command {
     public CreateFutureSetDestCommand(int frame, int player, Vector2 dest, Vector2 effectedCenter, float effectedRadius){
         this.frame = frame;
         this.playerid = player;
-        this.dest = dest.cpy();
-        this.effectedCenter = effectedCenter.cpy();
+        this.dest = dest;
+        this.effectedCenter = effectedCenter;
         this.effectedRadius = effectedRadius;
     }
 
@@ -31,7 +31,7 @@ public class CreateFutureSetDestCommand extends Command {
     }
 
     @Override
-    public void execute(HostModel hostModel) {
-        hostModel.addFutureAction(new SetDestAction(frame,playerid,dest,effectedCenter,effectedRadius));
+    public void execute(HostModel model) {
+        new SetDestAction(frame, playerid, dest, effectedCenter, effectedRadius).execute(model);
     }
 }
