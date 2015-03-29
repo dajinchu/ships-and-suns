@@ -135,8 +135,9 @@ public class Ship extends ObjectData implements Entity {
 
     public void setDest(Vector2 newdest, int platoon){
         platoonNumber = platoon;
-        dest = newdest;
-        calcDestWithWander();
+        dest.set(newdest);
+        wanderdest.set(newdest);
+        //calcDestWithWander();
     }
 
     public void captureSun(Sun sun){
