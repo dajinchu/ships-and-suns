@@ -24,6 +24,7 @@ public class Sun extends ObjectData{
     private static final int MAXCAP = 100;
 
     public Sun(int x, int y, HostModel model){
+        //This is constructor for unoccupied suns
         model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
@@ -31,6 +32,7 @@ public class Sun extends ObjectData{
         this.pos = new Vector2(x,y);
         this.size = 60;
         this.model = model;
+        spritekey=-1;//-1 is for not captured
     }
 
     public Sun(int x, int y, Player occupant,int initialPopulation, HostModel model){
@@ -42,6 +44,7 @@ public class Sun extends ObjectData{
         if(initialPopulation>0){
             produceShip(initialPopulation);
         }
+        setColorKey();
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
@@ -69,9 +72,9 @@ public class Sun extends ObjectData{
                 }break;
             case CAPTURED:
                 if(ship.my_owner==occupant){
-                    /*state = STATE.UPGRADING;
+                    state = STATE.UPGRADING;
                     progress=0;//Sort of hijack the capture system by setting progress to 0, this MIGHT cause issues, not sure
-                    capture(ship);*/
+                    capture(ship);
                 }else{
                     state=STATE.DECAPTURING;
                     decapture(ship);
@@ -89,6 +92,11 @@ public class Sun extends ObjectData{
                     decapture(ship);
                 }break;
         }
+        setColorKey();
+        InGameScreen.deternismFile.writeString("Sun "+ state+" "+ship.dumpInfo()+" progress="+progress+"\n",true);
+    }
+
+    private void setColorKey() {
         //Set key for color
         switch (state) {
             case EMPTY:
@@ -102,8 +110,8 @@ public class Sun extends ObjectData{
                 if (occupant.playerNumber == 1) spritekey=1;
                 break;
         }
-        InGameScreen.deternismFile.writeString("Sun "+ state+" "+ship.dumpInfo()+" progress="+progress+"\n",true);
     }
+
     private void upgrade(){
         level++;
         size+=5;
