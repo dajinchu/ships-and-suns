@@ -53,7 +53,7 @@ public class InGameScreen implements Screen {
     private int allShipRemove = 0;
 
     //View
-    private Color[] colormap = new Color[]{new Color(Color.RED), new Color(Color.BLUE)};
+    private Color[] colormap = new Color[]{new Color(Color.GRAY), new Color(Color.RED), new Color(Color.BLUE)};
     static Texture blue_earth = new Texture("blue_earth.png");
     static Texture red_earth = new Texture("red_earth.png");
     static Texture grey_earth = new Texture("grey_earth.png");
@@ -139,17 +139,26 @@ public class InGameScreen implements Screen {
         //Draw all ships
         for (ObjectData ship:model.getShips()) {
             drawShips++;
-            spriteBatch.setColor(colormap[ship.spritekey]);
+            spriteBatch.setColor(colormap[ship.spritekey+1]);
             spriteBatch.draw(redship, ship.pos.x - ship.size,
                     ship.pos.y - ship.size, ship.size*2, ship.size*2);
         }
         spriteBatch.end();
 
         shapeRenderer.begin();
-        shapeRenderer.setColor(colormap[model.me()]);
+        shapeRenderer.setColor(colormap[model.me()+1]);
+        //Set destination circle
         if(controller.setDestState!= Controller.SETDESTSTATE.NOT){
             shapeRenderer.circle(controller.setDestSelectCenter.x,controller.setDestSelectCenter.y,controller.setDestRadius);
         }
+        //Possible Sun upgrade circles
+        for(ObjectData sun : model.getSuns()){
+            for(int i = 1; i < sun.maxupgrade; i++) {
+                shapeRenderer.setColor(colormap[sun.spritekey+1]);
+                shapeRenderer.circle(sun.pos.x, sun.pos.y, Sun.FIRSTRADIUS+(i*5));
+            }
+        }
+        //World border
         shapeRenderer.rect(0,0,model.mapSize().x,model.mapSize().y);
         shapeRenderer.end();
 

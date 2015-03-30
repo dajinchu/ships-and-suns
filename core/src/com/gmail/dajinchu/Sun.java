@@ -22,6 +22,7 @@ public class Sun extends ObjectData{
     STATE state = STATE.EMPTY;
 
     private static final int MAXCAP = 100;
+    public static final int FIRSTRADIUS = 30;
 
     public Sun(int x, int y, HostModel model){
         //This is constructor for unoccupied suns
@@ -30,9 +31,10 @@ public class Sun extends ObjectData{
         model.allSuns.add(this);
 
         this.pos = new Vector2(x,y);
-        this.size = 60;
+        this.size = FIRSTRADIUS*2;
         this.model = model;
         spritekey=-1;//-1 is for not captured
+        maxupgrade = 3;
     }
 
     public Sun(int x, int y, Player occupant,int initialPopulation, HostModel model){
