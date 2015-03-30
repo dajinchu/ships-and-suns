@@ -134,7 +134,7 @@ public class InGameScreen implements Screen {
                 case 0: tempTexture = red_earth; break;
                 case 1: tempTexture = blue_earth; break;
             }
-            spriteBatch.draw(tempTexture,(int) sun.pos.x-sun.size/2, (int) sun.pos.y-sun.size/2, sun.size, sun.size);
+            spriteBatch.draw(tempTexture,(int) sun.pos.x-sun.size, (int) sun.pos.y-sun.size, sun.size*2, sun.size*2);
         }
         //Draw all ships
         for (ObjectData ship:model.getShips()) {

@@ -26,12 +26,12 @@ public class Sun extends ObjectData{
 
     public Sun(int x, int y, HostModel model){
         //This is constructor for unoccupied suns
-        model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
+        model.createCircleBody(x,y,size, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
 
         this.pos = new Vector2(x,y);
-        this.size = FIRSTRADIUS*2;
+        this.size = FIRSTRADIUS;
         this.model = model;
         spritekey=-1;//-1 is for not captured
         maxupgrade = 3;
