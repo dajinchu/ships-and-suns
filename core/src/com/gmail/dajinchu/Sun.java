@@ -7,10 +7,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 /**
  * Created by Da-Jin on 12/30/2014.
  */
-public class Sun {
+//Like ship, it is class for the Box2D Sun body. ONLY FOR HOST
+public class Sun extends ObjectData{
     Player occupant;
-    Vector2 pos;
-    Model model;
+    HostModel model;
 
     private boolean occupied;
 
@@ -22,19 +22,22 @@ public class Sun {
     STATE state = STATE.EMPTY;
 
     private static final int MAXCAP = 100;
-    public int size = 60;
+    public static final int FIRSTRADIUS = 30;
 
-    public Sun(int x, int y, Model model){
-        model.createCircleBody(x,y,size/2, BodyDef.BodyType.StaticBody,true).setUserData(this);
+    public Sun(int x, int y, HostModel model){
+        //This is constructor for unoccupied suns
+        model.createCircleBody(x,y,size, BodyDef.BodyType.StaticBody,true).setUserData(this);
 
         model.allSuns.add(this);
 
         this.pos = new Vector2(x,y);
+        this.size = FIRSTRADIUS;
         this.model = model;
-
+        spritekey=-1;//-1 is for not captured
+        maxupgrade = 3;
     }
 
-    public Sun(int x, int y, Player occupant,int initialPopulation, Model model){
+    public Sun(int x, int y, Player occupant,int initialPopulation, HostModel model){
         this(x,y,model);
 
         this.state = STATE.CAPTURED;
@@ -43,6 +46,7 @@ public class Sun {
         if(initialPopulation>0){
             produceShip(initialPopulation);
         }
+        setColorKey();
     }
     public void pulse(){
         //Gdx.app.log("Sun"," "+state);
@@ -70,9 +74,9 @@ public class Sun {
                 }break;
             case CAPTURED:
                 if(ship.my_owner==occupant){
-                    /*state = STATE.UPGRADING;
+                    state = STATE.UPGRADING;
                     progress=0;//Sort of hijack the capture system by setting progress to 0, this MIGHT cause issues, not sure
-                    capture(ship);*/
+                    capture(ship);
                 }else{
                     state=STATE.DECAPTURING;
                     decapture(ship);
@@ -90,8 +94,26 @@ public class Sun {
                     decapture(ship);
                 }break;
         }
+        setColorKey();
         InGameScreen.deternismFile.writeString("Sun "+ state+" "+ship.dumpInfo()+" progress="+progress+"\n",true);
     }
+
+    private void setColorKey() {
+        //Set key for color
+        switch (state) {
+            case EMPTY:
+            case CAPTURING:
+                spritekey = -1;
+                break;
+            case CAPTURED:
+            case DECAPTURING:
+            case UPGRADING:
+                if (occupant.playerNumber == 0) spritekey=0;
+                if (occupant.playerNumber == 1) spritekey=1;
+                break;
+        }
+    }
+
     private void upgrade(){
         level++;
         size+=5;

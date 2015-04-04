@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
  * Created by Da-Jin on 1/18/2015.
  */
 //FutureAction that sets destination of a player in model.
-public class SetDestAction implements FutureAction {
+public class SetDestAction {
 
     private final int frame;
     private final int playerid;
@@ -24,8 +24,8 @@ public class SetDestAction implements FutureAction {
         this.effectedCenter = effectedCenter;
         this.effectedRadiusSq = effectedRadius*effectedRadius;
     }
-    @Override
-    public void execute(Model model) {
+
+    public void execute(HostModel model) {
         int platoon = model.players[playerid].newPlatoon();
         for(int id : model.players[playerid].my_ships){
             tmp = model.allShips.get(id);
@@ -33,15 +33,5 @@ public class SetDestAction implements FutureAction {
                 tmp.setDest(dest,platoon);
             }
         }
-    }
-
-    @Override
-    public int getScheduledFrame() {
-        return frame;
-    }
-
-    @Override
-    public int getPlayerId() {
-        return playerid;
     }
 }

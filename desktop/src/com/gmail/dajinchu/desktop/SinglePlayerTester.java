@@ -1,8 +1,8 @@
 package com.gmail.dajinchu.desktop;
 
 import com.badlogic.gdx.Game;
-import com.gmail.dajinchu.InGameScreen;
 import com.gmail.dajinchu.Model;
+import com.gmail.dajinchu.InGameScreen;
 import com.gmail.dajinchu.net.SinglePlayerSocketManager;
 
 /**

@@ -18,9 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.gmail.dajinchu.ConnectScreen;
-import com.gmail.dajinchu.InGameScreen;
 import com.gmail.dajinchu.Model;
-import com.gmail.dajinchu.net.SinglePlayerSocketManager;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -129,7 +127,7 @@ public class LANConnect extends ConnectScreen {
         single.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainGame.setScreen(new InGameScreen(mainGame, Model.ModelFactory.defaultModel(50,0),new SinglePlayerSocketManager()));
+       //         mainGame.setScreen(new InGameScreen(mainGame, HostModel.ModelFactory.defaultHostModel(50,0,new SinglePlayerSocketManager())));
             }
         });
         //Name field

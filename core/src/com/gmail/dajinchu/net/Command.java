@@ -2,7 +2,7 @@ package com.gmail.dajinchu.net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.gmail.dajinchu.Controller;
+import com.gmail.dajinchu.HostModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class Command {
 
     public abstract String serialize();
-    public abstract void execute(Controller controller);
+    public abstract void execute(HostModel hostModel);
 
     public static Command deserialize(String in){
         Gdx.app.log("Command", "deserializing "+in);
@@ -24,7 +24,6 @@ public abstract class Command {
         switch (msg_type){
             case 0: return SetDest(args);
             case 1: return Ready(args);
-            case 2: return DoneSending(args);
         }
         //If returning null like this, SOMETHING IS BAD
         return null;
@@ -38,8 +37,5 @@ public abstract class Command {
     }
     private static ReadyToPlayCommand Ready(List<String> args){
         return new ReadyToPlayCommand(Integer.parseInt(args.get(0)));
-    }
-    private static DoneSendingCommand DoneSending(List<String> args){
-        return new DoneSendingCommand(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)));
     }
 }

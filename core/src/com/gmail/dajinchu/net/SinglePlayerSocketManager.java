@@ -1,41 +1,28 @@
 package com.gmail.dajinchu.net;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+
 /**
  * Created by Da-Jin on 2/2/2015.
  */
 //Basically a fake SocketManager for single player, just bounces stuff back
-public class SinglePlayerSocketManager implements SocketManager{
+public class SinglePlayerSocketManager extends SocketManager {
 
     MessageObserver observer;
 
-    public SinglePlayerSocketManager(){
-
+    public SinglePlayerSocketManager(BufferedReader reader, BufferedWriter writer) {
+        super(reader, writer);
     }
 
     @Override
     public void start() {
         //Bypass the ready to play sync system, there's not screen switching and it's single player!
-        notifyObserver(new ReadyToPlayCommand(0));
-        notifyObserver(new ReadyToPlayCommand(1));
-    }
-
-    @Override
-    public void sendMsg(Command msg) {
-        //Just bounce it back
-        notifyObserver(msg);
-        if(msg instanceof DoneSendingCommand){
-            notifyObserver(new DoneSendingCommand(((DoneSendingCommand) msg).frame, 1));
-        }
     }
 
     @Override
     public void setMessageReceived(MessageObserver msgrec) {
         observer = msgrec;
-    }
-
-    @Override
-    public void notifyObserver(Command msg) {
-        observer.update(msg);
     }
 
     @Override

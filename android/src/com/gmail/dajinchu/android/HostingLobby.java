@@ -23,8 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.gmail.dajinchu.HostModel;
 import com.gmail.dajinchu.MainGame;
-import com.gmail.dajinchu.Model;
 import com.gmail.dajinchu.net.SocketServerManager;
 
 import java.io.BufferedReader;
@@ -50,7 +50,7 @@ public class HostingLobby implements Screen{
     private Socket client;
     private JmDNS jmdns;
     private ServiceInfo serviceInfo;
-    private Model model;
+    private HostModel model;
 
     private SpriteBatch spriteBatch = new SpriteBatch();
     private final ShapeRenderer shapeRenderer;
@@ -136,12 +136,12 @@ public class HostingLobby implements Screen{
                 //Get name of new guy, and add it to list
                 addParticipant(br.readLine());
                 // Write output
-                sendInitalSetup(writer);
+                sendInitalSetup(br, writer);
                 //AFTER sending inital setup info, we can "activate" the go button to have actions
                 go.addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y){
-                        sendStart(br,writer);
+                        sendStart(writer);
                     }
                 });
             } catch (IOException e) {
@@ -152,14 +152,14 @@ public class HostingLobby implements Screen{
         }
     }
 
-    public void sendStart(final BufferedReader reader, final BufferedWriter writer){
+    public void sendStart(final BufferedWriter writer){
         try {
             writer.write("Start\n");
             Gdx.app.log("HostingLobby", "sent start");
             Gdx.app.postRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    mainGame.startGame(model, new SocketServerManager(reader, writer));
+                    mainGame.startGame(model);
                 }
             });
             writer.flush();
@@ -168,7 +168,7 @@ public class HostingLobby implements Screen{
         }
     }
 
-    public void sendInitalSetup(BufferedWriter writer){
+    public void sendInitalSetup(final BufferedReader reader, BufferedWriter writer){
         try {
             long seed = TimeUtils.millis();
             int client_player_id = 1;
@@ -176,7 +176,7 @@ public class HostingLobby implements Screen{
 
             writer.write(seed + "\n" + client_player_id+"\n");
             writer.flush();
-            model = Model.ModelFactory.defaultModel(seed, my_player_id);
+            model = HostModel.ModelFactory.defaultHostModel(seed, my_player_id, new SocketServerManager(reader,writer));
         } catch (IOException e) {
             e.printStackTrace();
         }
