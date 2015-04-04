@@ -60,7 +60,7 @@ public class InGameScreen implements Screen {
     static Texture redship = new Texture("ship.png");
     Texture tempTexture;
 
-    public static FileHandle file, checksumFile, deternismFile;
+    public static FileHandle file, checksumFile, deternismFile, interpFile;
 
     //For average 60 fps system to step model
     private float frameTime;
@@ -91,6 +91,7 @@ public class InGameScreen implements Screen {
         file = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation network 'hh-mm a'.txt'").format(new Date()));
         checksumFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation checksums 'hh-mm a'.txt'").format(new Date()));
         deternismFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation determinism 'hh-mm a'.txt'").format(new Date()));
+        interpFile = Gdx.files.external(new SimpleDateFormat("'Ships and Suns/'MM-dd-yyyy'/interpolation interp 'hh-mm a'.txt'").format(new Date()));
         deternismFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
         file.writeString("This is a " + socketManager.getName() + " log file\n", true);
         checksumFile.writeString("This is a " + socketManager.getName() + " log file\n", true);
@@ -137,7 +138,7 @@ public class InGameScreen implements Screen {
             spriteBatch.draw(tempTexture,(int) sun.pos.x-sun.size, (int) sun.pos.y-sun.size, sun.size*2, sun.size*2);
         }
         //Draw all ships
-        for (ObjectData ship:model.getShips()) {
+        for (ObjectData ship:model.getShips().values()) {
             drawShips++;
             spriteBatch.setColor(colormap[ship.spritekey+1]);
             spriteBatch.draw(redship, ship.pos.x - ship.size,

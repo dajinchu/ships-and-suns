@@ -2,6 +2,7 @@ package com.gmail.dajinchu;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 
 import java.util.Iterator;
 
@@ -10,13 +11,17 @@ import java.util.Iterator;
  */
 //TODO wtf is this class needed for!?
 public class Snapshot {
-    Array<ObjectData> ships = new Array<ObjectData>();
+    int frame;
+    IntMap<ObjectData> ships = new IntMap<ObjectData>();
     Array<ObjectData> suns = new Array<ObjectData>();
+
+
     public StringBuilder ret;
 
     public Snapshot(HostModel model){
 
         ret = new StringBuilder();
+        ret.append(model.worldFrame()+" ");
         ret.append(model.allShips.size+" ");
         ret.append(model.allSuns.size+" ");
 
@@ -35,6 +40,7 @@ public class Snapshot {
         Array<String> stringdata = new Array<String>(in.split(" "));
         Iterator<String> data = stringdata.iterator();
 
+        frame = Integer.parseInt(data.next());
         int numships = Integer.parseInt(data.next());
         int numsuns = Integer.parseInt(data.next());
 
@@ -44,7 +50,7 @@ public class Snapshot {
         for(int i=0; i<numships; i++){
             tmp = new ObjectData(new Vector2(Float.parseFloat(data.next()),Float.parseFloat(data.next())),Integer.parseInt(data.next()),Integer.parseInt(data.next()));
             tmp.id = Integer.parseInt(data.next());
-            ships.add(tmp);
+            ships.put(tmp.id,tmp);
         }
         for(int i=0; i<numsuns; i++){
             tmp = new ObjectData(new Vector2(Float.parseFloat(data.next()),Float.parseFloat(data.next())),Integer.parseInt(data.next()),Integer.parseInt(data.next()));

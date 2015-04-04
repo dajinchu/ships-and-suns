@@ -13,7 +13,7 @@ public interface Model extends MessageObserver {
     public enum GameState{STARTING,PLAYING,PAUSED};
 
     public void step(float timestep);
-    public Array<? extends ObjectData> getShips();
+    public com.badlogic.gdx.utils.IntMap<? extends ObjectData> getShips();
     public Array<? extends ObjectData> getSuns();
     public int me();
 

@@ -107,8 +107,12 @@ public class HostModel implements Model{
         world.step(1/60f, 6, 2);
         //Gdx.app.log("HostModel", "updating");
 
-        socketManager.sendSnap(new Snapshot(this));
+        //10 times a second
+        if(worldFrame % 6 == 0){
+            socketManager.sendSnap(new Snapshot(this));
+        }
 
+        //Every second
         if(worldFrame%60==0) {
             for (Sun sun : allSuns) {
                 sun.pulse();
@@ -165,8 +169,8 @@ public class HostModel implements Model{
     }
 
     @Override
-    public Array<? extends ObjectData> getShips() {
-        return allShips.values().toArray();
+    public IntMap<? extends ObjectData> getShips() {
+        return allShips;
     }
 
     @Override
@@ -209,7 +213,7 @@ public class HostModel implements Model{
     public Ship getShip(int id){
         return allShips.get(id);
     }
-    
+
     public void setPlayerReady(int playerid){
         InGameScreen.file.writeString("player "+playerid+"is now ready\n", true);
         players[playerid].readyToPlay = true;
